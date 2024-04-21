@@ -13,7 +13,7 @@ class AbstractDistribution(eqx.Module, strict=True):
     def _sample_n(self, key: PRNGKeyArray, n: int) -> PyTree[Array]:
         """Returns `n` samples."""
         raise NotImplementedError
-    
+
     def _sample_n_and_log_prob(
         self,
         key: PRNGKeyArray,
@@ -28,12 +28,12 @@ class AbstractDistribution(eqx.Module, strict=True):
         may override this method with a more efficient implementation.
 
         **Arguments:**
-        
+
         - `key`: PRNG key.
         - `n`: Number of samples to generate.
 
         **Returns:**
-        
+
         A tuple of `n` samples and their log probs.
         """
         samples = self._sample_n(key, n)
