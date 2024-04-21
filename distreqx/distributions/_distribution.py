@@ -1,8 +1,10 @@
 """Base class for distributions."""
 from abc import abstractmethod
 from typing import Tuple
-from jaxtyping import PyTree, Array, PRNGKeyArray, Num
+
 import equinox as eqx
+from jaxtyping import Array, Num, PRNGKeyArray, PyTree
+
 
 class AbstractDistribution(eqx.Module, strict=True):
     """Base class for all distreqx distributions."""
