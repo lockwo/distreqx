@@ -35,11 +35,13 @@ class Bernoulli(AbstractDistribution):
             `probs` can be specified.
         """
         # Validate arguments.
-        if logits is None and probs is None:
+        if (logits is None) == (probs is None):
             raise ValueError(
                 f"One and exactly one of `logits` and `probs` should be `None`, "
                 f"but `logits` is {logits} and `probs` is {probs}."
             )
+        if (not isinstance(logits, jax.Array)) and (not isinstance(probs, jax.Array)):
+            raise ValueError("`logits` and `probs` are not jax arrays.")
         # Parameters of the distribution.
         self._probs = None if probs is None else probs
         self._logits = None if logits is None else logits
@@ -74,7 +76,7 @@ class Bernoulli(AbstractDistribution):
     def sample(self, key: PRNGKeyArray) -> Array:
         """See `Distribution.sample`."""
         probs = self.probs
-        return jax.random.bernoulli(key=key, p=probs)
+        return jax.random.bernoulli(key=key, p=probs).astype("int8")
 
     def log_prob(self, value: Array) -> Array:
         """See `Distribution.log_prob`."""

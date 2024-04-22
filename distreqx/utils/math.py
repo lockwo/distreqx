@@ -127,7 +127,7 @@ def normalize(
         probs = jnp.asarray(probs)
         return probs / probs.sum(axis=-1, keepdims=True)
     else:
-        if probs is None:
+        if logits is None:
             raise ValueError("both logits and probs are None!")
         logits = jnp.asarray(logits)
         return jax.nn.log_softmax(logits, axis=-1)

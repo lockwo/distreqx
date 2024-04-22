@@ -167,7 +167,7 @@ class AbstractDistribution(eqx.Module, strict=True):
 
         **Arguments:**
 
-        - `other_dist`: A compatible Distax or TFP Distribution.
+        - `other_dist`: A compatible distreqx Distribution.
         - `kwargs`: Additional kwargs.
 
         **Returns:**
@@ -177,3 +177,17 @@ class AbstractDistribution(eqx.Module, strict=True):
         raise NotImplementedError(
             f"Distribution `{self.name}` does not implement `kl_divergence`."
         )
+
+    def cross_entropy(self, other_dist, **kwargs) -> Array:
+        """Calculates the cross entropy to another distribution.
+
+        **Arguments:**
+
+        - `other_dist`: A compatible distreqx Distribution.
+        - `kwargs`: Additional kwargs.
+
+        **Returns:**
+
+        The cross entropy `H(self || other_dist)`.
+        """
+        return self.kl_divergence(other_dist, **kwargs) + self.entropy()
