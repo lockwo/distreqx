@@ -93,5 +93,8 @@ nav:
     - API:
         - Distributions:
             - 'api/distributions/_distribution.md'
+            - 'api/distributions/bernoulli.md'
+        - Utilities:
+            - 'api/utils/math.md'
     - Examples:
         - Test: 'examples/00_test.ipynb'
