@@ -1,4 +1,4 @@
-# Bernoulli
+# Math
 
 ::: distreqx.utils.math.multiply_no_nan
 

@@ -1,9 +1,11 @@
 from unittest import TestCase
-from parameterized import parameterized
-from distreqx.distributions import _distribution
+
 import jax
 import jax.numpy as jnp
 import numpy as np
+from parameterized import parameterized  # type: ignore
+
+from distreqx.distributions import _distribution
 
 
 class DummyUnivariateDist(_distribution.AbstractDistribution):
@@ -57,7 +59,7 @@ class DistributionTest(TestCase):
         np.testing.assert_array_equal(sampler(seed), dist.sample(seed))
 
     def test_multivariate_survival_function_raises(self):
-        mult_dist = DummyMultivariateDist(42)
+        mult_dist = DummyMultivariateDist((42,))
         with self.assertRaises(NotImplementedError):
             mult_dist.survival_function(jnp.zeros(42))
         with self.assertRaises(NotImplementedError):

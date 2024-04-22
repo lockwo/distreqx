@@ -1,5 +1,6 @@
 """Utility math functions."""
-from typing import Tuple
+from typing import Optional, Tuple
+
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array
@@ -20,6 +21,7 @@ def multiply_no_nan(x: Array, y: Array) -> Array:
       The product of `x` and `y`.
 
     **Raises:**
+
       ValueError if the shapes of `x` and `y` do not match.
     """
     dtype = jnp.result_type(x, y)
@@ -105,7 +107,9 @@ def mul_exp(x: Array, logp: Array) -> Array:
     return x * p
 
 
-def normalize(*, probs: Array = None, logits: Array = None) -> Array:
+def normalize(
+    *, probs: Optional[Array] = None, logits: Optional[Array] = None
+) -> Array:
     """Normalizes logits via log_softmax or probabilities to ensure they sum to one.
 
     **Arguments:**
@@ -118,9 +122,13 @@ def normalize(*, probs: Array = None, logits: Array = None) -> Array:
       Normalized probabilities or logits.
     """
     if logits is None:
+        if probs is None:
+            raise ValueError("both logits and probs are None!")
         probs = jnp.asarray(probs)
         return probs / probs.sum(axis=-1, keepdims=True)
     else:
+        if probs is None:
+            raise ValueError("both logits and probs are None!")
         logits = jnp.asarray(logits)
         return jax.nn.log_softmax(logits, axis=-1)
 
@@ -166,7 +174,9 @@ def log_beta(a: Array, b: Array) -> Array:
 
     **Returns:**
 
-      The value `log B(a, b) = log Gamma(a) + log Gamma(b) - log Gamma(a + b)`, where `Gamma` is the Gamma function, obtained through stable computation of `log Gamma`.
+      The value `log B(a, b) = log Gamma(a) + log Gamma(b) - log Gamma(a + b)`,
+      where `Gamma` is the Gamma function, obtained through stable
+      computation of `log Gamma`.
     """
     return jax.lax.lgamma(a) + jax.lax.lgamma(b) - jax.lax.lgamma(a + b)
 
@@ -180,6 +190,9 @@ def log_beta_multivariate(a: Array) -> Array:
 
     **Returns:**
 
-      The value `log B(a) = sum_{k=1}^{K} log Gamma(a_k) - log Gamma(sum_{k=1}^{K} a_k)`, where `Gamma` is the Gamma function, obtained through stable computation of `log Gamma`.
+      The value
+      `log B(a) = sum_{k=1}^{K} log Gamma(a_k) - log Gamma(sum_{k=1}^{K} a_k)`,
+      where `Gamma` is the Gamma function, obtained through stable
+      computation of `log Gamma`.
     """
     return jnp.sum(jax.lax.lgamma(a), axis=-1) - jax.lax.lgamma(jnp.sum(a, axis=-1))
