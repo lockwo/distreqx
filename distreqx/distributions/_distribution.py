@@ -1,8 +1,9 @@
 """Base class for distributions."""
 from abc import abstractmethod
-from typing import Tuple
+from typing import Tuple, Union
 
 import equinox as eqx
+import jax
 from jax import numpy as jnp
 from jaxtyping import Array, PRNGKeyArray, PyTree
 
@@ -47,6 +48,18 @@ class AbstractDistribution(eqx.Module, strict=True):
         The log probability log P(value).
         """
         raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def event_shape(self) -> Union[Tuple[int], PyTree[jax.ShapeDtypeStruct]]:
+        """Shape of event of distribution samples."""
+        raise NotImplementedError
+
+    @property
+    def dtype(self) -> jnp.dtype:
+        """Data type of a sample"""
+        sample_spec = jax.eval_shape(self.sample, jax.random.PRNGKey(0))
+        return jax.tree_util.tree_map(lambda x: x.dtype, sample_spec)
 
     @property
     def name(self) -> str:

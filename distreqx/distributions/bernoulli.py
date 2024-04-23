@@ -64,6 +64,10 @@ class Bernoulli(AbstractDistribution):
             raise ValueError("_logits is None!")
         return jax.nn.sigmoid(self._logits)
 
+    @property
+    def event_shape(self) -> Tuple[int]:
+        return self.prob.shape
+
     def _log_probs_parameter(self) -> Tuple[Array, Array]:
         if self._logits is None:
             if self._probs is None:

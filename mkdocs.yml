@@ -93,7 +93,10 @@ nav:
     - API:
         - Distributions:
             - 'api/distributions/_distribution.md'
+            - 'api/distributions/_transformed.md'
             - 'api/distributions/bernoulli.md'
+        - Bijectors:
+            - 'api/bijectors/_bijector.md'
         - Utilities:
             - 'api/utils/math.md'
     - Examples:
