@@ -1,11 +1,13 @@
 """Distribution representing a Bijector applied to a Distribution."""
 
 from typing import Optional, Tuple
-from ..bijectors import AbstractBijector
-from ._distribution import AbstractDistribution
+
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array, PRNGKeyArray
+
+from ..bijectors import AbstractBijector
+from ._distribution import AbstractDistribution
 
 
 class Transformed(AbstractDistribution):
@@ -177,7 +179,7 @@ class Transformed(AbstractDistribution):
 
         **Arguments:**
 
-        - `other_dist`: A compatible Distax or TFP Distribution.
+        - `other_dist`: A compatible disteqx distribution.
         - `kwargs`: Additional kwargs, can accept an `input_hint`.
 
         **Returns:**
@@ -250,7 +252,7 @@ def _kl_divergence_transformed_transformed(
                 f"The KL divergence cannot be obtained because it is not possible to "
                 f"guarantee that the bijectors {dist1.bijector.name} and "
                 f"{dist2.bijector.name} of the Transformed distributions are "
-                f"equal. If possible, use the same instance of a Distrax bijector."
+                f"equal. If possible, use the same instance of a distreqx bijector."
             )
 
     return dist1.distribution.kl_divergence(dist2.distribution)

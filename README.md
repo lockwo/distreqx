@@ -32,6 +32,7 @@ from distreqx import
 ## Differences with Distrax
 
 - No support for TFP
+- Batch dimensions are dropped. If you want to operate on a batch, use `vmap` (note, this can be used in construction as well, e.g. [vmaping the construction](https://docs.kidger.site/equinox/tricks/#ensembling) of a `ScalarAffine`)
 
 ## Citation
 

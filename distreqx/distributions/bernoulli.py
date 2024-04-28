@@ -134,7 +134,7 @@ class Bernoulli(AbstractDistribution):
 
         **Arguments:**
 
-        - `other_dist`: A compatible Distax or TFP Distribution.
+        - `other_dist`: A compatible disteqx distribution.
         - `kwargs`: Additional kwargs.
 
         **Returns:**

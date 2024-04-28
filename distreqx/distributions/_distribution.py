@@ -1,11 +1,13 @@
 """Base class for distributions."""
 from abc import abstractmethod
-from typing import Tuple, Union
+from typing import Tuple
 
 import equinox as eqx
 import jax
 from jax import numpy as jnp
 from jaxtyping import Array, PRNGKeyArray, PyTree
+
+from .._custom_types import EventT
 
 
 class AbstractDistribution(eqx.Module, strict=True):
@@ -51,7 +53,7 @@ class AbstractDistribution(eqx.Module, strict=True):
 
     @property
     @abstractmethod
-    def event_shape(self) -> Union[Tuple[int], PyTree[jax.ShapeDtypeStruct]]:
+    def event_shape(self) -> EventT:
         """Shape of event of distribution samples."""
         raise NotImplementedError
 

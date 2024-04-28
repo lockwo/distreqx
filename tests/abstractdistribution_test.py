@@ -16,7 +16,7 @@ class DummyUnivariateDist(_distribution.AbstractDistribution):
 
     def log_prob(self, value):
         """Log probability density/mass function."""
-    
+
     @property
     def event_shape(self):
         return (1,)

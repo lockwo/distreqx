@@ -1,11 +1,12 @@
 """Tests for `bijector.py`."""
 from unittest import TestCase
-from parameterized import parameterized  # type: ignore
 
-from distreqx.bijectors import AbstractBijector
 import jax
 import jax.numpy as jnp
 import numpy as np
+from parameterized import parameterized  # type: ignore
+
+from distreqx.bijectors import AbstractBijector
 
 
 class DummyBijector(AbstractBijector):
