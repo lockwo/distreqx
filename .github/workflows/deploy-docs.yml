@@ -31,11 +31,19 @@ jobs:
         run: |
           mkdocs build
           mkdocs build  # twice, see https://github.com/patrick-kidger/pytkdocs_tweaks
-      
-      - name: Deploy docs
-        uses: mhausenblas/mkdocs-deploy-gh-pages@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CONFIG_FILE: mkdocs.yml
-          EXTRA_PACKAGES: build-base
-          REQUIREMENTS: docs/requirements.txt
+
+          remote_repo="https://x-access-token:${GITHUB_TOKEN}@${GITHUB_DOMAIN:-"github.com"}/${GITHUB_REPOSITORY}.git"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+          if ! git config --get user.name; then
+              git config --global user.name "${GITHUB_ACTOR}"
+          fi
+
+          if ! git config --get user.email; then
+              git config --global user.email "${GITHUB_ACTOR}@users.noreply.${GITHUB_DOMAIN:-"github.com"}"
+          fi
+
+          git remote rm origin
+          git remote add origin "${remote_repo}"
+
+          mkdocs gh-deploy --config-file mkdocs.yml --force
