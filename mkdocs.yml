@@ -93,5 +93,23 @@ nav:
     - API:
         - Distributions:
             - 'api/distributions/_distribution.md'
+            - 'api/distributions/_transformed.md'
+            - 'api/distributions/independent.md'
+            - 'api/distributions/bernoulli.md'
+            - Gaussians:
+              - 'api/distributions/normal.md'
+              - 'api/distributions/mvn_diag.md'
+              - 'api/distributions/mvn_from_bijector.md'
+        - Bijectors:
+            - 'api/bijectors/_bijector.md'
+            - 'api/bijectors/_linear.md'
+            - 'api/bijectors/block.md'
+            - 'api/bijectors/chain.md'
+            - 'api/bijectors/diag_linear.md'
+            - 'api/bijectors/scalar_affine.md'
+            - 'api/bijectors/shift.md'
+            - 'api/bijectors/tanh.md'
+        - Utilities:
+            - 'api/utils/math.md'
     - Examples:
-        - Test: 'examples/00_test.ipynb'
+        - Binary MNIST VAE: 'examples/01_vae.ipynb'

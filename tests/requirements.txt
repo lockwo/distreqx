@@ -1,0 +1,4 @@
+beartype
+pytest
+parameterized
+jax[cpu]
