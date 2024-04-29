@@ -31,4 +31,10 @@ jobs:
         run: |
           mkdocs build
           mkdocs build  # twice, see https://github.com/patrick-kidger/pytkdocs_tweaks
-          mkdocs gh-deploy --config-file mkdocs.yml
+      
+      - name: Deploy docs
+        uses: mhausenblas/mkdocs-deploy-gh-pages@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONFIG_FILE: mkdocs.yml
+          EXTRA_PACKAGES: build-base
