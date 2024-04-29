@@ -31,4 +31,4 @@ jobs:
         run: |
           mkdocs build
           mkdocs build  # twice, see https://github.com/patrick-kidger/pytkdocs_tweaks
-          mkdocs gh-deploy
+          mkdocs gh-deploy --config-file mkdocs.yml
