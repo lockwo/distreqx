@@ -1,15 +1,16 @@
 """Tests for `shift.py`."""
 
-from parameterized import parameterized  # type: ignore
 from unittest import TestCase
-from distreqx.bijectors import Tanh, Shift
+
 import jax
 import jax.numpy as jnp
 import numpy as np
+from parameterized import parameterized  # type: ignore
+
+from distreqx.bijectors import Shift, Tanh
 
 
 class ShiftTest(TestCase):
-
     def test_jacobian_is_constant_property(self):
         bijector = Shift(jnp.ones((4,)))
         self.assertTrue(bijector.is_constant_jacobian)
@@ -86,6 +87,6 @@ class ShiftTest(TestCase):
     def test_not_same_as_others(self):
         bij = Shift(jnp.ones((4,)))
         other = Shift(jnp.zeros((4,)))
+        tanh = Tanh()
         self.assertFalse(bij.same_as(other))
-        self.assertFalse(bij.same_as(Tanh()))
-
+        self.assertFalse(bij.same_as(tanh))

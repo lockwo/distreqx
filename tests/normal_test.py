@@ -1,15 +1,16 @@
 """Tests for `normal.py`."""
 
 from unittest import TestCase
-from distreqx.distributions import Normal
-from parameterized import parameterized  # type: ignore
+
 import jax
 import jax.numpy as jnp
 import numpy as np
+from parameterized import parameterized  # type: ignore
+
+from distreqx.distributions import Normal
 
 
 class NormalTest(TestCase):
-
     @parameterized.expand(
         [
             ("1d std normal", (jnp.array(0), jnp.array(1))),

@@ -1,11 +1,13 @@
 """MultivariateNormalDiag distribution."""
 
 from typing import Optional
-from ..bijectors import DiagLinear
-from .mvn_from_bijector import MultivariateNormalFromBijector
-from jaxtyping import Array
+
 import jax
 import jax.numpy as jnp
+from jaxtyping import Array
+
+from ..bijectors import DiagLinear
+from .mvn_from_bijector import MultivariateNormalFromBijector
 
 
 def _check_parameters(loc: Optional[Array], scale_diag: Optional[Array]) -> None:
@@ -47,10 +49,13 @@ class MultivariateNormalDiag(MultivariateNormalFromBijector):
         """
         _check_parameters(loc, scale_diag)
 
-        if scale_diag is None:
+        if scale_diag is None and loc is not None:
             scale_diag = jnp.ones(loc.shape[-1], loc.dtype)
-        elif loc is None:
+        elif loc is None and scale_diag is not None:
             loc = jnp.zeros(scale_diag.shape[-1], scale_diag.dtype)
+
+        assert loc is not None
+        assert scale_diag is not None
 
         broadcasted_shapes = jnp.broadcast_shapes(loc.shape, scale_diag.shape)
         loc = jnp.expand_dims(loc, axis=list(range(len(broadcasted_shapes) - loc.ndim)))
@@ -76,4 +81,6 @@ class MultivariateNormalDiag(MultivariateNormalFromBijector):
 
     def log_cdf(self, value: Array) -> Array:
         """See `Distribution.log_cdf`."""
-        return jnp.sum(jax.scipy.special.log_ndtr(self._standardize(value)), axis=-1)
+        # TODO: in normal and here we have a pyright ignore,
+        # jax has a weird return value for log_ndtr
+        return jnp.sum(jax.scipy.special.log_ndtr(self._standardize(value)), axis=-1)  # pyright: ignore[reportGeneralTypeIssues]
