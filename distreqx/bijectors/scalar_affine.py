@@ -1,11 +1,11 @@
 """Scalar affine bijector."""
 
 from typing import Optional, Tuple
-from jaxtyping import Array
-from ._bijector import AbstractBijector
-from .._custom_types import RealScalarLike
-import jax
+
 import jax.numpy as jnp
+from jaxtyping import Array
+
+from ._bijector import AbstractBijector
 
 
 class ScalarAffine(AbstractBijector):
@@ -21,16 +21,16 @@ class ScalarAffine(AbstractBijector):
     where `scale` and `shift` are the bijector's parameters.
     """
 
-    _shift: RealScalarLike
-    _scale: RealScalarLike
-    _inv_scale: RealScalarLike
-    _log_scale: RealScalarLike
+    _shift: Array
+    _scale: Array
+    _inv_scale: Array
+    _log_scale: Array
 
     def __init__(
         self,
-        shift: RealScalarLike,
-        scale: Optional[RealScalarLike] = None,
-        log_scale: Optional[RealScalarLike] = None,
+        shift: Array,
+        scale: Optional[Array] = None,
+        log_scale: Optional[Array] = None,
     ):
         """Initializes a ScalarAffine bijector.
 
@@ -51,17 +51,17 @@ class ScalarAffine(AbstractBijector):
 
         - `ValueError`: if both `scale` and `log_scale` are not None.
         """
-        super().__init__(event_ndims_in=0, is_constant_jacobian=True)
+        super().__init__(is_constant_jacobian=True)
         self._shift = shift
         if scale is None and log_scale is None:
-            self._scale = 1.0
-            self._inv_scale = 1.0
-            self._log_scale = 0.0
-        elif log_scale is None:
+            self._scale = jnp.ones_like(shift)
+            self._inv_scale = jnp.ones_like(shift)
+            self._log_scale = jnp.zeros_like(shift)
+        elif log_scale is None and scale is not None:
             self._scale = scale
             self._inv_scale = 1.0 / scale
             self._log_scale = jnp.log(jnp.abs(scale))
-        elif scale is None:
+        elif scale is None and log_scale is not None:
             self._scale = jnp.exp(log_scale)
             self._inv_scale = jnp.exp(jnp.negative(log_scale))
             self._log_scale = log_scale
@@ -71,17 +71,17 @@ class ScalarAffine(AbstractBijector):
             )
 
     @property
-    def shift(self) -> RealScalarLike:
+    def shift(self) -> Array:
         """The bijector's shift."""
         return self._shift
 
     @property
-    def log_scale(self) -> RealScalarLike:
+    def log_scale(self) -> Array:
         """The log of the bijector's scale."""
         return self._log_scale
 
     @property
-    def scale(self) -> RealScalarLike:
+    def scale(self) -> Array:
         """The bijector's scale."""
         assert self._scale is not None  # By construction.
         return self._scale
@@ -104,8 +104,7 @@ class ScalarAffine(AbstractBijector):
 
     def inverse_log_det_jacobian(self, y: Array) -> Array:
         """Computes log|det J(f^{-1})(y)|."""
-        batch_shape = jax.lax.broadcast_shapes(self._batch_shape, y.shape)
-        return jnp.broadcast_to(jnp.negative(self._log_scale), batch_shape)
+        return jnp.negative(self._log_scale)
 
     def inverse_and_log_det(self, y: Array) -> Tuple[Array, Array]:
         """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""

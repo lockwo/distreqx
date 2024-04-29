@@ -1,6 +1,8 @@
 """Linear bijector."""
-from ._bijector import AbstractBijector
+
 from jaxtyping import Array
+
+from ._bijector import AbstractBijector
 
 
 class AbstractLinearBijector(AbstractBijector):
@@ -16,9 +18,11 @@ class AbstractLinearBijector(AbstractBijector):
         """Initializes a `Linear` bijector.
 
         **Arguments:**
+
         - `event_dims`: the dimensionality of the vector `D`
         """
-        super().__init__(event_ndims_in=1, is_constant_jacobian=True)
+        super().__init__(is_constant_jacobian=True)
+        self._event_dims = event_dims
 
     @property
     def matrix(self) -> Array:

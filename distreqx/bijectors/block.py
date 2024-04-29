@@ -1,9 +1,11 @@
 """Wrapper to turn independent Bijectors into block Bijectors."""
 
 from typing import Tuple
+
 from jaxtyping import Array
-from ._bijector import AbstractBijector
+
 from ..utils import sum_last
+from ._bijector import AbstractBijector
 
 
 class Block(AbstractBijector):
@@ -29,6 +31,9 @@ class Block(AbstractBijector):
     last k dimensions.
     """
 
+    _ndims: int
+    _bijector: AbstractBijector
+
     def __init__(self, bijector: AbstractBijector, ndims: int):
         """Initializes a Block.
 
@@ -42,8 +47,6 @@ class Block(AbstractBijector):
         self._bijector = bijector
         self._ndims = ndims
         super().__init__(
-            event_ndims_in=ndims + self._bijector.event_ndims_in,
-            event_ndims_out=ndims + self._bijector.event_ndims_out,
             is_constant_jacobian=self._bijector.is_constant_jacobian,
             is_constant_log_det=self._bijector.is_constant_log_det,
         )
@@ -60,35 +63,29 @@ class Block(AbstractBijector):
 
     def forward(self, x: Array) -> Array:
         """Computes y = f(x)."""
-        self._check_forward_input_shape(x)
         return self._bijector.forward(x)
 
     def inverse(self, y: Array) -> Array:
         """Computes x = f^{-1}(y)."""
-        self._check_inverse_input_shape(y)
         return self._bijector.inverse(y)
 
     def forward_log_det_jacobian(self, x: Array) -> Array:
         """Computes log|det J(f)(x)|."""
-        self._check_forward_input_shape(x)
         log_det = self._bijector.forward_log_det_jacobian(x)
         return sum_last(log_det, self._ndims)
 
     def inverse_log_det_jacobian(self, y: Array) -> Array:
         """Computes log|det J(f^{-1})(y)|."""
-        self._check_inverse_input_shape(y)
         log_det = self._bijector.inverse_log_det_jacobian(y)
         return sum_last(log_det, self._ndims)
 
     def forward_and_log_det(self, x: Array) -> Tuple[Array, Array]:
         """Computes y = f(x) and log|det J(f)(x)|."""
-        self._check_forward_input_shape(x)
         y, log_det = self._bijector.forward_and_log_det(x)
         return y, sum_last(log_det, self._ndims)
 
     def inverse_and_log_det(self, y: Array) -> Tuple[Array, Array]:
         """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
-        self._check_inverse_input_shape(y)
         x, log_det = self._bijector.inverse_and_log_det(y)
         return x, sum_last(log_det, self._ndims)
 

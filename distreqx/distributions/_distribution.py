@@ -1,4 +1,5 @@
 """Base class for distributions."""
+
 from abc import abstractmethod
 from typing import Tuple
 

@@ -73,7 +73,7 @@ class Transformed(AbstractDistribution):
         dummy_shape = self.distribution.event_shape
         dummy = jnp.zeros(dummy_shape, dtype=self.distribution.dtype)
         shape_dtype = jax.eval_shape(self.bijector.forward, dummy)
-        return shape_dtype, shape_dtype.dtype
+        return shape_dtype.shape, shape_dtype.dtype
 
     @property
     def dtype(self) -> jnp.dtype:

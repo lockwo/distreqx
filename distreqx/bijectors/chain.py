@@ -1,7 +1,9 @@
 """Chain Bijector for composing a sequence of Bijector transformations."""
 
 from typing import List, Sequence, Tuple
+
 from jaxtyping import Array
+
 from ._bijector import AbstractBijector
 
 
@@ -28,6 +30,8 @@ class Chain(AbstractBijector):
     `y = f(g(x))`.
     """
 
+    _bijectors: List[AbstractBijector]
+
     def __init__(self, bijectors: Sequence[AbstractBijector]):
         """Initializes a Chain bijector.
 
@@ -38,23 +42,11 @@ class Chain(AbstractBijector):
         """
         if not bijectors:
             raise ValueError("The sequence of bijectors cannot be empty.")
-        for i, (outer, inner) in enumerate(
-            zip(self._bijectors[:-1], self._bijectors[1:])
-        ):
-            if outer.event_ndims_in != inner.event_ndims_out:
-                raise ValueError(
-                    f"The chain of bijector event shapes are incompatible. Bijector "
-                    f"{i} ({outer.name}) expects events with {outer.event_ndims_in} "
-                    f"dimensions, while Bijector {i+1} ({inner.name}) produces events "
-                    f"with {inner.event_ndims_out} dimensions."
-                )
-        self._bijectors = bijectors
+        self._bijectors = list(bijectors)
 
         is_constant_jacobian = all(b.is_constant_jacobian for b in self._bijectors)
         is_constant_log_det = all(b.is_constant_log_det for b in self._bijectors)
         super().__init__(
-            event_ndims_in=self._bijectors[-1].event_ndims_in,
-            event_ndims_out=self._bijectors[0].event_ndims_out,
             is_constant_jacobian=is_constant_jacobian,
             is_constant_log_det=is_constant_log_det,
         )

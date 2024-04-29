@@ -1,7 +1,9 @@
 """Shift bijector."""
+
+from jaxtyping import Array
+
 from ._bijector import AbstractBijector
 from .scalar_affine import ScalarAffine
-from .._custom_types import RealScalarLike
 
 
 class Shift(ScalarAffine):
@@ -17,13 +19,13 @@ class Shift(ScalarAffine):
     where `shift` parameterizes the bijector.
     """
 
-    def __init__(self, shift: RealScalarLike):
+    def __init__(self, shift: Array):
         """Initializes a `Shift` bijector.
 
         Args:
           shift: the bijector's shift parameter. Can also be batched.
         """
-        super().__init__(shift=shift, scale=1.0)
+        super().__init__(shift=shift)
 
     def same_as(self, other: AbstractBijector) -> bool:
         """Returns True if this bijector is guaranteed to be the same as `other`."""

@@ -1,4 +1,5 @@
 """Tests for `bijector.py`."""
+
 from unittest import TestCase
 
 import jax

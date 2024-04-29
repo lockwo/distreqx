@@ -6,5 +6,4 @@
             - __init__
             - sample_and_log_prob
             - entropy
-            - kl_divergence
 ---

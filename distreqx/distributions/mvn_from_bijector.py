@@ -1,14 +1,16 @@
 """MultivariateNormalFromBijector distribution."""
 
-from typing import Callable
-from jaxtyping import Array
-from ..bijectors import Block, Chain, DiagLinear, AbstractLinearBijector, Shift
-from .independent import Independent
-from ._transformed import Transformed
-from .normal import Normal
+from typing import Callable, Tuple
+
+import equinox as eqx
 import jax
 import jax.numpy as jnp
-import equinox as eqx
+from jaxtyping import Array
+
+from ..bijectors import AbstractLinearBijector, Block, Chain, DiagLinear, Shift
+from ._transformed import Transformed
+from .independent import Independent
+from .normal import Normal
 
 
 def _check_input_parameters_are_valid(
@@ -42,7 +44,7 @@ class MultivariateNormalFromBijector(Transformed):
 
     _loc: Array
     _scale: AbstractLinearBijector
-    _event_shape: int
+    _event_shape: Tuple[int]
 
     def __init__(self, loc: Array, scale: AbstractLinearBijector):
         """Initializes the distribution.
@@ -55,14 +57,14 @@ class MultivariateNormalFromBijector(Transformed):
         """
         _check_input_parameters_are_valid(scale, loc)
 
-        # Build a standard multivariate Gaussian with the right `batch_shape`.
+        # Build a standard multivariate Gaussian.
         std_mvn_dist = Independent(
             distribution=eqx.filter_vmap(Normal)(
                 jnp.zeros_like(loc), jnp.ones_like(loc)
             ),
         )
         # Form the bijector `f(x) = Ax + b`.
-        bijector = Chain([Block(Shift(loc), ndims=1), scale])
+        bijector = Chain([Block(Shift(loc), ndims=loc.ndim), scale])
         super().__init__(distribution=std_mvn_dist, bijector=bijector)
         self._scale = scale
         self._loc = loc
@@ -181,14 +183,7 @@ def _kl_divergence_mvn_mvn(
     Returns:
       Batchwise `KL(dist1 || dist2)`.
     """
-
-    num_dims = tuple(dist1.event_shape)[-1]  # `tuple` needed for TFP distrib.
-    if num_dims != tuple(dist2.event_shape)[-1]:
-        raise ValueError(
-            f"Both multivariate normal distributions must have the "
-            f"same `event_shape`, but they have {num_dims} and "
-            f"{tuple(dist2.event_shape)[-1]} dimensions."
-        )
+    num_dims = dist1.event_shape[-1]
 
     # Calculation is based on:
     # https://github.com/tensorflow/probability/blob/v0.12.1/tensorflow_probability/python/distributions/mvn_linear_operator.py#L384

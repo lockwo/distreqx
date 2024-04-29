@@ -1,4 +1,5 @@
 """Tests for `math.py`."""
+
 from unittest import TestCase
 
 import jax

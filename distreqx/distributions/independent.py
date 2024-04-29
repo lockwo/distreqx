@@ -1,15 +1,17 @@
 """Independent distribution."""
 
-from typing import Tuple
 import operator
-from jaxtyping import PRNGKeyArray, Array, PyTree
-from ._distribution import AbstractDistribution
-from .._custom_types import EventT, RealScalarLike
+from typing import Tuple
+
 import jax.numpy as jnp
 import jax.tree_util as jtu
+from jaxtyping import Array, PRNGKeyArray, PyTree
+
+from .._custom_types import EventT
+from ._distribution import AbstractDistribution
 
 
-def _reduce_helper(pytree: PyTree) -> RealScalarLike:
+def _reduce_helper(pytree: PyTree) -> Array:
     sum_over_leaves = jtu.tree_map(jnp.sum, pytree)
     return jtu.tree_reduce(operator.add, sum_over_leaves)
 
@@ -44,21 +46,21 @@ class Independent(AbstractDistribution):
         """See `Distribution.sample`."""
         return self._distribution.sample(key)
 
-    def sample_and_log_prob(self, key: PRNGKeyArray) -> Tuple[Array, RealScalarLike]:
+    def sample_and_log_prob(self, key: PRNGKeyArray) -> Tuple[Array, Array]:
         """See `Distribution.sample_and_log_prob`."""
         samples, log_prob = self._distribution.sample_and_log_prob(key)
         log_prob = _reduce_helper(log_prob)
         return samples, log_prob
 
-    def log_prob(self, value: PyTree) -> RealScalarLike:
+    def log_prob(self, value: PyTree) -> Array:
         """See `Distribution.log_prob`."""
         return _reduce_helper(self._distribution.log_prob(value))
 
-    def entropy(self) -> RealScalarLike:
+    def entropy(self) -> Array:
         """See `Distribution.entropy`."""
         return _reduce_helper(self._distribution.entropy())
 
-    def log_cdf(self, value: PyTree) -> RealScalarLike:
+    def log_cdf(self, value: PyTree) -> Array:
         """See `Distribution.log_cdf`."""
         return _reduce_helper(self._distribution.log_cdf(value))
 

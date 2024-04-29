@@ -1,4 +1,5 @@
 """Utility math functions."""
+
 from typing import Optional, Tuple
 
 import jax
