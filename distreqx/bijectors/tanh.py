@@ -29,7 +29,8 @@ class Tanh(AbstractBijector):
     instead of `sample` followed by `log_prob`.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Initialize the TanH bijector."""
         super().__init__()
 
     def forward_log_det_jacobian(self, x: Array) -> Array:

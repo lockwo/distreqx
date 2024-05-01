@@ -1,4 +1,4 @@
-# Base Linear Bijector Class
+# Base Linear Bijector
 
 ::: distreqx.bijectors._linear.AbstractLinearBijector
     selection:

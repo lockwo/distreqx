@@ -14,16 +14,16 @@ def multiply_no_nan(x: Array, y: Array) -> Array:
 
     **Arguments:**
 
-      - `x`: First input.
-      - `y`: Second input.
+    - `x`: First input.
+    - `y`: Second input.
 
     **Returns:**
 
-      The product of `x` and `y`.
+    - The product of `x` and `y`.
 
     **Raises:**
 
-      ValueError if the shapes of `x` and `y` do not match.
+    - ValueError if the shapes of `x` and `y` do not match.
     """
     dtype = jnp.result_type(x, y)
     return jnp.where(y == 0, jnp.zeros((), dtype=dtype), x * y)
@@ -37,12 +37,12 @@ def multiply_no_nan_jvp(
 
     **Arguments:**
 
-      - `primals`: A tuple containing the primal values of `x` and `y`.
-      - `tangents`: A tuple containing the tangent values of `x` and `y`.
+    - `primals`: A tuple containing the primal values of `x` and `y`.
+    - `tangents`: A tuple containing the tangent values of `x` and `y`.
 
     **Returns:**
 
-      A tuple containing the output of the primal and tangent operations.
+    - A tuple containing the output of the primal and tangent operations.
     """
     x, y = primals
     x_dot, y_dot = tangents
@@ -58,12 +58,12 @@ def power_no_nan(x: Array, y: Array) -> Array:
 
     **Arguments:**
 
-      - `x`: First input.
-      - `y`: Second input.
+    - `x`: First input.
+    - `y`: Second input.
 
     **Returns:**
 
-      The power `x ** y`.
+    - The power `x ** y`.
     """
     dtype = jnp.result_type(x, y)
     return jnp.where(y == 0, jnp.ones((), dtype=dtype), jnp.power(x, y))
@@ -77,12 +77,12 @@ def power_no_nan_jvp(
 
     **Arguments:**
 
-      - `primals`: A tuple containing the primal values of `x` and `y`.
-      - `tangents`: A tuple containing the tangent values of `x` and `y`.
+    - `primals`: A tuple containing the primal values of `x` and `y`.
+    - `tangents`: A tuple containing the tangent values of `x` and `y`.
 
     **Returns:**
 
-      A tuple containing the output of the primal and tangent operations.
+    - A tuple containing the output of the primal and tangent operations.
     """
     x, y = primals
     x_dot, y_dot = tangents
@@ -96,12 +96,12 @@ def mul_exp(x: Array, logp: Array) -> Array:
 
     **Arguments:**
 
-      - `x`: An array.
-      - `logp`: An array representing logarithms.
+    - `x`: An array.
+    - `logp`: An array representing logarithms.
 
     **Returns:**
 
-      The result of `x * exp(logp)`.
+    - The result of `x * exp(logp)`.
     """
     p = jnp.exp(logp)
     x = jnp.where(p == 0, 0.0, x)
@@ -115,12 +115,12 @@ def normalize(
 
     **Arguments:**
 
-      - `probs`: Probability values.
-      - `logits`: Logit values.
+    - `probs`: Probability values.
+    - `logits`: Logit values.
 
     **Returns:**
 
-      Normalized probabilities or logits.
+    - Normalized probabilities or logits.
     """
     if logits is None:
         if probs is None:
@@ -139,12 +139,12 @@ def sum_last(x: Array, ndims: int) -> Array:
 
     **Arguments:**
 
-      - `x`: An array.
-      - `ndims`: The number of last dimensions to sum.
+    - `x`: An array.
+    - `ndims`: The number of last dimensions to sum.
 
     **Returns:**
 
-      The sum of the last `ndims` dimensions of `x`.
+    - The sum of the last `ndims` dimensions of `x`.
     """
     axes_to_sum = tuple(range(-ndims, 0))
     return jnp.sum(x, axis=axes_to_sum)
@@ -155,12 +155,12 @@ def log_expbig_minus_expsmall(big: Array, small: Array) -> Array:
 
     **Arguments:**
 
-      - `big`: First input.
-      - `small`: Second input. It must be `small <= big`.
+    - `big`: First input.
+    - `small`: Second input. It must be `small <= big`.
 
     **Returns:**
 
-      The resulting `log(exp(big) - exp(small))`.
+    - The resulting `log(exp(big) - exp(small))`.
     """
     return big + jnp.log1p(-jnp.exp(small - big))
 
@@ -170,12 +170,12 @@ def log_beta(a: Array, b: Array) -> Array:
 
     **Arguments:**
 
-      - `a`: First input. It must be positive.
-      - `b`: Second input. It must be positive.
+    - `a`: First input. It must be positive.
+    - `b`: Second input. It must be positive.
 
     **Returns:**
 
-      The value `log B(a, b) = log Gamma(a) + log Gamma(b) - log Gamma(a + b)`,
+    - The value `log B(a, b) = log Gamma(a) + log Gamma(b) - log Gamma(a + b)`,
       where `Gamma` is the Gamma function, obtained through stable
       computation of `log Gamma`.
     """
@@ -187,11 +187,11 @@ def log_beta_multivariate(a: Array) -> Array:
 
     **Arguments:**
 
-      - `a`: An array of length `K` containing positive values.
+    - `a`: An array of length `K` containing positive values.
 
     **Returns:**
 
-      The value
+    - The value
       `log B(a) = sum_{k=1}^{K} log Gamma(a_k) - log Gamma(sum_{k=1}^{K} a_k)`,
       where `Gamma` is the Gamma function, obtained through stable
       computation of `log Gamma`.

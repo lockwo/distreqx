@@ -22,8 +22,9 @@ class Shift(ScalarAffine):
     def __init__(self, shift: Array):
         """Initializes a `Shift` bijector.
 
-        Args:
-          shift: the bijector's shift parameter. Can also be batched.
+        **Arguments:**
+
+        - `shift`: the bijector's shift parameter.
         """
         super().__init__(shift=shift)
 

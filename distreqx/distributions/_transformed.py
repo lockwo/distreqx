@@ -111,7 +111,7 @@ class Transformed(AbstractDistribution):
 
         **Returns:**
 
-        A tuple of a sample and its log probs.
+        - A tuple of a sample and its log probs.
         """
         x, lp_x = self.distribution.sample_and_log_prob(key)
         y, fldj = self.bijector.forward_and_log_det(x)
@@ -153,7 +153,7 @@ class Transformed(AbstractDistribution):
 
         **Returns:**
 
-        The entropy of the distribution.
+        - The entropy of the distribution.
 
         **Raises:**
 
@@ -175,16 +175,37 @@ class Transformed(AbstractDistribution):
             )
 
     def kl_divergence(self, other_dist, **kwargs) -> Array:
-        """Calculates the KL divergence to another distribution.
+        """Obtains the KL divergence between two Transformed distributions.
+
+        This computes the KL divergence between two Transformed distributions with the
+        same bijector. If the two Transformed distributions do not have the same
+        bijector, an error is raised. To determine if the bijectors are equal, this
+        method proceeds as follows:
+        - If both bijectors are the same instance of a distreqx bijector, then they are
+        declared equal.
+        - If not the same instance, we check if they are equal according to their
+        `same_as` predicate.
+        - Otherwise, the string representation of the Jaxpr of the `forward` method
+        of each bijector is compared. If both string representations are equal, the
+        bijectors are declared equal.
+        - Otherwise, the bijectors cannot be guaranteed to be equal and an error is
+        raised.
 
         **Arguments:**
 
-        - `other_dist`: A compatible disteqx distribution.
-        - `kwargs`: Additional kwargs, can accept an `input_hint`.
+        - `other_dist`: A Transformed distribution.
+        - `input_hint`: keyword argument, an example sample from the base distribution,
+            used to trace the `forward` method. If not specified, it is computed using
+            a zero array of the shape and dtype of a sample from the base distribution.
 
         **Returns:**
 
-        The KL divergence `KL(self || other_dist)`.
+        - `KL(dist1 || dist2)`.
+
+        **Raises:**
+
+        - `NotImplementedError`: If bijectors are not known to be equal.
+        - `ValueError`: If the base distributions do not have the same `event_shape`.
         """
         return _kl_divergence_transformed_transformed(self, other_dist, **kwargs)
 
@@ -196,39 +217,6 @@ def _kl_divergence_transformed_transformed(
     input_hint: Optional[Array] = None,
     **unused_kwargs,
 ) -> Array:
-    """Obtains the KL divergence between two Transformed distributions.
-
-    This computes the KL divergence between two Transformed distributions with the
-    same bijector. If the two Transformed distributions do not have the same
-    bijector, an error is raised. To determine if the bijectors are equal, this
-    method proceeds as follows:
-    - If both bijectors are the same instance of a distreqx bijector, then they are
-      declared equal.
-    - If not the same instance, we check if they are equal according to their
-      `same_as` predicate.
-    - Otherwise, the string representation of the Jaxpr of the `forward` method
-      of each bijector is compared. If both string representations are equal, the
-      bijectors are declared equal.
-    - Otherwise, the bijectors cannot be guaranteed to be equal and an error is
-      raised.
-
-    **Arguments:**
-
-    - `dist1`: A Transformed distribution.
-    - `dist2`: A Transformed distribution.
-    - `input_hint`: an example sample from the base distribution, used to trace the
-        `forward` method. If not specified, it is computed using a zero array of
-        the shape and dtype of a sample from the base distribution.
-
-    **Returns:**
-
-    `KL(dist1 || dist2)`.
-
-    **Raises:**
-
-    - `NotImplementedError`: If bijectors are not known to be equal.
-    - `ValueError`: If the base distributions do not have the same `event_shape`.
-    """
     if dist1.distribution.event_shape != dist2.distribution.event_shape:
         raise ValueError(
             f"The two base distributions do not have the same event shape: "

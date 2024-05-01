@@ -26,7 +26,7 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install .
           python -m pip install -r docs/requirements.txt
-
+      # https://github.com/mhausenblas/mkdocs-deploy-gh-pages/blob/master/action.sh
       - name: Build docs
         run: |
           mkdocs build

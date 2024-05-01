@@ -38,6 +38,7 @@ class Block(AbstractBijector):
         """Initializes a Block.
 
         **Arguments:**
+
         - `bijector`: the bijector to be promoted to a block bijector. It can be a
             distreqx bijector or a callable to be wrapped by `Lambda`.
         - `ndims`: number of dimensions to promote to event dimensions.
