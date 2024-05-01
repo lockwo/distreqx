@@ -1,4 +1,4 @@
-# Base Distribution Class
+# Base Distribution
 
 ::: distreqx.distributions._distribution.AbstractDistribution
     selection:
@@ -9,5 +9,4 @@
             - cdf
             - survival_function
             - log_survival_function
-            - stddev
 ---

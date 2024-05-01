@@ -4,4 +4,5 @@
     selection:
         members:
             - __init__
+            - entropy
 ---

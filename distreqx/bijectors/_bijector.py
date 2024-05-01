@@ -63,34 +63,34 @@ class AbstractBijector(eqx.Module, strict=True):
         self._is_constant_log_det = is_constant_log_det
 
     def forward(self, x: PyTree) -> PyTree:
-        """Computes y = f(x)."""
+        R"""Computes $y = f(x)$."""
         y, _ = self.forward_and_log_det(x)
         return y
 
     def inverse(self, y: PyTree) -> PyTree:
-        """Computes x = f^{-1}(y)."""
+        r"""Computes $x = f^{-1}(y)$."""
         x, _ = self.inverse_and_log_det(y)
         return x
 
     def forward_log_det_jacobian(self, x: PyTree) -> PyTree:
-        """Computes log|det J(f)(x)|."""
+        r"""Computes $\log|\det J(f)(x)|$."""
         _, logdet = self.forward_and_log_det(x)
         return logdet
 
     def inverse_log_det_jacobian(self, y: PyTree) -> PyTree:
-        """Computes log|det J(f^{-1})(y)|."""
+        r"""Computes $\log|\det J(f^{-1})(y)|$."""
         _, logdet = self.inverse_and_log_det(y)
         return logdet
 
     @abstractmethod
     def forward_and_log_det(self, x: PyTree) -> Tuple[PyTree, PyTree]:
-        """Computes y = f(x) and log|det J(f)(x)|."""
+        r"""Computes $y = f(x)$ and $\log|\det J(f)(x)|$."""
         raise NotImplementedError(
             f"Bijector {self.name} does not implement `forward_and_log_det`."
         )
 
     def inverse_and_log_det(self, y: Array) -> Tuple[PyTree, PyTree]:
-        """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
+        r"""Computes $x = f^{-1}(y)$ and $\log|\det J(f^{-1})(y)|$."""
         raise NotImplementedError(
             f"Bijector {self.name} does not implement `inverse_and_log_det`."
         )

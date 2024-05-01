@@ -1,11 +1,11 @@
 <h1 align='center'>distreqx</h1>
 <h2 align='center'>Distrax + Equinox = distreqx. Easy Pytree probability distributions and bijectors.</h2>
 
-distreqx is a [JAX](https://github.com/google/jax)-based library providing implementations of a subset of [TensorFlow Probability (TFP)](https://github.com/tensorflow/probability), with some new features and emphasis on jax compatibility.
+distreqx (pronounced "dist-rex") is a [JAX](https://github.com/google/jax)-based library providing implementations of distributions, bijectors, and tools for statistical and probabilistic machine learning with all benefits of jax (native GPU/TPU acceleration, differentiability, vectorization, distributing workloads, XLA compilation, etc.).
 
-This is a largely as reimplementation of [distrax](https://github.com/google-deepmind/distrax) using [equinox](https://github.com/patrick-kidger/equinox), much of the code/comments/documentation/tests are directly taken or adapted from distrax so all credit to the DeepMind team.  
+The origin of this repo is a reimplementation of [distrax](https://github.com/google-deepmind/distrax), (which is asubset of [TensorFlow Probability (TFP)](https://github.com/tensorflow/probability), with some new features and emphasis on jax compatibility) using [equinox](https://github.com/patrick-kidger/equinox). As a result, much of the original code/comments/documentation/tests are directly taken or adapted from distrax (original distrax copyright available at end of README.)
 
-Features include:
+Current features include:
 
 - Probability distributions
 - Bijectors
@@ -14,14 +14,16 @@ Features include:
 ## Installation
 
 ```
-pip install distreqx
+git clone https://github.com/lockwo/distreqx.git
+cd distreqx
+pip install -e .
 ```
 
-Requires Python 3.9+, JAX 0.4.13+, and [Equinox](https://github.com/patrick-kidger/equinox) 0.11.0+.
+Requires Python 3.9+, JAX 0.4.11+, and [Equinox](https://github.com/patrick-kidger/equinox) 0.11.0+.
 
 ## Documentation
 
-Available at .
+Available at https://lockwo.github.io/distreqx/.
 
 ## Quick example
 
@@ -31,9 +33,9 @@ from distreqx import
 
 ## Differences with Distrax
 
-- No support for TFP
-- Broader pytree support
+- No official support/interoperability with TFP
 - The concept of a batch dimension is dropped. If you want to operate on a batch, use `vmap` (note, this can be used in construction as well, e.g. [vmaping the construction](https://docs.kidger.site/equinox/tricks/#ensembling) of a `ScalarAffine`)
+- Broader pytree enablement 
 
 ## Citation
 
@@ -46,8 +48,7 @@ If you found this library useful in academic research, please cite:
 
 ## See also: other libraries in the JAX ecosystem
 
-[Equinox](https://github.com/patrick-kidger/equinox): neural networks and everything not already in core JAX!  
-[jaxtyping](https://github.com/patrick-kidger/jaxtyping): type annotations for shape/dtype of arrays.  
+[GPJax](https://github.com/JaxGaussianProcesses/GPJax): Gaussian processes in JAX. 
 [Optimistix](https://github.com/patrick-kidger/optimistix): root finding, minimisation, fixed points, and least squares.  
 [Lineax](https://github.com/patrick-kidger/lineax): linear solvers.  
 [sympy2jax](https://github.com/patrick-kidger/sympy2jax): SymPy<->JAX conversion; train symbolic expressions via gradient descent.  

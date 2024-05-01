@@ -177,11 +177,13 @@ def _kl_divergence_mvn_mvn(
     """Divergence KL(dist1 || dist2) between multivariate normal distributions.
 
     **Arguments:**
-    dist1: A multivariate normal distribution.
-      dist2: A multivariate normal distribution.
 
-    Returns:
-      Batchwise `KL(dist1 || dist2)`.
+    - `dist1`: A multivariate normal distribution.
+    - `dist2`: A multivariate normal distribution.
+
+    **Returns:**
+
+    -  `KL(dist1 || dist2)`.
     """
     num_dims = dist1.event_shape[-1]
 

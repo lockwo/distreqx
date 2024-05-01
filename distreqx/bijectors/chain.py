@@ -36,6 +36,7 @@ class Chain(AbstractBijector):
         """Initializes a Chain bijector.
 
         **Arguments:**
+
         - `bijectors`: a sequence of bijectors to be composed into one. Each bijector
             can be a distreqx bijector or a callable to be wrapped
             by `Lambda`. The sequence must contain at least one bijector.

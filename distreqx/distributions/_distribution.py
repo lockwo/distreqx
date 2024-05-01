@@ -32,7 +32,7 @@ class AbstractDistribution(eqx.Module, strict=True):
 
         **Returns:**
 
-            A tuple of a sample and their log probs.
+        - A tuple of a sample and their log probs.
         """
         samples = self.sample(key)
         log_prob = self.log_prob(samples)
@@ -48,7 +48,7 @@ class AbstractDistribution(eqx.Module, strict=True):
 
         **Returns:**
 
-        The log probability log P(value).
+        - The log probability log P(value).
         """
         raise NotImplementedError
 
@@ -78,7 +78,7 @@ class AbstractDistribution(eqx.Module, strict=True):
 
         **Returns:**
 
-        The probability P(value).
+        - The probability P(value).
         """
         return jnp.exp(self.log_prob(value))
 
@@ -109,7 +109,7 @@ class AbstractDistribution(eqx.Module, strict=True):
 
         **Returns:**
 
-        The CDF evaluated at value, i.e. P[X <= value].
+        - The CDF evaluated at value, i.e. P[X <= value].
         """
         return jnp.exp(self.log_cdf(value))
 
@@ -127,7 +127,7 @@ class AbstractDistribution(eqx.Module, strict=True):
 
         **Returns:**
 
-        The survival function evaluated at `value`, i.e. P[X > value]
+        - The survival function evaluated at `value`, i.e. P[X > value]
         """
         return 1.0 - self.cdf(value)
 
@@ -145,7 +145,7 @@ class AbstractDistribution(eqx.Module, strict=True):
 
         **Returns:**
 
-        The log of the survival function evaluated at `value`, i.e.
+        - The log of the survival function evaluated at `value`, i.e.
             log P[X > value]
         """
         return jnp.log1p(-self.cdf(value))
@@ -188,7 +188,7 @@ class AbstractDistribution(eqx.Module, strict=True):
 
         **Returns:**
 
-        The KL divergence `KL(self || other_dist)`.
+        - The KL divergence `KL(self || other_dist)`.
         """
         raise NotImplementedError(
             f"Distribution `{self.name}` does not implement `kl_divergence`."
@@ -204,6 +204,6 @@ class AbstractDistribution(eqx.Module, strict=True):
 
         **Returns:**
 
-        The cross entropy `H(self || other_dist)`.
+        - The cross entropy `H(self || other_dist)`.
         """
         return self.kl_divergence(other_dist, **kwargs) + self.entropy()

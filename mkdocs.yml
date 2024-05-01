@@ -90,6 +90,8 @@ plugins:
 
 nav:
     - 'index.md'
+    - Examples:
+        - Binary MNIST VAE: 'examples/01_vae.ipynb'
     - API:
         - Distributions:
             - 'api/distributions/_distribution.md'
@@ -111,5 +113,5 @@ nav:
             - 'api/bijectors/tanh.md'
         - Utilities:
             - 'api/utils/math.md'
-    - Examples:
-        - Binary MNIST VAE: 'examples/01_vae.ipynb'
+    - Further Details:
+        - 'misc/faq.md'
