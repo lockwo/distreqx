@@ -31,6 +31,11 @@ These hooks use Black and isort to format the code, and flake8 to lint it.
 
 Now make your changes. Make sure to include additional tests if necessary.
 
+If you include a new features, there are 3 required classes of tests:
+- Correctness: tests the are against analytic or known solutions that ensure the computation is correct
+- Compatibility: tests that check for `jit`, `vmap`, and `grad`-ability of the feature to make sure they behave as expected
+- Edge cases: tests that make sure edge cases (e.g. large/small numerics, unexpected dtypes) are either dealt with or fail in an expected manner
+
 Next verify the tests all pass:
 
 ```bash
