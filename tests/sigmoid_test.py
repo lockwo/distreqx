@@ -1,18 +1,19 @@
 """Tests for `sigmoid.py`."""
 
 from unittest import TestCase
-from parameterized import parameterized  # type: ignore
 
-from distreqx.bijectors import Tanh, Sigmoid
 import jax
 import jax.numpy as jnp
 import numpy as np
+from parameterized import parameterized  # type: ignore
+
+from distreqx.bijectors import Sigmoid, Tanh
+
 
 RTOL = 1e-5
 
 
 class SigmoidTest(TestCase):
-
     def setUp(self):
         self.seed = jax.random.PRNGKey(1234)
 
@@ -21,11 +22,9 @@ class SigmoidTest(TestCase):
         self.assertFalse(bijector.is_constant_jacobian)
         self.assertFalse(bijector.is_constant_log_det)
 
-    @parameterized.expand([
-        ("x_shape", (2,)),
-        ("x_shape", (2, 3)),
-        ("x_shape", (2, 3, 4))
-    ])
+    @parameterized.expand(
+        [("x_shape", (2,)), ("x_shape", (2, 3)), ("x_shape", (2, 3, 4))]
+    )
     def test_forward_shapes(self, name, x_shape):
         x = jnp.zeros(shape=x_shape)
         bijector = Sigmoid()
@@ -37,11 +36,9 @@ class SigmoidTest(TestCase):
         self.assertEqual(logdet1.shape, x_shape)
         self.assertEqual(logdet2.shape, x_shape)
 
-    @parameterized.expand([
-        ("y_shape", (2,)),
-        ("y_shape", (2, 3)),
-        ("y_shape", (2, 3, 4))
-    ])
+    @parameterized.expand(
+        [("y_shape", (2,)), ("y_shape", (2, 3)), ("y_shape", (2, 3, 4))]
+    )
     def test_inverse_shapes(self, name, y_shape):
         y = jnp.zeros(shape=y_shape)
         bijector = Sigmoid()

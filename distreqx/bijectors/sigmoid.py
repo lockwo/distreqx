@@ -1,10 +1,12 @@
 """Sigmoid bijector."""
 
 from typing import Tuple
-from ._bijector import AbstractBijector
+
 import jax
-from jaxtyping import Array
 import jax.numpy as jnp
+from jaxtyping import Array
+
+from ._bijector import AbstractBijector
 
 
 class Sigmoid(AbstractBijector):
@@ -25,7 +27,7 @@ class Sigmoid(AbstractBijector):
     forward mapping and the backward mapping one after the other to recover the
     original input `x`, it is the user's responsibility to simplify the operation
     to avoid numerical issues. One example of such case is to use the bijector
-    within a `Transformed` distribution and to obtain the log-probability of 
+    within a `Transformed` distribution and to obtain the log-probability of
     samples obtained from the distribution's `sample` method. For values of the
     samples for which it is not possible to apply the inverse bijector accurately,
     `log_prob` returns NaN. This can be avoided by using `sample_and_log_prob`
@@ -55,9 +57,15 @@ class Sigmoid(AbstractBijector):
 
 def _more_stable_sigmoid(x: Array) -> Array:
     """Where extremely negatively saturated, approximate sigmoid with exp(x)."""
-    return jnp.where(x < -9, jnp.exp(x), jax.nn.sigmoid(x))
+    ret = jnp.where(x < -9, jnp.exp(x), jax.nn.sigmoid(x))
+    if not isinstance(ret, Array):
+        raise TypeError("ret is not an Array")
+    return ret
 
 
 def _more_stable_softplus(x: Array) -> Array:
     """Where extremely saturated, approximate softplus with log1p(exp(x))."""
-    return jnp.where(x < -9, jnp.log1p(jnp.exp(x)), jax.nn.softplus(x))
+    ret = jnp.where(x < -9, jnp.log1p(jnp.exp(x)), jax.nn.softplus(x))
+    if not isinstance(ret, Array):
+        raise TypeError("ret is not an Array")
+    return ret
