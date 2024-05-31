@@ -1,18 +1,21 @@
 """Tests for `linear.py`."""
 
 from unittest import TestCase
-from distreqx.bijectors import AbstractLinearBijector
+
 from parameterized import parameterized  # type: ignore
+
+from distreqx.bijectors import AbstractLinearBijector
 
 
 class MockLinear(AbstractLinearBijector):
+    def __init__(self, dims):
+        super().__init__(dims)
 
     def forward_and_log_det(self, x):
         raise Exception
 
 
 class LinearTest(TestCase):
-
     @parameterized.expand(
         [
             ("1", 1),

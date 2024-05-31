@@ -1,15 +1,16 @@
 """Tests for `diag_linear.py`."""
 
 from unittest import TestCase
-from distreqx.bijectors import Tanh, DiagLinear
+
+import equinox as eqx
 import jax
 import jax.numpy as jnp
 import numpy as np
-import equinox as eqx
+
+from distreqx.bijectors import DiagLinear, Tanh
 
 
 class DiagLinearTest(TestCase):
-
     def test_static_properties(self):
         bij = DiagLinear(diag=jnp.ones((4,)))
         self.assertTrue(bij.is_constant_jacobian)
@@ -77,7 +78,7 @@ class DiagLinearTest(TestCase):
 
         batched_x = jax.random.normal(prng[1], (10, 4))
         single_x = jax.random.normal(prng[2], (4,))
-        batched_logdet = bij.forward_log_det_jacobian(batched_x)
+        batched_logdet = eqx.filter_vmap(bij.forward_log_det_jacobian)(batched_x)
 
         jacobian_fn = jax.jacfwd(bij.forward)
         logdet_numerical = jnp.linalg.slogdet(jacobian_fn(single_x))[1]
@@ -98,20 +99,6 @@ class DiagLinearTest(TestCase):
         logdet_numerical = jnp.linalg.slogdet(jacobian_fn(single_y))[1]
         for logdet in batched_logdet:
             np.testing.assert_allclose(logdet, logdet_numerical, atol=5e-4)
-
-    def test_raises_on_invalid_input_shape(self):
-        bij = DiagLinear(diag=jnp.ones((4,)))
-        for fn_name, fn in [
-            ("forward", bij.forward),
-            ("inverse", bij.inverse),
-            ("forward_log_det_jacobian", bij.forward_log_det_jacobian),
-            ("inverse_log_det_jacobian", bij.inverse_log_det_jacobian),
-            ("forward_and_log_det", bij.forward_and_log_det),
-            ("inverse_and_log_det", bij.inverse_and_log_det),
-        ]:
-            with self.subTest(fn_name=fn_name):
-                with self.assertRaises(ValueError):
-                    fn(jnp.array(0))
 
     def test_jittable(self):
         @eqx.filter_jit

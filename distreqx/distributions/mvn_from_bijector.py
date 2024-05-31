@@ -8,9 +8,9 @@ import jax.numpy as jnp
 from jaxtyping import Array
 
 from ..bijectors import AbstractLinearBijector, Block, Chain, DiagLinear, Shift
-from ._transformed import Transformed
 from .independent import Independent
 from .normal import Normal
+from .transformed import Transformed
 
 
 def _check_input_parameters_are_valid(

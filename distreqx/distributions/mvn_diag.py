@@ -54,14 +54,12 @@ class MultivariateNormalDiag(MultivariateNormalFromBijector):
         elif loc is None and scale_diag is not None:
             loc = jnp.zeros(scale_diag.shape[-1], scale_diag.dtype)
 
-        assert loc is not None
-        assert scale_diag is not None
-
-        broadcasted_shapes = jnp.broadcast_shapes(loc.shape, scale_diag.shape)
-        loc = jnp.expand_dims(loc, axis=list(range(len(broadcasted_shapes) - loc.ndim)))
-        scale_diag = jnp.expand_dims(
-            scale_diag, axis=list(range(len(broadcasted_shapes) - scale_diag.ndim))
-        )
+        if loc is None:
+            raise ValueError("loc is None")
+        if scale_diag is None:
+            raise ValueError("scale_diag is None")
+        if scale_diag.ndim != 1:
+            raise ValueError("scale_diag must be a vector!")
 
         scale = DiagLinear(scale_diag)
         super().__init__(loc=loc, scale=scale)
