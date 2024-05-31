@@ -95,9 +95,9 @@ nav:
     - API:
         - Distributions:
             - 'api/distributions/_distribution.md'
-            - 'api/distributions/_transformed.md'
             - 'api/distributions/independent.md'
             - 'api/distributions/bernoulli.md'
+            - 'api/distributions/transformed.md'
             - Gaussians:
               - 'api/distributions/normal.md'
               - 'api/distributions/mvn_diag.md'
@@ -110,6 +110,7 @@ nav:
             - 'api/bijectors/diag_linear.md'
             - 'api/bijectors/scalar_affine.md'
             - 'api/bijectors/shift.md'
+            - 'api/bijectors/sigmoid.md'
             - 'api/bijectors/tanh.md'
         - Utilities:
             - 'api/utils/math.md'

@@ -1,6 +1,6 @@
 # Base Transformed
 
-::: distreqx.distributions._transformed.Transformed
+::: distreqx.distributions.transformed.Transformed
     selection:
         members:
             - __init__

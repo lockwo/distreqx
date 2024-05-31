@@ -53,8 +53,6 @@ If you found this library useful in academic research, please cite:
 [Lineax](https://github.com/patrick-kidger/lineax): linear solvers.  
 [sympy2jax](https://github.com/patrick-kidger/sympy2jax): SymPy<->JAX conversion; train symbolic expressions via gradient descent.  
 [diffrax](https://github.com/patrick-kidger/diffrax): numerical differential equation solvers in JAX. Autodifferentiable and GPU-capable.
-
-**Awesome JAX**  
 [Awesome JAX](https://github.com/n2cholas/awesome-jax): a longer list of other JAX projects.  
 
 ## Original distrax copyright

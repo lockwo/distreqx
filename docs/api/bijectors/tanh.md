@@ -2,6 +2,5 @@
 
 ::: distreqx.bijectors.tanh.Tanh
     selection:
-        members:
-            - __init__
+        members: None
 ---

@@ -5,4 +5,5 @@ from .chain import Chain as Chain
 from .diag_linear import DiagLinear as DiagLinear
 from .scalar_affine import ScalarAffine as ScalarAffine
 from .shift import Shift as Shift
+from .sigmoid import Sigmoid as Sigmoid
 from .tanh import Tanh as Tanh
