@@ -97,6 +97,7 @@ nav:
             - 'api/distributions/_distribution.md'
             - 'api/distributions/independent.md'
             - 'api/distributions/bernoulli.md'
+            - 'api/distributions/categorical.md'
             - 'api/distributions/transformed.md'
             - Gaussians:
               - 'api/distributions/normal.md'
