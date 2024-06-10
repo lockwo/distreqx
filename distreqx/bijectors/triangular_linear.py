@@ -1,7 +1,5 @@
 """Triangular linear bijector."""
 
-from typing import Tuple
-
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array
@@ -38,11 +36,12 @@ class TriangularLinear(AbstractLinearBijector):
     def __init__(self, matrix: Array, is_lower: bool = True):
         """Initializes a `TriangularLinear` bijector.
 
-        Args:
-        matrix: a square matrix whose triangular part defines `A`. Can also be a
+        **Arguments:**
+
+        - `matrix`: a square matrix whose triangular part defines `A`. Can also be a
             batch of matrices. Whether `A` is the lower or upper triangular part of
             `matrix` is determined by `is_lower`.
-        is_lower: if True, `A` is set to the lower triangular part of `matrix`. If
+        - `is_lower`: if True, `A` is set to the lower triangular part of `matrix`. If
             False, `A` is set to the upper triangular part of `matrix`.
         """
         if matrix.ndim < 2:
@@ -77,7 +76,7 @@ class TriangularLinear(AbstractLinearBijector):
         triangular_logdet = jnp.vectorize(_triangular_logdet, signature="(m,m)->()")
         return triangular_logdet(self._matrix)
 
-    def forward_and_log_det(self, x: Array) -> Tuple[Array, Array]:
+    def forward_and_log_det(self, x: Array) -> tuple[Array, Array]:
         """Computes y = f(x) and log|det J(f)(x)|."""
         return self.forward(x), self.forward_log_det_jacobian(x)
 
@@ -89,7 +88,7 @@ class TriangularLinear(AbstractLinearBijector):
         """Computes log|det J(f^{-1})(y)|."""
         return -self.forward_log_det_jacobian(y)
 
-    def inverse_and_log_det(self, y: Array) -> Tuple[Array, Array]:
+    def inverse_and_log_det(self, y: Array) -> tuple[Array, Array]:
         """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
         return self.inverse(y), self.inverse_log_det_jacobian(y)
 

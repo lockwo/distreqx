@@ -25,7 +25,7 @@ def _check_parameters(loc: Optional[Array], scale_tri: Optional[Array]) -> None:
 
     if scale_tri is not None and scale_tri.shape[-1] != scale_tri.shape[-2]:
         raise ValueError(
-            f"The parameter `scale_tri` must be a (batched) square matrix, but "
+            f"The parameter `scale_tri` must be a square matrix, but "
             f"`scale_tri.shape = {scale_tri.shape}`."
         )
 
@@ -59,16 +59,15 @@ class MultivariateNormalTri(MultivariateNormalFromBijector):
 
         **Arguments:**
 
-        - `loc`: Mean vector of the distribution of shape `k` (can also be a batch of
-            such vectors). If not specified, it defaults to zeros.
-        - `scale_tri`: The scale matrix `S`. It must be a `k x k` triangular matrix
-            (additional dimensions index batches). If `scale_tri` is not triangular,
-            the entries above or below the main diagonal will be ignored. The
-            parameter `is_lower` specifies if `scale_tri` is lower or upper
-            triangular. It is the responsibility of the user to make sure that
-            `scale_tri` only contains non-zero elements in its diagonal; this class
-            makes no attempt to verify that. If `scale_tri` is not specified, it
-            defaults to the identity.
+        - `loc`: Mean vector of the distribution of shape `k`.
+            If not specified, it defaults to zeros.
+        - `scale_tri`: The scale matrix `S`. It must be a `k x k` triangular matrix.
+            If `scale_tri` is not triangular, the entries above or below the main
+            diagonal will be ignored. The parameter `is_lower` specifies if `scale_tri`
+            is lower or upper triangular. It is the responsibility of the user to make
+            sure that `scale_tri` only contains non-zero elements in its diagonal;
+            this class makes no attempt to verify that. If `scale_tri` is not specified,
+            it defaults to the identity.
         - `is_lower`: Indicates if `scale_tri` is lower (if True) or upper (if False)
             triangular.
         """

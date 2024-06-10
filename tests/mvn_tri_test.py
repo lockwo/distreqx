@@ -18,6 +18,28 @@ class MultivariateNormalTriTest(TestCase):
     def setUp(self):
         self.key = jax.random.PRNGKey(0)
 
+    def _test_raises_error(self, dist_kwargs):
+        with self.assertRaises(ValueError):
+            dist = MultivariateNormalTri(**dist_kwargs)
+            dist.sample(key=self.key)
+
+    def test_invalid_parameters(self):
+        self._test_raises_error(dist_kwargs={"loc": None, "scale_tri": None})
+        self._test_raises_error(dist_kwargs={"loc": jnp.array(1.0), "scale_tri": None})
+        self._test_raises_error(dist_kwargs={"loc": None, "scale_tri": jnp.array(1.0)})
+        self._test_raises_error(
+            dist_kwargs={"loc": None, "scale_tri": jnp.array([1.0])}
+        )
+        self._test_raises_error(
+            dist_kwargs={
+                "loc": None,
+                "scale_tri": jnp.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]]),
+            }
+        )
+        self._test_raises_error(
+            dist_kwargs={"loc": jnp.zeros((5,)), "scale_tri": jnp.ones((4, 4))}
+        )
+
     @parameterized.expand([("float32", jnp.float32), ("float64", jnp.float64)])
     def test_sample_dtype(self, name, dtype):
         dist_params = {
