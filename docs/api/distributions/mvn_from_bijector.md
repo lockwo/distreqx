@@ -4,5 +4,4 @@
     selection:
         members:
             - __init__
-            - covariance
 ---
