@@ -49,10 +49,15 @@ If you found this library useful in academic research, please cite:
 ## See also: other libraries in the JAX ecosystem
 
 [GPJax](https://github.com/JaxGaussianProcesses/GPJax): Gaussian processes in JAX. 
+
 [Optimistix](https://github.com/patrick-kidger/optimistix): root finding, minimisation, fixed points, and least squares.  
+
 [Lineax](https://github.com/patrick-kidger/lineax): linear solvers.  
+
 [sympy2jax](https://github.com/patrick-kidger/sympy2jax): SymPy<->JAX conversion; train symbolic expressions via gradient descent.  
+
 [diffrax](https://github.com/patrick-kidger/diffrax): numerical differential equation solvers in JAX. Autodifferentiable and GPU-capable.
+
 [Awesome JAX](https://github.com/n2cholas/awesome-jax): a longer list of other JAX projects.  
 
 ## Original distrax copyright
