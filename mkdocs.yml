@@ -98,6 +98,7 @@ nav:
               - 'api/distributions/normal.md'
               - 'api/distributions/mvn_diag.md'
               - 'api/distributions/mvn_from_bijector.md'
+              - 'api/distributions/mvn_tri.md'
             - 'api/distributions/bernoulli.md'
             - 'api/distributions/independent.md'
             - 'api/distributions/transformed.md'
@@ -112,6 +113,7 @@ nav:
             - 'api/bijectors/shift.md'
             - 'api/bijectors/sigmoid.md'
             - 'api/bijectors/tanh.md'
+            - 'api/bijectors/triangular_linear.md'
         - Utilities:
             - 'api/utils/math.md'
     - Further Details:
