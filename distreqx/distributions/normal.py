@@ -1,19 +1,18 @@
 """Normal distribution."""
 
 import math
-from typing import Tuple
 
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array, PRNGKeyArray
 
-from ._distribution import AbstractDistribution
+from ._distribution import AbstractProbDistribution
 
 
 _half_log2pi = 0.5 * math.log(2 * math.pi)
 
 
-class Normal(AbstractDistribution):
+class Normal(AbstractProbDistribution, strict=True):
     """Normal distribution with location `loc` and `scale` parameters."""
 
     _loc: Array
@@ -31,7 +30,7 @@ class Normal(AbstractDistribution):
         self._scale = jnp.array(scale)
 
     @property
-    def event_shape(self) -> Tuple[int, ...]:
+    def event_shape(self) -> tuple[int, ...]:
         """Shape of event of distribution samples."""
         return self._loc.shape
 
@@ -54,7 +53,7 @@ class Normal(AbstractDistribution):
         rnd = self._sample_from_std_normal(key)
         return self._scale * rnd + self._loc
 
-    def sample_and_log_prob(self, key: PRNGKeyArray) -> Tuple[Array, Array]:
+    def sample_and_log_prob(self, key: PRNGKeyArray) -> tuple[Array, Array]:
         """See `Distribution.sample_and_log_prob`."""
         rnd = self._sample_from_std_normal(key)
         samples = self._scale * rnd + self._loc
