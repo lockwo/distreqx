@@ -292,7 +292,8 @@ class AbstractSTDDistribution(AbstractDistribution, strict=True):
 
 
 class AbstractSurivialDistribution(AbstractDistribution, strict=True):
-    """Abstract distribution + concrete `survival_function` and `log_survival_function`."""
+    """Abstract distribution + concrete `survival_function` and
+    `log_survival_function`."""
 
     def survival_function(self, value: PyTree[Array]) -> PyTree[Array]:
         """Evaluates the survival function at `value`.

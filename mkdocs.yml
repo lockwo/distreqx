@@ -104,8 +104,6 @@ nav:
             - 'api/distributions/transformed.md'
             - 'api/distributions/_distribution.md'
         - Bijectors:
-            - 'api/bijectors/_bijector.md'
-            - 'api/bijectors/_linear.md'
             - 'api/bijectors/block.md'
             - 'api/bijectors/chain.md'
             - 'api/bijectors/diag_linear.md'
@@ -114,6 +112,7 @@ nav:
             - 'api/bijectors/sigmoid.md'
             - 'api/bijectors/tanh.md'
             - 'api/bijectors/triangular_linear.md'
+            - 'api/bijectors/_bijector.md'
         - Utilities:
             - 'api/utils/math.md'
     - Further Details:

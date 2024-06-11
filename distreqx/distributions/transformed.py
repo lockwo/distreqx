@@ -290,7 +290,7 @@ class Transformed(AbstractTransformed, AbstractSTDDistribution, strict=True):
 
         - Otherwise, the bijectors cannot be guaranteed to be equal and an error is
         raised.
-        
+
 
         **Arguments:**
 

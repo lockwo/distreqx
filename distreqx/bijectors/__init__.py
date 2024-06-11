@@ -1,4 +1,9 @@
-from ._bijector import AbstractBijector as AbstractBijector
+from ._bijector import (
+    AbstractBijector as AbstractBijector,
+    AbstractFowardInverseBijector as AbstractFowardInverseBijector,
+    AbstractFwdLogDetJacBijector as AbstractFwdLogDetJacBijector,
+    AbstractInvLogDetJacBijector as AbstractInvLogDetJacBijector,
+)
 from ._linear import AbstractLinearBijector as AbstractLinearBijector
 from .block import Block as Block
 from .chain import Chain as Chain

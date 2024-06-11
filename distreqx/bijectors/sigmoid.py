@@ -1,15 +1,17 @@
 """Sigmoid bijector."""
 
-from typing import Tuple
-
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array
 
-from ._bijector import AbstractBijector
+from ._bijector import (
+    AbstractBijector,
+    AbstractFowardInverseBijector,
+    AbstractInvLogDetJacBijector,
+)
 
 
-class Sigmoid(AbstractBijector):
+class Sigmoid(AbstractFowardInverseBijector, AbstractInvLogDetJacBijector, strict=True):
     """A bijector that computes the logistic sigmoid.
 
     The log-determinant implementation in this bijector is more numerically stable
@@ -34,18 +36,22 @@ class Sigmoid(AbstractBijector):
     instead of `sample` followed by `log_prob`.
     """
 
+    _is_constant_log_det: bool
+    _is_constant_jacobian: bool
+
     def __init__(self) -> None:
-        super().__init__()
+        self._is_constant_jacobian = False
+        self._is_constant_log_det = False
 
     def forward_log_det_jacobian(self, x: Array) -> Array:
         """Computes log|det J(f)(x)|."""
         return -_more_stable_softplus(-x) - _more_stable_softplus(x)
 
-    def forward_and_log_det(self, x: Array) -> Tuple[Array, Array]:
+    def forward_and_log_det(self, x: Array) -> tuple[Array, Array]:
         """Computes y = f(x) and log|det J(f)(x)|."""
         return _more_stable_sigmoid(x), self.forward_log_det_jacobian(x)
 
-    def inverse_and_log_det(self, y: Array) -> Tuple[Array, Array]:
+    def inverse_and_log_det(self, y: Array) -> tuple[Array, Array]:
         """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
         x = jnp.log(y) - jnp.log1p(-y)
         return x, -self.forward_log_det_jacobian(x)

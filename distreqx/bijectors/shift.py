@@ -1,12 +1,13 @@
 """Shift bijector."""
 
+from jax import numpy as jnp
 from jaxtyping import Array
 
 from ._bijector import AbstractBijector
-from .scalar_affine import ScalarAffine
+from .scalar_affine import AbstractScalarAffine
 
 
-class Shift(ScalarAffine):
+class Shift(AbstractScalarAffine):
     """Bijector that translates its input elementwise.
 
     The bijector is defined as follows:
@@ -19,6 +20,13 @@ class Shift(ScalarAffine):
     where `shift` parameterizes the bijector.
     """
 
+    _shift: Array
+    _scale: Array
+    _inv_scale: Array
+    _log_scale: Array
+    _is_constant_jacobian: bool
+    _is_constant_log_det: bool
+
     def __init__(self, shift: Array):
         """Initializes a `Shift` bijector.
 
@@ -26,10 +34,15 @@ class Shift(ScalarAffine):
 
         - `shift`: the bijector's shift parameter.
         """
-        super().__init__(shift=shift)
+        self._is_constant_jacobian = True
+        self._is_constant_log_det = True
+        self._shift = shift
+        self._scale = jnp.ones_like(shift)
+        self._inv_scale = jnp.ones_like(shift)
+        self._log_scale = jnp.zeros_like(shift)
 
     def same_as(self, other: AbstractBijector) -> bool:
         """Returns True if this bijector is guaranteed to be the same as `other`."""
-        if type(other) is Shift:  # pylint: disable=unidiomatic-typecheck
+        if type(other) is Shift:
             return self.shift is other.shift
         return False
