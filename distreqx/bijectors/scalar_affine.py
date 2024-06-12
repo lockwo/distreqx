@@ -1,14 +1,74 @@
 """Scalar affine bijector."""
 
-from typing import Optional, Tuple
+from typing import Optional
 
+import equinox as eqx
 import jax.numpy as jnp
 from jaxtyping import Array
 
 from ._bijector import AbstractBijector
 
 
-class ScalarAffine(AbstractBijector):
+class AbstractScalarAffine(AbstractBijector, strict=True):
+    """An affine bijector that acts elementwise.
+
+    The bijector is defined as follows:
+
+    - Forward: `y = scale * x + shift`
+    - Forward Jacobian determinant: `log|det J(x)| = log|scale|`
+    - Inverse: `x = (y - shift) / scale`
+    - Inverse Jacobian determinant: `log|det J(y)| = -log|scale|`
+
+    where `scale` and `shift` are the bijector's parameters.
+    """
+
+    _shift: eqx.AbstractVar[Array]
+    _scale: eqx.AbstractVar[Array]
+    _inv_scale: eqx.AbstractVar[Array]
+    _log_scale: eqx.AbstractVar[Array]
+
+    @property
+    def shift(self) -> Array:
+        """The bijector's shift."""
+        return self._shift
+
+    @property
+    def log_scale(self) -> Array:
+        """The log of the bijector's scale."""
+        return self._log_scale
+
+    @property
+    def scale(self) -> Array:
+        """The bijector's scale."""
+        assert self._scale is not None  # By construction.
+        return self._scale
+
+    def forward(self, x: Array) -> Array:
+        """Computes y = f(x)."""
+        return self._scale * x + self._shift
+
+    def forward_log_det_jacobian(self, x: Array) -> Array:
+        """Computes log|det J(f)(x)|."""
+        return self._log_scale
+
+    def forward_and_log_det(self, x: Array) -> tuple[Array, Array]:
+        """Computes y = f(x) and log|det J(f)(x)|."""
+        return self.forward(x), self.forward_log_det_jacobian(x)
+
+    def inverse(self, y: Array) -> Array:
+        """Computes x = f^{-1}(y)."""
+        return self._inv_scale * (y - self._shift)
+
+    def inverse_log_det_jacobian(self, y: Array) -> Array:
+        """Computes log|det J(f^{-1})(y)|."""
+        return jnp.negative(self._log_scale)
+
+    def inverse_and_log_det(self, y: Array) -> tuple[Array, Array]:
+        """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
+        return self.inverse(y), self.inverse_log_det_jacobian(y)
+
+
+class ScalarAffine(AbstractScalarAffine, strict=True):
     """An affine bijector that acts elementwise.
 
     The bijector is defined as follows:
@@ -25,6 +85,8 @@ class ScalarAffine(AbstractBijector):
     _scale: Array
     _inv_scale: Array
     _log_scale: Array
+    _is_constant_jacobian: bool
+    _is_constant_log_det: bool
 
     def __init__(
         self,
@@ -51,7 +113,8 @@ class ScalarAffine(AbstractBijector):
 
         - `ValueError`: if both `scale` and `log_scale` are not None.
         """
-        super().__init__(is_constant_jacobian=True)
+        self._is_constant_jacobian = True
+        self._is_constant_log_det = True
         self._shift = shift
         if scale is None and log_scale is None:
             self._scale = jnp.ones_like(shift)
@@ -69,46 +132,6 @@ class ScalarAffine(AbstractBijector):
             raise ValueError(
                 "Only one of `scale` and `log_scale` can be specified, not both."
             )
-
-    @property
-    def shift(self) -> Array:
-        """The bijector's shift."""
-        return self._shift
-
-    @property
-    def log_scale(self) -> Array:
-        """The log of the bijector's scale."""
-        return self._log_scale
-
-    @property
-    def scale(self) -> Array:
-        """The bijector's scale."""
-        assert self._scale is not None  # By construction.
-        return self._scale
-
-    def forward(self, x: Array) -> Array:
-        """Computes y = f(x)."""
-        return self._scale * x + self._shift
-
-    def forward_log_det_jacobian(self, x: Array) -> Array:
-        """Computes log|det J(f)(x)|."""
-        return self._log_scale
-
-    def forward_and_log_det(self, x: Array) -> Tuple[Array, Array]:
-        """Computes y = f(x) and log|det J(f)(x)|."""
-        return self.forward(x), self.forward_log_det_jacobian(x)
-
-    def inverse(self, y: Array) -> Array:
-        """Computes x = f^{-1}(y)."""
-        return self._inv_scale * (y - self._shift)
-
-    def inverse_log_det_jacobian(self, y: Array) -> Array:
-        """Computes log|det J(f^{-1})(y)|."""
-        return jnp.negative(self._log_scale)
-
-    def inverse_and_log_det(self, y: Array) -> Tuple[Array, Array]:
-        """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
-        return self.inverse(y), self.inverse_log_det_jacobian(y)
 
     def same_as(self, other: AbstractBijector) -> bool:
         """Returns True if this bijector is guaranteed to be the same as `other`."""

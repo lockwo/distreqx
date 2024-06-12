@@ -36,6 +36,7 @@ from distreqx import
 - No official support/interoperability with TFP
 - The concept of a batch dimension is dropped. If you want to operate on a batch, use `vmap` (note, this can be used in construction as well, e.g. [vmaping the construction](https://docs.kidger.site/equinox/tricks/#ensembling) of a `ScalarAffine`)
 - Broader pytree enablement 
+- Strict [abstract/final](https://docs.kidger.site/equinox/pattern/) design pattern
 
 ## Citation
 

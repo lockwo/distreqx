@@ -1,16 +1,24 @@
 """MultivariateNormalFromBijector distribution."""
 
-from typing import Callable, Tuple
+from typing import Callable
 
 import equinox as eqx
 import jax
 import jax.numpy as jnp
-from jaxtyping import Array
+from jaxtyping import Array, PyTree
 
-from ..bijectors import AbstractLinearBijector, Block, Chain, DiagLinear, Shift
+from ..bijectors import (
+    AbstractBijector,
+    AbstractLinearBijector,
+    Block,
+    Chain,
+    DiagLinear,
+    Shift,
+)
+from ._distribution import AbstractDistribution
 from .independent import Independent
 from .normal import Normal
-from .transformed import Transformed
+from .transformed import AbstractTransformed
 
 
 def _check_input_parameters_are_valid(
@@ -27,48 +35,12 @@ def _check_input_parameters_are_valid(
         )
 
 
-class MultivariateNormalFromBijector(Transformed):
-    """Multivariate normal distribution on `R^k`.
-
-    The multivariate normal over `x` is characterized by an invertible affine
-    transformation `x = f(z) = A @ z + b`, where `z` is a random variable that
-    follows a standard multivariate normal on `R^k`, i.e., `p(z) = N(0, I_k)`,
-    `A` is a `k x k` transformation matrix, and `b` is a `k`-dimensional vector.
-
-    The resulting PDF on `x` is a multivariate normal, `p(x) = N(b, C)`, where
-    `C = A @ A.T` is the covariance matrix.
-
-    The transformation `x = f(z)` must be specified by a linear scale bijector
-    implementing the operation `A @ z` and a shift (or location) term `b`.
-    """
-
-    _loc: Array
-    _scale: AbstractLinearBijector
-    _event_shape: Tuple[int]
-
-    def __init__(self, loc: Array, scale: AbstractLinearBijector):
-        """Initializes the distribution.
-
-        **Arguments:**
-
-        - `loc`: The term `b`, i.e., the mean of the multivariate normal distribution.
-        - `scale`: The bijector specifying the linear transformation `A @ z`, as
-            described in the class docstring.
-        """
-        _check_input_parameters_are_valid(scale, loc)
-
-        # Build a standard multivariate Gaussian.
-        std_mvn_dist = Independent(
-            distribution=eqx.filter_vmap(Normal)(
-                jnp.zeros_like(loc), jnp.ones_like(loc)
-            ),
-        )
-        # Form the bijector `f(x) = Ax + b`.
-        bijector = Chain([Block(Shift(loc), ndims=loc.ndim), scale])
-        super().__init__(distribution=std_mvn_dist, bijector=bijector)
-        self._scale = scale
-        self._loc = loc
-        self._event_shape = loc.shape[-1:]
+class AbstractMultivariateNormalFromBijector(AbstractTransformed, strict=True):
+    _loc: eqx.AbstractVar[Array]
+    _scale: eqx.AbstractVar[AbstractLinearBijector]
+    _event_shape: eqx.AbstractVar[tuple[int]]
+    _distribution: eqx.AbstractVar[AbstractDistribution]
+    _bijector: eqx.AbstractVar[AbstractBijector]
 
     @property
     def scale(self) -> AbstractLinearBijector:
@@ -139,29 +111,84 @@ class MultivariateNormalFromBijector(Transformed):
         return _kl_divergence_mvn_mvn(self, other_dist)
 
 
+class MultivariateNormalFromBijector(AbstractMultivariateNormalFromBijector):
+    """Multivariate normal distribution on `R^k`.
+
+    The multivariate normal over `x` is characterized by an invertible affine
+    transformation `x = f(z) = A @ z + b`, where `z` is a random variable that
+    follows a standard multivariate normal on `R^k`, i.e., `p(z) = N(0, I_k)`,
+    `A` is a `k x k` transformation matrix, and `b` is a `k`-dimensional vector.
+
+    The resulting PDF on `x` is a multivariate normal, `p(x) = N(b, C)`, where
+    `C = A @ A.T` is the covariance matrix.
+
+    The transformation `x = f(z)` must be specified by a linear scale bijector
+    implementing the operation `A @ z` and a shift (or location) term `b`.
+    """
+
+    _loc: Array
+    _scale: AbstractLinearBijector
+    _event_shape: tuple[int]
+    _distribution: AbstractDistribution
+    _bijector: AbstractBijector
+
+    def __init__(self, loc: Array, scale: AbstractLinearBijector):
+        """Initializes the distribution.
+
+        **Arguments:**
+
+        - `loc`: The term `b`, i.e., the mean of the multivariate normal distribution.
+        - `scale`: The bijector specifying the linear transformation `A @ z`, as
+            described in the class docstring.
+        """
+        _check_input_parameters_are_valid(scale, loc)
+
+        # Build a standard multivariate Gaussian.
+        std_mvn_dist = Independent(
+            distribution=eqx.filter_vmap(Normal)(
+                jnp.zeros_like(loc), jnp.ones_like(loc)
+            ),
+        )
+        # Form the bijector `f(x) = Ax + b`.
+        bijector = Chain([Block(Shift(loc), ndims=loc.ndim), scale])
+        self._distribution = std_mvn_dist
+        self._bijector = bijector
+        self._scale = scale
+        self._loc = loc
+        self._event_shape = loc.shape[-1:]
+
+    def log_cdf(self, value: PyTree[Array]) -> PyTree[Array]:
+        raise NotImplementedError
+
+    def cdf(self, value: PyTree[Array]) -> PyTree[Array]:
+        raise NotImplementedError
+
+
 def _squared_frobenius_norm(x: Array) -> Array:
     """Computes the squared Frobenius norm of a matrix."""
     return jnp.sum(jnp.square(x), axis=[-2, -1])
 
 
-def _log_abs_determinant(d: MultivariateNormalFromBijector) -> Array:
+def _log_abs_determinant(d: AbstractMultivariateNormalFromBijector) -> Array:
     """Obtains `log|det(A)|`."""
     return d.scale.forward_log_det_jacobian(jnp.zeros(d.event_shape, dtype=d.dtype))
 
 
-def _inv_scale_operator(d: MultivariateNormalFromBijector) -> Callable[[Array], Array]:
+def _inv_scale_operator(
+    d: AbstractMultivariateNormalFromBijector,
+) -> Callable[[Array], Array]:
     """Gets the operator that performs `A^-1 * x`."""
     return jax.vmap(d.scale.inverse, in_axes=-1, out_axes=-1)
 
 
-def _scale_matrix(d: MultivariateNormalFromBijector) -> Array:
+def _scale_matrix(d: AbstractMultivariateNormalFromBijector) -> Array:
     """Gets the full scale matrix `A`."""
     return d.scale.matrix
 
 
-def _has_diagonal_scale(d: MultivariateNormalFromBijector) -> bool:
+def _has_diagonal_scale(d: AbstractMultivariateNormalFromBijector) -> bool:
     """Determines if the scale matrix `A` is diagonal."""
-    if isinstance(d, MultivariateNormalFromBijector) and isinstance(
+    if isinstance(d, AbstractMultivariateNormalFromBijector) and isinstance(
         d.scale, DiagLinear
     ):
         return True
@@ -169,8 +196,8 @@ def _has_diagonal_scale(d: MultivariateNormalFromBijector) -> bool:
 
 
 def _kl_divergence_mvn_mvn(
-    dist1: MultivariateNormalFromBijector,
-    dist2: MultivariateNormalFromBijector,
+    dist1: AbstractMultivariateNormalFromBijector,
+    dist2: AbstractMultivariateNormalFromBijector,
     *unused_args,
     **unused_kwargs,
 ) -> Array:

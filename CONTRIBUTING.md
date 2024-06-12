@@ -29,7 +29,7 @@ These hooks use Black and isort to format the code, and flake8 to lint it.
 
 **If you're making changes to the code:**
 
-Now make your changes. Make sure to include additional tests if necessary.
+Now make your changes. Make sure to include additional tests if necessary. Be sure to consider the abstract/final design pattern: https://docs.kidger.site/equinox/pattern/.
 
 If you include a new features, there are 3 required classes of tests:
 - Correctness: tests the are against analytic or known solutions that ensure the computation is correct
