@@ -7,7 +7,7 @@ from ._bijector import AbstractBijector
 from .scalar_affine import AbstractScalarAffine
 
 
-class Shift(AbstractScalarAffine):
+class Shift(AbstractScalarAffine, strict=True):
     """Bijector that translates its input elementwise.
 
     The bijector is defined as follows:

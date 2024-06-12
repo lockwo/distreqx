@@ -1,6 +1,6 @@
 """Chain Bijector for composing a sequence of Bijector transformations."""
 
-from typing import List, Sequence
+from typing import Sequence
 
 from jaxtyping import Array
 
@@ -34,7 +34,7 @@ class Chain(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector, strict=T
     `y = f(g(x))`.
     """
 
-    _bijectors: List[AbstractBijector]
+    _bijectors: list[AbstractBijector]
     _is_constant_jacobian: bool
     _is_constant_log_det: bool
 
@@ -64,7 +64,7 @@ class Chain(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector, strict=T
         self._is_constant_log_det = is_constant_log_det
 
     @property
-    def bijectors(self) -> List[AbstractBijector]:
+    def bijectors(self) -> list[AbstractBijector]:
         """The list of bijectors in the chain."""
         return self._bijectors
 
