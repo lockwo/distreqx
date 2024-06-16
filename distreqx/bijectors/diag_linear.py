@@ -2,6 +2,7 @@
 
 from typing import Tuple
 
+import jax
 import jax.numpy as jnp
 from jaxtyping import Array
 
@@ -77,8 +78,9 @@ class DiagLinear(AbstractLinearBijector):
     @property
     def matrix(self) -> Array:
         """The full matrix `A`."""
-        # TODO: vectorize -> vmap
-        return jnp.vectorize(jnp.diag, signature="(k)->(k,k)")(self.diag)
+        expanded_diag = jnp.expand_dims(self.diag, axis=0)
+        result = jax.vmap(jnp.diag)(expanded_diag)
+        return result[0]
 
     def same_as(self, other: AbstractBijector) -> bool:
         """Returns True if this bijector is guaranteed to be the same as `other`."""
