@@ -1,7 +1,5 @@
 """Diagonal linear bijector."""
 
-from typing import Tuple
-
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array
@@ -12,7 +10,7 @@ from .block import Block
 from .scalar_affine import ScalarAffine
 
 
-class DiagLinear(AbstractLinearBijector):
+class DiagLinear(AbstractLinearBijector, strict=True):
     """Linear bijector with a diagonal weight matrix.
 
     The bijector is defined as `f(x) = Ax` where `A` is a `DxD` diagonal matrix.
@@ -30,6 +28,9 @@ class DiagLinear(AbstractLinearBijector):
 
     _diag: Array
     _bijector: AbstractBijector
+    _is_constant_jacobian: bool
+    _is_constant_log_det: bool
+    _event_dims: int
 
     def __init__(self, diag: Array):
         """Initializes the bijector.
@@ -43,8 +44,10 @@ class DiagLinear(AbstractLinearBijector):
         self._bijector = Block(
             ScalarAffine(shift=jnp.zeros_like(diag), scale=diag), ndims=diag.ndim
         )
-        super().__init__(event_dims=diag.shape[-1])
+        self._event_dims = diag.shape[-1]
         self._diag = diag
+        self._is_constant_jacobian = True
+        self._is_constant_log_det = True
 
     def forward(self, x: Array) -> Array:
         """Computes y = f(x)."""
@@ -62,11 +65,11 @@ class DiagLinear(AbstractLinearBijector):
         """Computes log|det J(f^{-1})(y)|."""
         return self._bijector.inverse_log_det_jacobian(y)
 
-    def inverse_and_log_det(self, y: Array) -> Tuple[Array, Array]:
+    def inverse_and_log_det(self, y: Array) -> tuple[Array, Array]:
         """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
         return self._bijector.inverse_and_log_det(y)
 
-    def forward_and_log_det(self, x: Array) -> Tuple[Array, Array]:
+    def forward_and_log_det(self, x: Array) -> tuple[Array, Array]:
         """Computes y = f(x) and log|det J(f)(x)|."""
         return self._bijector.forward_and_log_det(x)
 

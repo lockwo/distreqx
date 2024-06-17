@@ -1,16 +1,25 @@
 """Bernoulli distribution."""
 
-from typing import Optional, Tuple, Union
+from typing import Optional, Union
 
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array, PRNGKeyArray
 
 from ..utils.math import multiply_no_nan
-from ._distribution import AbstractDistribution
+from ._distribution import (
+    AbstractSampleLogProbDistribution,
+    AbstractSTDDistribution,
+    AbstractSurivialDistribution,
+)
 
 
-class Bernoulli(AbstractDistribution):
+class Bernoulli(
+    AbstractSampleLogProbDistribution,
+    AbstractSTDDistribution,
+    AbstractSurivialDistribution,
+    strict=True,
+):
     """Bernoulli distribution of shape dims.
 
     Bernoulli distribution with parameter `probs`, the probability of outcome `1`.
@@ -65,10 +74,10 @@ class Bernoulli(AbstractDistribution):
         return jax.nn.sigmoid(self._logits)
 
     @property
-    def event_shape(self) -> Tuple[int]:
+    def event_shape(self) -> tuple[int]:
         return self.prob.shape
 
-    def _log_probs_parameter(self) -> Tuple[Array, Array]:
+    def _log_probs_parameter(self) -> tuple[Array, Array]:
         if self._logits is None:
             if self._probs is None:
                 raise ValueError("_probs is None!")
@@ -121,6 +130,9 @@ class Bernoulli(AbstractDistribution):
         """See `Distribution.mean`."""
         return self.probs
 
+    def median(self) -> None:
+        raise NotImplementedError
+
     def variance(self) -> Array:
         """See `Distribution.variance`."""
         return (1 - self.probs) * self.probs
@@ -146,7 +158,7 @@ class Bernoulli(AbstractDistribution):
 
 def _probs_and_log_probs(
     dist: Bernoulli,
-) -> Tuple[
+) -> tuple[
     Array,
     Array,
     Array,

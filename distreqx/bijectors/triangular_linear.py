@@ -13,7 +13,7 @@ def _triangular_logdet(matrix: Array) -> Array:
     return jnp.sum(jnp.log(jnp.abs(jnp.diag(matrix))))
 
 
-class TriangularLinear(AbstractLinearBijector):
+class TriangularLinear(AbstractLinearBijector, strict=True):
     """A linear bijector whose weight matrix is triangular.
 
     The bijector is defined as `f(x) = Ax` where `A` is a DxD triangular matrix.
@@ -32,6 +32,9 @@ class TriangularLinear(AbstractLinearBijector):
 
     _matrix: Array
     _is_lower: bool
+    _is_constant_jacobian: bool
+    _is_constant_log_det: bool
+    _event_dims: int
 
     def __init__(self, matrix: Array, is_lower: bool = True):
         """Initializes a `TriangularLinear` bijector.
@@ -44,6 +47,8 @@ class TriangularLinear(AbstractLinearBijector):
         - `is_lower`: if True, `A` is set to the lower triangular part of `matrix`. If
             False, `A` is set to the upper triangular part of `matrix`.
         """
+        self._is_constant_jacobian = True
+        self._is_constant_log_det = True
         if matrix.ndim < 2:
             raise ValueError(
                 f"`matrix` must have at least 2 dimensions, got {matrix.ndim}."
@@ -52,8 +57,7 @@ class TriangularLinear(AbstractLinearBijector):
             raise ValueError(
                 f"`matrix` must be square; instead, it has shape {matrix.shape[-2:]}."
             )
-        super().__init__(event_dims=matrix.shape[-1])
-
+        self._event_dims = matrix.shape[-1]
         self._matrix = jnp.tril(matrix) if is_lower else jnp.triu(matrix)
         self._is_lower = is_lower
 

@@ -1,13 +1,17 @@
 """Chain Bijector for composing a sequence of Bijector transformations."""
 
-from typing import List, Sequence, Tuple
+from typing import Sequence
 
 from jaxtyping import Array
 
-from ._bijector import AbstractBijector
+from ._bijector import (
+    AbstractBijector,
+    AbstractFwdLogDetJacBijector,
+    AbstractInvLogDetJacBijector,
+)
 
 
-class Chain(AbstractBijector):
+class Chain(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector, strict=True):
     """Composition of a sequence of bijectors into a single bijector.
 
     Bijectors are composable: if `f` and `g` are bijectors, then `g o f` is also
@@ -30,7 +34,9 @@ class Chain(AbstractBijector):
     `y = f(g(x))`.
     """
 
-    _bijectors: List[AbstractBijector]
+    _bijectors: list[AbstractBijector]
+    _is_constant_jacobian: bool
+    _is_constant_log_det: bool
 
     def __init__(self, bijectors: Sequence[AbstractBijector]):
         """Initializes a Chain bijector.
@@ -47,13 +53,18 @@ class Chain(AbstractBijector):
 
         is_constant_jacobian = all(b.is_constant_jacobian for b in self._bijectors)
         is_constant_log_det = all(b.is_constant_log_det for b in self._bijectors)
-        super().__init__(
-            is_constant_jacobian=is_constant_jacobian,
-            is_constant_log_det=is_constant_log_det,
-        )
+        if is_constant_log_det is None:
+            is_constant_log_det = is_constant_jacobian
+        if is_constant_jacobian and not is_constant_log_det:
+            raise ValueError(
+                "The Jacobian is said to be constant, but its "
+                "determinant is said not to be, which is impossible."
+            )
+        self._is_constant_jacobian = is_constant_jacobian
+        self._is_constant_log_det = is_constant_log_det
 
     @property
-    def bijectors(self) -> List[AbstractBijector]:
+    def bijectors(self) -> list[AbstractBijector]:
         """The list of bijectors in the chain."""
         return self._bijectors
 
@@ -69,7 +80,7 @@ class Chain(AbstractBijector):
             y = bijector.inverse(y)
         return y
 
-    def forward_and_log_det(self, x: Array) -> Tuple[Array, Array]:
+    def forward_and_log_det(self, x: Array) -> tuple[Array, Array]:
         """Computes y = f(x) and log|det J(f)(x)|."""
         x, log_det = self._bijectors[-1].forward_and_log_det(x)
         for bijector in reversed(self._bijectors[:-1]):
@@ -77,7 +88,7 @@ class Chain(AbstractBijector):
             log_det += ld
         return x, log_det
 
-    def inverse_and_log_det(self, y: Array) -> Tuple[Array, Array]:
+    def inverse_and_log_det(self, y: Array) -> tuple[Array, Array]:
         """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
         y, log_det = self._bijectors[0].inverse_and_log_det(y)
         for bijector in self._bijectors[1:]:

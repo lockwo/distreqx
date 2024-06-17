@@ -1,14 +1,18 @@
 """Independent distribution."""
 
 import operator
-from typing import Tuple
 
 import jax.numpy as jnp
 import jax.tree_util as jtu
 from jaxtyping import Array, PRNGKeyArray, PyTree
 
 from .._custom_types import EventT
-from ._distribution import AbstractDistribution
+from ._distribution import (
+    AbstractCDFDistribution,
+    AbstractDistribution,
+    AbstractProbDistribution,
+    AbstractSurivialDistribution,
+)
 
 
 def _reduce_helper(pytree: PyTree) -> Array:
@@ -16,7 +20,12 @@ def _reduce_helper(pytree: PyTree) -> Array:
     return jtu.tree_reduce(operator.add, sum_over_leaves)
 
 
-class Independent(AbstractDistribution):
+class Independent(
+    AbstractProbDistribution,
+    AbstractCDFDistribution,
+    AbstractSurivialDistribution,
+    strict=True,
+):
     """Independent distribution obtained from child distributions."""
 
     _distribution: AbstractDistribution
@@ -46,7 +55,7 @@ class Independent(AbstractDistribution):
         """See `Distribution.sample`."""
         return self._distribution.sample(key)
 
-    def sample_and_log_prob(self, key: PRNGKeyArray) -> Tuple[Array, Array]:
+    def sample_and_log_prob(self, key: PRNGKeyArray) -> tuple[Array, Array]:
         """See `Distribution.sample_and_log_prob`."""
         samples, log_prob = self._distribution.sample_and_log_prob(key)
         log_prob = _reduce_helper(log_prob)

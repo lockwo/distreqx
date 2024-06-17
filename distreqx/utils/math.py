@@ -1,6 +1,6 @@
 """Utility math functions."""
 
-from typing import Optional, Tuple
+from typing import Optional
 
 import jax
 import jax.numpy as jnp
@@ -31,8 +31,8 @@ def multiply_no_nan(x: Array, y: Array) -> Array:
 
 @multiply_no_nan.defjvp
 def multiply_no_nan_jvp(
-    primals: Tuple[Array, Array], tangents: Tuple[Array, Array]
-) -> Tuple[Array, Array]:
+    primals: tuple[Array, Array], tangents: tuple[Array, Array]
+) -> tuple[Array, Array]:
     """Custom gradient computation for `multiply_no_nan`.
 
     **Arguments:**
@@ -71,8 +71,8 @@ def power_no_nan(x: Array, y: Array) -> Array:
 
 @power_no_nan.defjvp
 def power_no_nan_jvp(
-    primals: Tuple[Array, Array], tangents: Tuple[Array, Array]
-) -> Tuple[Array, Array]:
+    primals: tuple[Array, Array], tangents: tuple[Array, Array]
+) -> tuple[Array, Array]:
     """Custom gradient computation for `power_no_nan`.
 
     **Arguments:**

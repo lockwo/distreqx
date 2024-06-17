@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from typing import Optional, Tuple
 
 import equinox as eqx
 from jaxtyping import Array, PyTree
@@ -27,69 +26,38 @@ class AbstractBijector(eqx.Module, strict=True):
       will assume these properties hold, and will make no attempt to verify them.
     """
 
-    _is_constant_jacobian: bool
-    _is_constant_log_det: bool
-
-    def __init__(
-        self,
-        is_constant_jacobian: bool = False,
-        is_constant_log_det: Optional[bool] = None,
-    ):
-        """Initializes a Bijector.
-
-        **Arguments:**
-
-        - `is_constant_jacobian`: Whether the Jacobian is promised to be constant
-            (which is the case if and only if the bijector is affine). A value of
-            False will be interpreted as "we don't know whether the Jacobian is
-            constant", rather than "the Jacobian is definitely not constant". Only
-            set to True if you're absolutely sure the Jacobian is constant; if
-            you're not sure, set to False.
-        - `is_constant_log_det`: Whether the Jacobian determinant is promised to be
-            constant (which is the case for, e.g., volume-preserving bijectors). If
-            None, it defaults to `is_constant_jacobian`. Note that the Jacobian
-            determinant can be constant without the Jacobian itself being constant.
-            Only set to True if you're absoltely sure the Jacobian determinant is
-            constant; if you're not sure, set to False.
-        """
-        if is_constant_log_det is None:
-            is_constant_log_det = is_constant_jacobian
-        if is_constant_jacobian and not is_constant_log_det:
-            raise ValueError(
-                "The Jacobian is said to be constant, but its "
-                "determinant is said not to be, which is impossible."
-            )
-        self._is_constant_jacobian = is_constant_jacobian
-        self._is_constant_log_det = is_constant_log_det
-
-    def forward(self, x: PyTree) -> PyTree:
-        R"""Computes $y = f(x)$."""
-        y, _ = self.forward_and_log_det(x)
-        return y
-
-    def inverse(self, y: PyTree) -> PyTree:
-        r"""Computes $x = f^{-1}(y)$."""
-        x, _ = self.inverse_and_log_det(y)
-        return x
-
-    def forward_log_det_jacobian(self, x: PyTree) -> PyTree:
-        r"""Computes $\log|\det J(f)(x)|$."""
-        _, logdet = self.forward_and_log_det(x)
-        return logdet
-
-    def inverse_log_det_jacobian(self, y: PyTree) -> PyTree:
-        r"""Computes $\log|\det J(f^{-1})(y)|$."""
-        _, logdet = self.inverse_and_log_det(y)
-        return logdet
+    _is_constant_jacobian: eqx.AbstractVar[bool]
+    _is_constant_log_det: eqx.AbstractVar[bool]
 
     @abstractmethod
-    def forward_and_log_det(self, x: PyTree) -> Tuple[PyTree, PyTree]:
+    def forward(self, x: PyTree) -> PyTree:
+        R"""Computes $y = f(x)$."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def inverse(self, y: PyTree) -> PyTree:
+        r"""Computes $x = f^{-1}(y)$."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def forward_log_det_jacobian(self, x: PyTree) -> PyTree:
+        r"""Computes $\log|\det J(f)(x)|$."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def inverse_log_det_jacobian(self, y: PyTree) -> PyTree:
+        r"""Computes $\log|\det J(f^{-1})(y)|$."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def forward_and_log_det(self, x: PyTree) -> tuple[PyTree, PyTree]:
         r"""Computes $y = f(x)$ and $\log|\det J(f)(x)|$."""
         raise NotImplementedError(
             f"Bijector {self.name} does not implement `forward_and_log_det`."
         )
 
-    def inverse_and_log_det(self, y: Array) -> Tuple[PyTree, PyTree]:
+    @abstractmethod
+    def inverse_and_log_det(self, y: Array) -> tuple[PyTree, PyTree]:
         r"""Computes $x = f^{-1}(y)$ and $\log|\det J(f^{-1})(y)|$."""
         raise NotImplementedError(
             f"Bijector {self.name} does not implement `inverse_and_log_det`."
@@ -110,7 +78,39 @@ class AbstractBijector(eqx.Module, strict=True):
         """Name of the bijector."""
         return self.__class__.__name__
 
+    @abstractmethod
     def same_as(self, other) -> bool:
         """Returns True if this bijector is guaranteed to be the same as `other`."""
-        del other
-        return False
+        raise NotImplementedError
+
+
+class AbstractInvLogDetJacBijector(AbstractBijector, strict=True):
+    """AbstractBijector + concrete `inverse_log_det_jacobian`."""
+
+    def inverse_log_det_jacobian(self, y: PyTree) -> PyTree:
+        r"""Computes $\log|\det J(f^{-1})(y)|$."""
+        _, logdet = self.inverse_and_log_det(y)
+        return logdet
+
+
+class AbstractFwdLogDetJacBijector(AbstractBijector, strict=True):
+    """AbstractBijector + concrete `forward_log_det_jacobian`."""
+
+    def forward_log_det_jacobian(self, x: PyTree) -> PyTree:
+        r"""Computes $\log|\det J(f)(x)|$."""
+        _, logdet = self.forward_and_log_det(x)
+        return logdet
+
+
+class AbstractFowardInverseBijector(AbstractBijector, strict=True):
+    """AbstractBijector + concrete `forward` and `reverse`."""
+
+    def forward(self, x: PyTree) -> PyTree:
+        R"""Computes $y = f(x)$."""
+        y, _ = self.forward_and_log_det(x)
+        return y
+
+    def inverse(self, y: PyTree) -> PyTree:
+        r"""Computes $x = f^{-1}(y)$."""
+        x, _ = self.inverse_and_log_det(y)
+        return x

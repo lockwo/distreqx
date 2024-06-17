@@ -3,7 +3,7 @@
 
 distreqx (pronounced "dist-rex") is a [JAX](https://github.com/google/jax)-based library providing implementations of distributions, bijectors, and tools for statistical and probabilistic machine learning with all benefits of jax (native GPU/TPU acceleration, differentiability, vectorization, distributing workloads, XLA compilation, etc.).
 
-The origin of this repo is a reimplementation of [distrax](https://github.com/google-deepmind/distrax), (which is asubset of [TensorFlow Probability (TFP)](https://github.com/tensorflow/probability), with some new features and emphasis on jax compatibility) using [equinox](https://github.com/patrick-kidger/equinox). As a result, much of the original code/comments/documentation/tests are directly taken or adapted from distrax (original distrax copyright available at end of README.)
+The origin of this repo is a reimplementation of [distrax](https://github.com/google-deepmind/distrax), (which is a subset of [TensorFlow Probability (TFP)](https://github.com/tensorflow/probability), with some new features and emphasis on jax compatibility) using [equinox](https://github.com/patrick-kidger/equinox). As a result, much of the original code/comments/documentation/tests are directly taken or adapted from distrax (original distrax copyright available at end of README.)
 
 Current features include:
 
@@ -36,6 +36,7 @@ from distreqx import
 - No official support/interoperability with TFP
 - The concept of a batch dimension is dropped. If you want to operate on a batch, use `vmap` (note, this can be used in construction as well, e.g. [vmaping the construction](https://docs.kidger.site/equinox/tricks/#ensembling) of a `ScalarAffine`)
 - Broader pytree enablement 
+- Strict [abstract/final](https://docs.kidger.site/equinox/pattern/) design pattern
 
 ## Citation
 
@@ -49,10 +50,15 @@ If you found this library useful in academic research, please cite:
 ## See also: other libraries in the JAX ecosystem
 
 [GPJax](https://github.com/JaxGaussianProcesses/GPJax): Gaussian processes in JAX. 
+
 [Optimistix](https://github.com/patrick-kidger/optimistix): root finding, minimisation, fixed points, and least squares.  
+
 [Lineax](https://github.com/patrick-kidger/lineax): linear solvers.  
+
 [sympy2jax](https://github.com/patrick-kidger/sympy2jax): SymPy<->JAX conversion; train symbolic expressions via gradient descent.  
+
 [diffrax](https://github.com/patrick-kidger/diffrax): numerical differential equation solvers in JAX. Autodifferentiable and GPU-capable.
+
 [Awesome JAX](https://github.com/n2cholas/awesome-jax): a longer list of other JAX projects.  
 
 ## Original distrax copyright

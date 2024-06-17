@@ -1,4 +1,4 @@
-from typing import Tuple, Union
+from typing import Union
 
 import jax
 from jaxtyping import (
@@ -6,4 +6,4 @@ from jaxtyping import (
 )
 
 
-EventT = Union[Tuple[int], PyTree[jax.ShapeDtypeStruct]]
+EventT = Union[tuple[int], PyTree[jax.ShapeDtypeStruct]]
