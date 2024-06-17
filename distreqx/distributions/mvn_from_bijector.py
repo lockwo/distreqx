@@ -99,8 +99,8 @@ class MultivariateNormalFromBijector(Transformed):
         - The covariance matrix, of shape `k x k`.
         """
         if isinstance(self.scale, DiagLinear):
-            # TODO: Make this vmap
-            result = jnp.vectorize(jnp.diag, signature="(k)->(k,k)")(self.variance())
+            variance = jnp.expand_dims(self.variance(), axis=0)
+            result = jax.vmap(jnp.diag)(variance)[0]
         else:
             result = jax.vmap(self.scale.forward, in_axes=-2, out_axes=-2)(
                 self._scale.matrix
