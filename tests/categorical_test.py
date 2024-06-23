@@ -33,7 +33,7 @@ class CategoricalTest(TestCase):
             {"probs": jnp.array(probs)} if from_probs else {"logits": jnp.array(logits)}
         )
         dist = self.dist(**dist_kwargs)
-        self.assertEqual(dist.event_shape, ())
+        self.assertEqual(dist.event_shape, shape[:-1])
         self.assertEqual(dist.num_categories, shape[-1])
         np.testing.assert_allclose(
             dist.logits, math.normalize(logits=jnp.array(logits)), rtol=1e-3
@@ -212,13 +212,16 @@ class CategoricalTest(TestCase):
             with self.subTest(method=method):
                 fn = getattr(dist, method)
                 x = fn(value)
-                self.assertEqual(value.shape, x.shape)  # TODO
+                self.assertEqual(value.shape, x.shape)  # TODO: test for known solutions
 
     def test_method_with_input_unnormalized_probs(self):
         # We test this case separately because the result of `cdf` and `log_cdf`
         # differs from TFP when the input `probs` are not normalized.
-        probs = np.array([0.1, 0.2, 0.3])
-        normalized_probs = probs / np.sum(probs, axis=-1, keepdims=True)
+
+        probs = jnp.array(
+            [0.1, 0.2, 0.3], "float32"
+        )  # float32 because float64 does pass the latest test (see comment below)
+        normalized_probs = probs / jnp.sum(probs, axis=-1, keepdims=True)
         distr_params = {"probs": jnp.array(probs)}
         value = jnp.asarray([0, 1, 2])
         dist = self.dist(**distr_params)
@@ -290,15 +293,12 @@ class CategoricalTest(TestCase):
                 if method == "logits_parameter"
                 else dist.logits.shape[:-1]
             )
-            self.assertEqual(x_shape, x.shape)  # TODO
+            self.assertEqual(x_shape, x.shape)  # TODO: test for known solutions
 
     @parameterized.expand(
         [
             ("kl distreqx_to_distreqx", "kl_divergence", "distreqx_to_distreqx"),
-            # TODO ('kl distreqx_to_distrax', 'kl_divergence', 'distreqx_to_distrax'),
             ("cross-ent distreqx_to_distreqx", "cross_entropy", "distreqx_to_distreqx"),
-            # TODO ('cross-ent distreqx_to_distrax', 'cross_entropy',
-            # 'distreqx_to_distrax'),
         ]
     )
     def test_with_two_distributions(self, name, function_string, mode_string):
@@ -310,15 +310,14 @@ class CategoricalTest(TestCase):
         with self.subTest(method=function_string):
             fn = getattr(dist1, function_string)
             x = fn(dist2)
-            self.assertEqual(dist1.logits.shape[:-1], x.shape)  # TODO
+            self.assertEqual(
+                dist1.logits.shape[:-1], x.shape
+            )  # TODO: test for known solutions
 
     @parameterized.expand(
         [
             ("kl distreqx_to_distreqx", "kl_divergence", "distreqx_to_distreqx"),
-            # TODO ('kl distreqx_to_distrax', 'kl_divergence', 'distreqx_to_distrax'),
             ("cross-ent distreqx_to_distreqx", "cross_entropy", "distreqx_to_distreqx"),
-            # TODO ('cross-ent distreqx_to_distrax', 'cross_entropy',
-            # 'distreqx_to_distrax'),
         ]
     )
     def test_with_two_distributions_extreme_cases(
@@ -333,38 +332,29 @@ class CategoricalTest(TestCase):
         with self.subTest(method=function_string):
             fn = getattr(dist1, function_string)
             x = fn(dist2)
-            self.assertEqual(dist1.logits.shape[:-1], x.shape)  # TODO
+            self.assertEqual(
+                dist1.logits.shape[:-1], x.shape
+            )  # TODO: test for known solutions
 
     @parameterized.expand(
         [
-            ("kl distreqx_to_distreqx", "kl_divergence", "distreqx_to_distreqx"),
-            # TODO ('kl distreqx_to_distrax', 'kl_divergence', 'distreqx_to_distrax'),
-            ("cross-ent distreqx_to_distreqx", "cross_entropy", "distreqx_to_distreqx"),
-            # TODO ('cross-ent distreqx_to_distrax', 'cross_entropy',
-            # 'distreqx_to_distrax'),
+            ("kl distreqx_to_distreqx", "kl_divergence"),
+            ("cross-ent distreqx_to_distreqx", "cross_entropy"),
         ]
     )
     def test_with_two_distributions_raises_on_invalid_num_categories(
-        self, name, function_string, mode_string
+        self, name, function_string
     ):
         probs1 = jnp.asarray([0.1, 0.5, 0.4])
         distreqx_dist1 = self.dist(probs=probs1)
-        distrax_dist1 = None  # TODO
         logits2 = jnp.asarray([-0.1, 0.3])
         distreqx_dist2 = self.dist(logits=logits2)
-        distrax_dist2 = None  # TODO
-        dist_a = (
-            distrax_dist1 if mode_string == "distrax_to_distreqx" else distreqx_dist1
-        )
-        dist_b = (
-            distrax_dist2 if mode_string == "distreqx_to_distrax" else distreqx_dist2
-        )
-        first_fn = getattr(dist_a, function_string)
+        first_fn = getattr(distreqx_dist1, function_string)
         with self.assertRaises(ValueError):
-            _ = first_fn(dist_b)
-        second_fn = getattr(dist_b, function_string)
+            _ = first_fn(distreqx_dist2)
+        second_fn = getattr(distreqx_dist2, function_string)
         with self.assertRaises(ValueError):
-            _ = second_fn(dist_a)
+            _ = second_fn(distreqx_dist1)
 
     def test_jittable(self):
         @eqx.filter_jit

@@ -10,8 +10,13 @@ from ..utils.math import mul_exp, multiply_no_nan, normalize
 from ._distribution import AbstractDistribution
 
 
-class Categorical(AbstractDistribution):
-    """Categorical distribution."""
+class Categorical(AbstractDistribution, strict=True):
+    """Categorical distribution over integers.
+
+    The Categorical distribution is parameterized by either probabilities (`probs`) or
+    unormalized log-probabilities (`logits`) of a set of `K` classes.
+    It is defined over the integers `{0, 1, ..., K-1}`.
+    """
 
     _logits: Union[Array, None]
     _probs: Union[Array, None]
@@ -41,17 +46,17 @@ class Categorical(AbstractDistribution):
     @property
     def event_shape(self) -> tuple[int, ...]:
         """Shape of event of distribution samples."""
-        return ()
+        if self._probs is not None:
+            return self._probs.shape[:-1]
+        assert self._logits is not None
+        return self._logits.shape[:-1]
 
     @property
     def logits(self) -> Array:
         """The logits for each event."""
         if self._logits is not None:
             return self._logits
-        if self._probs is None:
-            raise ValueError(
-                "_probs and _logits are None!"
-            )  # TODO: useless but needed for pyright
+        assert self._probs is not None
         return jnp.log(self._probs)
 
     @property
@@ -59,10 +64,7 @@ class Categorical(AbstractDistribution):
         """The probabilities for each event."""
         if self._probs is not None:
             return self._probs
-        if self._logits is None:
-            raise ValueError(
-                "_probs and _logits are None!"
-            )  # TODO: useless but needed for pyright
+        assert self._logits is not None
         return jax.nn.softmax(self._logits, axis=-1)
 
     @property
@@ -70,10 +72,7 @@ class Categorical(AbstractDistribution):
         """Number of categories."""
         if self._probs is not None:
             return self._probs.shape[-1]
-        if self._logits is None:
-            raise ValueError(
-                "_probs and _logits are None!"
-            )  # TODO: useless but needed for pyright
+        assert self._logits is not None
         return self._logits.shape[-1]
 
     def sample(self, key: PRNGKeyArray) -> Array:
@@ -109,10 +108,7 @@ class Categorical(AbstractDistribution):
     def entropy(self) -> Array:
         """See `Distribution.entropy`."""
         if self._logits is None:
-            if self._probs is None:
-                raise ValueError(
-                    "_probs and _logits are None!"
-                )  # TODO: useless but needed for pyright
+            assert self._probs is not None
             log_probs = jnp.log(self._probs)
         else:
             log_probs = jax.nn.log_softmax(self._logits)
@@ -121,10 +117,7 @@ class Categorical(AbstractDistribution):
     def mode(self) -> Array:
         """See `Distribution.mode`."""
         if self._logits is None:
-            if self._probs is None:
-                raise ValueError(
-                    "_probs and _logits are None!"
-                )  # TODO: useless but needed for pyright
+            assert self._probs is not None
             parameter = self.probs
         else:
             parameter = self.logits
@@ -151,10 +144,6 @@ class Categorical(AbstractDistribution):
     def log_cdf(self, value: Array) -> Array:
         """See `Distribution.log_cdf`."""
         return jnp.log(self.cdf(value))
-
-    def logits_parameter(self) -> Array:
-        """Wrapper for `logits` property, for TFP API compatibility."""
-        return self.logits
 
     def kl_divergence(self, other_dist, **kwargs) -> Array:
         """Calculates the KL divergence to another distribution.
@@ -195,8 +184,8 @@ def _kl_divergence_categorical_categorical(
 
     ValueError if the two distributions have different number of categories.
     """
-    logits1 = dist1.logits_parameter()
-    logits2 = dist2.logits_parameter()
+    logits1 = dist1.logits
+    logits2 = dist2.logits
     num_categories1 = logits1.shape[-1]
     num_categories2 = logits2.shape[-1]
 
