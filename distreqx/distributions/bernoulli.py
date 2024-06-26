@@ -75,7 +75,7 @@ class Bernoulli(
 
     @property
     def event_shape(self) -> tuple[int]:
-        return self.prob.shape
+        return self.probs.shape
 
     def _log_probs_parameter(self) -> tuple[Array, Array]:
         if self._logits is None:

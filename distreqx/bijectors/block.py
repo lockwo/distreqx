@@ -1,4 +1,5 @@
 """Wrapper to turn independent Bijectors into block Bijectors."""
+
 from jaxtyping import Array
 
 from ..utils import sum_last
