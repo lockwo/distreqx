@@ -80,8 +80,7 @@ class DiagLinear(AbstractLinearBijector, strict=True):
     @property
     def matrix(self) -> Array:
         """The full matrix `A`."""
-        # TODO: vectorize -> vmap
-        return jnp.vectorize(jnp.diag, signature="(k)->(k,k)")(self.diag)
+        return jnp.diag(self.diag)
 
     def same_as(self, other: AbstractBijector) -> bool:
         """Returns True if this bijector is guaranteed to be the same as `other`."""

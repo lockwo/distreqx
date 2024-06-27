@@ -77,8 +77,7 @@ class TriangularLinear(AbstractLinearBijector, strict=True):
 
     def forward_log_det_jacobian(self, x: Array) -> Array:
         """Computes log|det J(f)(x)|."""
-        triangular_logdet = jnp.vectorize(_triangular_logdet, signature="(m,m)->()")
-        return triangular_logdet(self._matrix)
+        return _triangular_logdet(self._matrix)
 
     def forward_and_log_det(self, x: Array) -> tuple[Array, Array]:
         """Computes y = f(x) and log|det J(f)(x)|."""
