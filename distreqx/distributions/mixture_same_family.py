@@ -1,16 +1,17 @@
 """Mixture distributions."""
 
+import equinox as eqx
 import jax
 import jax.numpy as jnp
-import equinox as eqx
-from jaxtyping import Array
+from jaxtyping import Array, PyTree
+
 from ._distribution import (
-    AbstractSTDDistribution,
-    AbstractSampleLogProbDistribution,
-    AbstractSurivialDistribution,
+    AbstractCDFDistribution,
     AbstractDistribution,
     AbstractProbDistribution,
-    AbstractCDFDistribution,
+    AbstractSampleLogProbDistribution,
+    AbstractSTDDistribution,
+    AbstractSurivialDistribution,
 )
 from .categorical import Categorical
 
@@ -32,13 +33,13 @@ class MixtureSameFamily(
         self,
         mixture_distribution: Categorical,
         components_distribution: AbstractDistribution,
-    ):
+    ) -> None:
         """Initializes a mixture distribution for components of a shared family.
 
-        Args:
-          mixture_distribution: Distribution over selecting components.
-          components_distribution: Component distribution, with rightmost batch
-            dimension indexing components.
+        **Arguments*:*
+
+        - `mixture_distribution`: Distribution over selecting components.
+        - `components_distribution`: Component distribution.
         """
         self._mixture_distribution = mixture_distribution
         self._components_distribution = components_distribution
@@ -59,7 +60,7 @@ class MixtureSameFamily(
         return self._components_distribution.event_shape
 
     def sample(self, key) -> Array:
-        """See `Distribution._sample_n`."""
+        """See `AbstractDistribution._sample`."""
         key_mix, key_components = jax.random.split(key)
         mix_sample = self.mixture_distribution.sample(key_mix)
 
@@ -106,9 +107,9 @@ class MixtureSameFamily(
         var_cond_mean = jnp.sum(weights * sq_diff, axis=component_axis)
         return mean_cond_var + var_cond_mean
 
-    def _per_mixture_component_log_prob(self, value):
+    def _per_mixture_component_log_prob(self, value: Array) -> Array:
         # Add component axis to make input broadcast with components distribution.
-        # expanded = jnp.expand_dims(value, axis=-1 - len(self.event_shape))
+
         # Compute `log_prob` in every component.
         lp = eqx.filter_vmap(lambda dist, x: dist.log_prob(x), in_axes=(0, None))(
             self.components_distribution, value
@@ -116,17 +117,17 @@ class MixtureSameFamily(
         # Last axis of mixture log probs are components.
         return lp + jax.nn.log_softmax(self._mixture_distribution.logits, axis=-1)
 
-    def log_prob(self, value):
+    def log_prob(self, value: Array) -> Array:
         # Reduce last axis of mixture log probs are components
         return jax.scipy.special.logsumexp(
             self._per_mixture_component_log_prob(value), axis=-1
         )
 
-    def posterior_marginal(self, observations):
-        return Categorical(logits=self._per_mixture_component_log_prob(observations))
+    def posterior_marginal(self, observation: Array) -> Categorical:
+        return Categorical(logits=self._per_mixture_component_log_prob(observation))
 
-    def posterior_mode(self, observations):
-        return jnp.argmax(self._per_mixture_component_log_prob(observations), axis=-1)
+    def posterior_mode(self, observation: Array) -> Array:
+        return jnp.argmax(self._per_mixture_component_log_prob(observation), axis=-1)
 
     def median(self):
         raise NotImplementedError
@@ -137,7 +138,7 @@ class MixtureSameFamily(
     def entropy(self):
         raise NotImplementedError
 
-    def log_cdf(self, value):
+    def log_cdf(self, value: PyTree[Array]) -> PyTree[Array]:
         raise NotImplementedError
 
     def kl_divergence(self, other_dist, **kwargs):
