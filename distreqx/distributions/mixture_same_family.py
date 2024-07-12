@@ -111,7 +111,7 @@ class MixtureSameFamily(
         # Add component axis to make input broadcast with components distribution.
 
         # Compute `log_prob` in every component.
-        lp = eqx.filter_vmap(lambda dist, x: dist.log_prob(x), in_axes=(0, None))(
+        lp = eqx.filter_vmap(lambda dist, x: dist.log_prob(x), in_axes=(eqx.if_array(0), None))(
             self.components_distribution, value
         )
         # Last axis of mixture log probs are components.
