@@ -62,7 +62,7 @@ class MultivariateNormalTri(AbstractMultivariateNormalFromBijector, strict=True)
     _is_lower: bool
     _loc: Array
     _scale: AbstractLinearBijector
-    _event_shape: tuple[int]
+    _event_shape: tuple[int, ...]
     _distribution: AbstractDistribution
     _bijector: AbstractBijector
 

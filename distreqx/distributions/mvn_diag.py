@@ -51,7 +51,7 @@ class MultivariateNormalDiag(AbstractMultivariateNormalFromBijector, strict=True
 
     _loc: Array
     _scale: AbstractLinearBijector
-    _event_shape: tuple[int]
+    _event_shape: tuple[int, ...]
     _distribution: AbstractDistribution
     _bijector: AbstractBijector
     _scale_diag: Array
