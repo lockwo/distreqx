@@ -73,10 +73,9 @@ class MixtureSameFamily(
         mask = jax.nn.one_hot(mix_sample, num_components)
         samples_all = self.components_distribution.sample(key_components)
 
-
         # Need to sum over the component axis, which is the last one for scalar
         # components, the second-last one for 1-dim events, etc.
-        samples = jnp.sum(samples_all * mask, axis=0)
+        samples = jax.vmap(jnp.sum, in_axes=(1, None))(samples_all * mask, axis=0)
         return samples
 
     def mean(self) -> Array:
