@@ -73,8 +73,6 @@ class MixtureSameFamily(
         mask = jax.nn.one_hot(mix_sample, num_components)
         samples_all = self.components_distribution.sample(key_components)
 
-        # Make mask broadcast with (potentially multivariate) samples.
-        mask = mask.reshape(mask.shape + (1,) * len(self.event_shape))
 
         # Need to sum over the component axis, which is the last one for scalar
         # components, the second-last one for 1-dim events, etc.
