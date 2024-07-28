@@ -7,7 +7,11 @@ import jax.numpy as jnp
 from jaxtyping import Array, PRNGKeyArray
 
 from ..utils.math import mul_exp, multiply_no_nan, normalize
-from ._distribution import AbstractDistribution
+from ._distribution import (
+    AbstractSampleLogProbDistribution,
+    AbstractSTDDistribution,
+    AbstractSurivialDistribution,
+)
 
 
 class Categorical(
@@ -160,8 +164,7 @@ class Categorical(
     def log_cdf(self, value: Array) -> Array:
         """See `Distribution.log_cdf`."""
         return jnp.log(self.cdf(value))
-      
-      
+
     def median(self):
         raise NotImplementedError
 
@@ -180,12 +183,10 @@ class Categorical(
         - `kwargs`: Additional kwargs.
 
         **Returns:**
-        
+
         The KL divergence `KL(self || other_dist)`.
         """
         return _kl_divergence_categorical_categorical(self, other_dist)
-
-
 
 
 def _kl_divergence_categorical_categorical(

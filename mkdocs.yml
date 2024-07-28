@@ -92,6 +92,7 @@ nav:
     - 'index.md'
     - Examples:
         - Binary MNIST VAE: 'examples/01_vae.ipynb'
+        - GMM/BMM: 'examples/02_mixture_models.ipynb'
     - API:
         - Distributions:
             - Gaussians:

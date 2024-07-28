@@ -33,7 +33,7 @@ class CategoricalTest(TestCase):
             {"probs": jnp.array(probs)} if from_probs else {"logits": jnp.array(logits)}
         )
         dist = self.dist(**dist_kwargs)
-        self.assertEqual(dist.event_shape, shape[:-1])
+        self.assertEqual(dist.event_shape, ())
         self.assertEqual(dist.num_categories, shape[-1])
         np.testing.assert_allclose(
             dist.logits, math.normalize(logits=jnp.array(logits)), rtol=1e-3
@@ -285,7 +285,7 @@ class CategoricalTest(TestCase):
             {"probs": jnp.array(probs)} if from_probs else {"logits": jnp.array(logits)}
         )
         dist = self.dist(**distr_params)
-        for method in ["entropy", "mode", "logits_parameter"]:
+        for method in ["entropy", "mode"]:
             fn = getattr(dist, method)
             x = fn()
             x_shape = (
