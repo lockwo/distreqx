@@ -62,7 +62,7 @@ class MultivariateNormalTri(AbstractMultivariateNormalFromBijector, strict=True)
     _is_lower: bool
     _loc: Array
     _scale: AbstractLinearBijector
-    _event_shape: tuple[int]
+    _event_shape: tuple[int, ...]
     _distribution: AbstractDistribution
     _bijector: AbstractBijector
 
@@ -128,7 +128,7 @@ class MultivariateNormalTri(AbstractMultivariateNormalFromBijector, strict=True)
     @property
     def scale_tri(self) -> Array:
         """Triangular scale matrix `S`."""
-        return jnp.broadcast_to(self._scale_tri, self.event_shape + self.event_shape)
+        return self._scale_tri
 
     @property
     def is_lower(self) -> bool:

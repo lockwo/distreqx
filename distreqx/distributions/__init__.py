@@ -7,7 +7,9 @@ from ._distribution import (
     AbstractSurivialDistribution as AbstractSurivialDistribution,
 )
 from .bernoulli import Bernoulli as Bernoulli
+from .categorical import Categorical as Categorical
 from .independent import Independent as Independent
+from .mixture_same_family import MixtureSameFamily as MixtureSameFamily
 from .mvn_diag import MultivariateNormalDiag as MultivariateNormalDiag
 from .mvn_from_bijector import (
     AbstractMultivariateNormalFromBijector as AbstractMultivariateNormalFromBijector,

@@ -6,7 +6,6 @@ import jax.numpy as jnp
 import jax.tree_util as jtu
 from jaxtyping import Array, PRNGKeyArray, PyTree
 
-from .._custom_types import EventT
 from ._distribution import (
     AbstractCDFDistribution,
     AbstractDistribution,
@@ -43,7 +42,7 @@ class Independent(
         self._distribution = distribution
 
     @property
-    def event_shape(self) -> EventT:
+    def event_shape(self) -> tuple:
         """Shape of event of distribution samples."""
         return self._distribution.event_shape
 

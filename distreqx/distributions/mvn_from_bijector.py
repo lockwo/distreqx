@@ -38,7 +38,7 @@ def _check_input_parameters_are_valid(
 class AbstractMultivariateNormalFromBijector(AbstractTransformed, strict=True):
     _loc: eqx.AbstractVar[Array]
     _scale: eqx.AbstractVar[AbstractLinearBijector]
-    _event_shape: eqx.AbstractVar[tuple[int]]
+    _event_shape: eqx.AbstractVar[tuple[int, ...]]
     _distribution: eqx.AbstractVar[AbstractDistribution]
     _bijector: eqx.AbstractVar[AbstractBijector]
 
@@ -127,7 +127,7 @@ class MultivariateNormalFromBijector(AbstractMultivariateNormalFromBijector):
 
     _loc: Array
     _scale: AbstractLinearBijector
-    _event_shape: tuple[int]
+    _event_shape: tuple[int, ...]
     _distribution: AbstractDistribution
     _bijector: AbstractBijector
 

@@ -74,8 +74,8 @@ class Bernoulli(
         return jax.nn.sigmoid(self._logits)
 
     @property
-    def event_shape(self) -> tuple[int]:
-        return self.prob.shape
+    def event_shape(self) -> tuple[int, ...]:
+        return self.probs.shape
 
     def _log_probs_parameter(self) -> tuple[Array, Array]:
         if self._logits is None:
