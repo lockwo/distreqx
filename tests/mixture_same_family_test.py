@@ -81,5 +81,5 @@ class MixtureSameFamilyTest(unittest.TestCase):
         dist = MixtureSameFamily(
             mixture_distribution=mixture_dist, components_distribution=components_dist
         )
-        sample = eqx.filter_jit(dist.sample)(self.key)
+        sample = eqx.filter_jit(dist.sample)(jax.random.PRNGKey(0))
         self.assertIsInstance(sample, jnp.ndarray)
