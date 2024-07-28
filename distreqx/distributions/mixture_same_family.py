@@ -131,7 +131,7 @@ class MixtureSameFamily(
 
         **Arguments:**
 
-            - `observation`: the data point to compute the distribution over
+        - `observation`: the data point to compute the distribution over
 
         **Returns:**
 
@@ -146,7 +146,7 @@ class MixtureSameFamily(
 
         **Arguments:**
 
-            - `observation`: the data point to compute the mode of
+        - `observation`: the data point to compute the mode of
 
         **Returns:**
 
