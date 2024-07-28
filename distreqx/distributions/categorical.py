@@ -52,7 +52,7 @@ class Categorical(
         self._logits = None if logits is None else normalize(logits=logits)
 
     @property
-    def event_shape(self):
+    def event_shape(self) -> tuple:
         """Shape of event of distribution samples."""
         return ()
 
