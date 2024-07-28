@@ -8,19 +8,43 @@ import jax.numpy as jnp
 import numpy as np
 from parameterized import parameterized  # type: ignore
 
-from distreqx.bijectors import AbstractLinearBijector, DiagLinear
+from distreqx.bijectors import (
+    AbstractFowardInverseBijector,
+    AbstractFwdLogDetJacBijector,
+    AbstractInvLogDetJacBijector,
+    AbstractLinearBijector,
+    DiagLinear,
+)
 from distreqx.distributions import MultivariateNormalFromBijector
 
 
-class MockLinear(AbstractLinearBijector):
-    """A mock linear bijector."""
+class MockLinear(
+    AbstractLinearBijector,
+    AbstractFowardInverseBijector,
+    AbstractFwdLogDetJacBijector,
+    AbstractInvLogDetJacBijector,
+    strict=True,
+):
+    _is_constant_jacobian: bool
+    _is_constant_log_det: bool
+    _event_dims: int
 
-    def __init__(self, event_dims: int):
-        super().__init__(event_dims)
+    def __init__(self, dims):
+        self._event_dims = dims
+        self._is_constant_jacobian = True
+        self._is_constant_log_det = True
 
     def forward_and_log_det(self, x):
         """Computes y = f(x) and log|det J(f)(x)|."""
         return x, jnp.zeros_like(x)[:-1]
+
+    def same_as(self, other):
+        raise NotImplementedError
+
+    def inverse_and_log_det(self, y):
+        raise NotImplementedError(
+            f"Bijector {self.name} does not implement `inverse_and_log_det`."
+        )
 
 
 class MultivariateNormalFromBijectorTest(TestCase):

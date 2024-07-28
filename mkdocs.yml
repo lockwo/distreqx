@@ -94,18 +94,18 @@ nav:
         - Binary MNIST VAE: 'examples/01_vae.ipynb'
     - API:
         - Distributions:
-            - 'api/distributions/_distribution.md'
-            - 'api/distributions/independent.md'
-            - 'api/distributions/bernoulli.md'
-            - 'api/distributions/categorical.md'
-            - 'api/distributions/transformed.md'
             - Gaussians:
               - 'api/distributions/normal.md'
               - 'api/distributions/mvn_diag.md'
               - 'api/distributions/mvn_from_bijector.md'
+              - 'api/distributions/mvn_tri.md'
+            - 'api/distributions/bernoulli.md'
+            - 'api/distributions/categorical.md'
+            - 'api/distributions/independent.md'
+            - 'api/distributions/mixture_same_family.md'
+            - 'api/distributions/transformed.md'
+            - 'api/distributions/_distribution.md'
         - Bijectors:
-            - 'api/bijectors/_bijector.md'
-            - 'api/bijectors/_linear.md'
             - 'api/bijectors/block.md'
             - 'api/bijectors/chain.md'
             - 'api/bijectors/diag_linear.md'
@@ -113,6 +113,8 @@ nav:
             - 'api/bijectors/shift.md'
             - 'api/bijectors/sigmoid.md'
             - 'api/bijectors/tanh.md'
+            - 'api/bijectors/triangular_linear.md'
+            - 'api/bijectors/_bijector.md'
         - Utilities:
             - 'api/utils/math.md'
     - Further Details:

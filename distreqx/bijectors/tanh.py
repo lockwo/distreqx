@@ -1,15 +1,17 @@
 """Tanh bijector."""
 
-from typing import Tuple
-
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array
 
-from ._bijector import AbstractBijector
+from ._bijector import (
+    AbstractBijector,
+    AbstractFowardInverseBijector,
+    AbstractInvLogDetJacBijector,
+)
 
 
-class Tanh(AbstractBijector):
+class Tanh(AbstractFowardInverseBijector, AbstractInvLogDetJacBijector, strict=True):
     """A bijector that computes the hyperbolic tangent.
 
     The log-determinant implementation in this bijector is more numerically stable
@@ -29,22 +31,26 @@ class Tanh(AbstractBijector):
     instead of `sample` followed by `log_prob`.
     """
 
-    def __init__(self):
-        super().__init__()
+    _is_constant_log_det: bool
+    _is_constant_jacobian: bool
+
+    def __init__(self) -> None:
+        self._is_constant_jacobian = False
+        self._is_constant_log_det = False
 
     def forward_log_det_jacobian(self, x: Array) -> Array:
         """Computes log|det J(f)(x)|."""
         return 2 * (jnp.log(2) - x - jax.nn.softplus(-2 * x))
 
-    def forward_and_log_det(self, x: Array) -> Tuple[Array, Array]:
+    def forward_and_log_det(self, x: Array) -> tuple[Array, Array]:
         """Computes y = f(x) and log|det J(f)(x)|."""
         return jnp.tanh(x), self.forward_log_det_jacobian(x)
 
-    def inverse_and_log_det(self, y: Array) -> Tuple[Array, Array]:
+    def inverse_and_log_det(self, y: Array) -> tuple[Array, Array]:
         """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
         x = jnp.arctanh(y)
         return x, -self.forward_log_det_jacobian(x)
 
     def same_as(self, other: AbstractBijector) -> bool:
         """Returns True if this bijector is guaranteed to be the same as `other`."""
-        return type(other) is Tanh  # pylint: disable=unidiomatic-typecheck
+        return type(other) is Tanh

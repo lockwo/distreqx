@@ -10,7 +10,12 @@ from ..utils.math import mul_exp, multiply_no_nan, normalize
 from ._distribution import AbstractDistribution
 
 
-class Categorical(AbstractDistribution, strict=True):
+class Categorical(
+    AbstractSTDDistribution,
+    AbstractSampleLogProbDistribution,
+    AbstractSurivialDistribution,
+    strict=True,
+):
     """Categorical distribution over integers.
 
     The Categorical distribution is parameterized by either probabilities (`probs`) or
@@ -31,7 +36,6 @@ class Categorical(AbstractDistribution, strict=True):
         - `probs`: Probability of each category. Only one of `logits` or `probs` can
             be specified.
         """
-        super().__init__()
         if (logits is None) == (probs is None):
             raise ValueError(
                 f"One and exactly one of `logits` and `probs` should be `None`, "
@@ -44,19 +48,19 @@ class Categorical(AbstractDistribution, strict=True):
         self._logits = None if logits is None else normalize(logits=logits)
 
     @property
-    def event_shape(self) -> tuple[int, ...]:
+    def event_shape(self):
         """Shape of event of distribution samples."""
-        if self._probs is not None:
-            return self._probs.shape[:-1]
-        assert self._logits is not None
-        return self._logits.shape[:-1]
+        return ()
 
     @property
     def logits(self) -> Array:
         """The logits for each event."""
         if self._logits is not None:
             return self._logits
-        assert self._probs is not None
+        if self._probs is None:
+            raise ValueError(
+                "_probs and _logits are None!"
+            )  # TODO: useless but needed for pyright
         return jnp.log(self._probs)
 
     @property
@@ -64,7 +68,10 @@ class Categorical(AbstractDistribution, strict=True):
         """The probabilities for each event."""
         if self._probs is not None:
             return self._probs
-        assert self._logits is not None
+        if self._logits is None:
+            raise ValueError(
+                "_probs and _logits are None!"
+            )  # TODO: useless but needed for pyright
         return jax.nn.softmax(self._logits, axis=-1)
 
     @property
@@ -72,7 +79,10 @@ class Categorical(AbstractDistribution, strict=True):
         """Number of categories."""
         if self._probs is not None:
             return self._probs.shape[-1]
-        assert self._logits is not None
+        if self._logits is None:
+            raise ValueError(
+                "_probs and _logits are None!"
+            )  # TODO: useless but needed for pyright
         return self._logits.shape[-1]
 
     def sample(self, key: PRNGKeyArray) -> Array:
@@ -108,7 +118,10 @@ class Categorical(AbstractDistribution, strict=True):
     def entropy(self) -> Array:
         """See `Distribution.entropy`."""
         if self._logits is None:
-            assert self._probs is not None
+            if self._probs is None:
+                raise ValueError(
+                    "_probs and _logits are None!"
+                )  # TODO: useless but needed for pyright
             log_probs = jnp.log(self._probs)
         else:
             log_probs = jax.nn.log_softmax(self._logits)
@@ -117,7 +130,10 @@ class Categorical(AbstractDistribution, strict=True):
     def mode(self) -> Array:
         """See `Distribution.mode`."""
         if self._logits is None:
-            assert self._probs is not None
+            if self._probs is None:
+                raise ValueError(
+                    "_probs and _logits are None!"
+                )  # TODO: useless but needed for pyright
             parameter = self.probs
         else:
             parameter = self.logits
@@ -144,6 +160,16 @@ class Categorical(AbstractDistribution, strict=True):
     def log_cdf(self, value: Array) -> Array:
         """See `Distribution.log_cdf`."""
         return jnp.log(self.cdf(value))
+      
+      
+    def median(self):
+        raise NotImplementedError
+
+    def variance(self):
+        raise NotImplementedError
+
+    def mean(self):
+        raise NotImplementedError
 
     def kl_divergence(self, other_dist, **kwargs) -> Array:
         """Calculates the KL divergence to another distribution.
@@ -154,10 +180,12 @@ class Categorical(AbstractDistribution, strict=True):
         - `kwargs`: Additional kwargs.
 
         **Returns:**
-
+        
         The KL divergence `KL(self || other_dist)`.
         """
         return _kl_divergence_categorical_categorical(self, other_dist)
+
+
 
 
 def _kl_divergence_categorical_categorical(
@@ -186,6 +214,7 @@ def _kl_divergence_categorical_categorical(
     """
     logits1 = dist1.logits
     logits2 = dist2.logits
+
     num_categories1 = logits1.shape[-1]
     num_categories2 = logits2.shape[-1]
 

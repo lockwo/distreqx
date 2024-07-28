@@ -8,7 +8,18 @@ from parameterized import parameterized  # type: ignore
 from distreqx.distributions import _distribution
 
 
-class DummyUnivariateDist(_distribution.AbstractDistribution):
+class AbstractAll(
+    _distribution.AbstractSurivialDistribution,
+    _distribution.AbstractSTDDistribution,
+    _distribution.AbstractSampleLogProbDistribution,
+    _distribution.AbstractCDFDistribution,
+    _distribution.AbstractProbDistribution,
+    strict=True,
+):
+    pass
+
+
+class DummyUnivariateDist(AbstractAll):
     """Dummy univariate distribution for testing."""
 
     def sample(self, key):
@@ -21,8 +32,29 @@ class DummyUnivariateDist(_distribution.AbstractDistribution):
     def event_shape(self):
         return (1,)
 
+    def entropy(self):
+        raise NotImplementedError
 
-class DummyMultivariateDist(_distribution.AbstractDistribution):
+    def kl_divergence(self, other_dist, **kwargs):
+        raise NotImplementedError
+
+    def log_cdf(self, value):
+        raise NotImplementedError
+
+    def mean(self):
+        raise NotImplementedError
+
+    def median(self):
+        raise NotImplementedError
+
+    def mode(self):
+        raise NotImplementedError
+
+    def variance(self):
+        raise NotImplementedError
+
+
+class DummyMultivariateDist(AbstractAll):
     """Dummy multivariate distribution for testing."""
 
     _dimension: tuple
@@ -36,6 +68,27 @@ class DummyMultivariateDist(_distribution.AbstractDistribution):
     @property
     def event_shape(self):
         return self._dimension
+
+    def entropy(self):
+        raise NotImplementedError
+
+    def kl_divergence(self, other_dist, **kwargs):
+        raise NotImplementedError
+
+    def log_cdf(self, value):
+        raise NotImplementedError
+
+    def mean(self):
+        raise NotImplementedError
+
+    def median(self):
+        raise NotImplementedError
+
+    def mode(self):
+        raise NotImplementedError
+
+    def variance(self):
+        raise NotImplementedError
 
 
 class DistributionTest(TestCase):

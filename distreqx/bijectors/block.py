@@ -1,14 +1,12 @@
 """Wrapper to turn independent Bijectors into block Bijectors."""
 
-from typing import Tuple
-
 from jaxtyping import Array
 
 from ..utils import sum_last
 from ._bijector import AbstractBijector
 
 
-class Block(AbstractBijector):
+class Block(AbstractBijector, strict=True):
     """A wrapper that promotes a bijector to a block bijector.
 
     A block bijector applies a bijector to a k-dimensional array of events, but
@@ -33,6 +31,8 @@ class Block(AbstractBijector):
 
     _ndims: int
     _bijector: AbstractBijector
+    _is_constant_jacobian: bool
+    _is_constant_log_det: bool
 
     def __init__(self, bijector: AbstractBijector, ndims: int):
         """Initializes a Block.
@@ -47,10 +47,8 @@ class Block(AbstractBijector):
             raise ValueError(f"`ndims` must be non-negative; got {ndims}.")
         self._bijector = bijector
         self._ndims = ndims
-        super().__init__(
-            is_constant_jacobian=self._bijector.is_constant_jacobian,
-            is_constant_log_det=self._bijector.is_constant_log_det,
-        )
+        self._is_constant_jacobian = self._bijector.is_constant_jacobian
+        self._is_constant_log_det = self._bijector.is_constant_log_det
 
     @property
     def bijector(self) -> AbstractBijector:
@@ -80,12 +78,12 @@ class Block(AbstractBijector):
         log_det = self._bijector.inverse_log_det_jacobian(y)
         return sum_last(log_det, self._ndims)
 
-    def forward_and_log_det(self, x: Array) -> Tuple[Array, Array]:
+    def forward_and_log_det(self, x: Array) -> tuple[Array, Array]:
         """Computes y = f(x) and log|det J(f)(x)|."""
         y, log_det = self._bijector.forward_and_log_det(x)
         return y, sum_last(log_det, self._ndims)
 
-    def inverse_and_log_det(self, y: Array) -> Tuple[Array, Array]:
+    def inverse_and_log_det(self, y: Array) -> tuple[Array, Array]:
         """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
         x, log_det = self._bijector.inverse_and_log_det(y)
         return x, sum_last(log_det, self._ndims)
