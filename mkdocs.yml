@@ -100,6 +100,7 @@ nav:
               - 'api/distributions/mvn_from_bijector.md'
               - 'api/distributions/mvn_tri.md'
             - 'api/distributions/bernoulli.md'
+            - 'api/distributions/categorical.md'
             - 'api/distributions/independent.md'
             - 'api/distributions/mixture_same_family.md'
             - 'api/distributions/transformed.md'

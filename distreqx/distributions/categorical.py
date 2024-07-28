@@ -1,4 +1,4 @@
-"Categorical distribution." ""
+"""Categorical distribution."""
 
 from typing import Optional, Union
 
@@ -7,11 +7,7 @@ import jax.numpy as jnp
 from jaxtyping import Array, PRNGKeyArray
 
 from ..utils.math import mul_exp, multiply_no_nan, normalize
-from ._distribution import (
-    AbstractSampleLogProbDistribution,
-    AbstractSTDDistribution,
-    AbstractSurivialDistribution,
-)
+from ._distribution import AbstractDistribution
 
 
 class Categorical(
@@ -20,14 +16,21 @@ class Categorical(
     AbstractSurivialDistribution,
     strict=True,
 ):
-    """Categorical distribution."""
+    """Categorical distribution over integers.
+
+    The Categorical distribution is parameterized by either probabilities (`probs`) or
+    unormalized log-probabilities (`logits`) of a set of `K` classes.
+    It is defined over the integers `{0, 1, ..., K-1}`.
+    """
 
     _logits: Union[Array, None]
     _probs: Union[Array, None]
 
     def __init__(self, logits: Optional[Array] = None, probs: Optional[Array] = None):
         """Initializes a Categorical distribution.
+
         **Arguments:**
+
         - `logits`: Logit transform of the probability of each category. Only one
             of `logits` or `probs` can be specified.
         - `probs`: Probability of each category. Only one of `logits` or `probs` can
@@ -157,21 +160,8 @@ class Categorical(
     def log_cdf(self, value: Array) -> Array:
         """See `Distribution.log_cdf`."""
         return jnp.log(self.cdf(value))
-
-    def logits_parameter(self) -> Array:
-        """Wrapper for `logits` property, for TFP API compatibility."""
-        return self.logits
-
-    def kl_divergence(self, other_dist, **kwargs) -> Array:
-        """Calculates the KL divergence to another distribution.
-        **Arguments:**
-        - `other_dist`: A compatible disteqx distribution.
-        - `kwargs`: Additional kwargs.
-        **Returns:**
-        The KL divergence `KL(self || other_dist)`.
-        """
-        return _kl_divergence_categorical_categorical(self, other_dist)
-
+      
+      
     def median(self):
         raise NotImplementedError
 
@@ -181,6 +171,22 @@ class Categorical(
     def mean(self):
         raise NotImplementedError
 
+    def kl_divergence(self, other_dist, **kwargs) -> Array:
+        """Calculates the KL divergence to another distribution.
+
+        **Arguments:**
+
+        - `other_dist`: A compatible disteqx distribution.
+        - `kwargs`: Additional kwargs.
+
+        **Returns:**
+        
+        The KL divergence `KL(self || other_dist)`.
+        """
+        return _kl_divergence_categorical_categorical(self, other_dist)
+
+
+
 
 def _kl_divergence_categorical_categorical(
     dist1: Categorical,
@@ -189,18 +195,26 @@ def _kl_divergence_categorical_categorical(
     **unused_kwargs,
 ) -> Array:
     """Obtains the KL divergence `KL(dist1 || dist2)` between two Categoricals.
+
     The KL computation takes into account that `0 * log(0) = 0`; therefore,
     `dist1` may have zeros in its probability vector.
+
     **Arguments:**
+
         - `dist1`: A Categorical distribution.
         - `dist2`: A Categorical distribution.
+
     **Returns:**
+
     Batchwise `KL(dist1 || dist2)`.
+
     **Raises:**
+
     ValueError if the two distributions have different number of categories.
     """
-    logits1 = dist1.logits_parameter()
-    logits2 = dist2.logits_parameter()
+    logits1 = dist1.logits
+    logits2 = dist2.logits
+
     num_categories1 = logits1.shape[-1]
     num_categories2 = logits2.shape[-1]
 
