@@ -207,7 +207,7 @@ def _kl_divergence_categorical_categorical(
 
     **Returns:**
 
-    Batchwise `KL(dist1 || dist2)`.
+    `KL(dist1 || dist2)`.
 
     **Raises:**
 

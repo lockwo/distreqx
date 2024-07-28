@@ -24,7 +24,7 @@ class MixtureSameFamily(
     AbstractCDFDistribution,
     strict=True,
 ):
-    """Mixture with components provided from a single batched distribution."""
+    """Mixture with components provided from a single vmapped distribution."""
 
     _mixture_distribution: Categorical
     _components_distribution: AbstractDistribution
@@ -126,9 +126,33 @@ class MixtureSameFamily(
         )
 
     def posterior_marginal(self, observation: Array) -> Categorical:
+        """
+        Generate the posterior distribution given a datapoint.
+
+        **Arguments:**
+
+            - `observation`: the data point to compute the distribution over
+
+        **Returns:**
+
+        The computed categorical distribution
+
+        """
         return Categorical(logits=self._per_mixture_component_log_prob(observation))
 
     def posterior_mode(self, observation: Array) -> Array:
+        """
+        Compute the most likely component a data point falls into.
+
+        **Arguments:**
+
+            - `observation`: the data point to compute the mode of
+
+        **Returns:**
+
+        The computed mode
+
+        """
         return jnp.argmax(self._per_mixture_component_log_prob(observation), axis=-1)
 
     def median(self):
