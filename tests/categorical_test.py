@@ -243,7 +243,7 @@ class CategoricalTest(TestCase):
         # `0.`, so its log is innacurate: it gives `-36.7` instead of `-np.inf`.
         np.testing.assert_allclose(
             dist.log_survival_function(value),
-            jnp.log(1.0 - jnp.cumsum(normalized_probs)),
+            jnp.log(1.0 - jnp.cumsum(normalized_probs)).at[-1].set(-jnp.inf),
             atol=1e-5,
         )
 
