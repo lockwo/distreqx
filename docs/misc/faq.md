@@ -11,3 +11,7 @@ The simple answer to that question is "I tried". Distrax is a the product of a l
 ## Why use equinox?
 
 The `Jittable` class is basically an equinox module (if you squint) and while we could reimplement a custom Module class (like GPJax does), why reinvent the wheel? Equinox is actively being developed and should it become inactive is still possible to maintain.
+
+## What about flowjax?
+
+When I started this project, I was unaware of [flowjax](https://github.com/danielward27/flowjax). Although flowjax does provide a lot of advanced tooling for NFs and bijections, there are notable differences. `distreqx` is less specialized and provides a broader baseline set of tools (e.g. distributions). flowjax has more advanced NF tools. `distreqx` also adheres to an abstract/final design pattern from the development side. flowjax also approaches the concept of "transformed" distributions in a different manner.

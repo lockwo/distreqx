@@ -3,7 +3,7 @@
 
 distreqx (pronounced "dist-rex") is a [JAX](https://github.com/google/jax)-based library providing implementations of distributions, bijectors, and tools for statistical and probabilistic machine learning with all benefits of jax (native GPU/TPU acceleration, differentiability, vectorization, distributing workloads, XLA compilation, etc.).
 
-The origin of this repo is a reimplementation of [distrax](https://github.com/google-deepmind/distrax), (which is a subset of [TensorFlow Probability (TFP)](https://github.com/tensorflow/probability), with some new features and emphasis on jax compatibility) using [equinox](https://github.com/patrick-kidger/equinox). As a result, much of the original code/comments/documentation/tests are directly taken or adapted from distrax (original distrax copyright available at end of README.)
+The origin of this package is a reimplementation of [distrax](https://github.com/google-deepmind/distrax), (which is a subset of [TensorFlow Probability (TFP)](https://github.com/tensorflow/probability), with some new features and emphasis on jax compatibility) using [equinox](https://github.com/patrick-kidger/equinox). As a result, much of the original code/comments/documentation/tests are directly taken or adapted from distrax (original distrax copyright available at end of README.)
 
 Current features include:
 
@@ -28,7 +28,17 @@ Available at https://lockwo.github.io/distreqx/.
 ## Quick example
 
 ```python
-from distreqx import
+from distreqx import distributions
+
+key = jax.random.PRNGKey(1234)
+mu = jnp.array([-1., 0., 1.])
+sigma = jnp.array([0.1, 0.2, 0.3])
+
+dist = distributions.MultivariateNormalDiag(mu, sigma)
+
+samples = dist_distrax.sample(key)
+
+print(dist_distrax.log_prob(samples))
 ```
 
 ## Differences with Distrax
@@ -43,6 +53,12 @@ from distreqx import
 If you found this library useful in academic research, please cite: 
 
 ```bibtex
+@software{lockwood2024distreqx,
+  title = {distreqx: Distributions and Bijectors in Jax},
+  author = {Owen Lockwood},
+  url = {https://github.com/lockwo/distreqx},
+  doi = {[tbd]},
+}
 ```
 
 (Also consider starring the project on GitHub.)
@@ -50,6 +66,8 @@ If you found this library useful in academic research, please cite:
 ## See also: other libraries in the JAX ecosystem
 
 [GPJax](https://github.com/JaxGaussianProcesses/GPJax): Gaussian processes in JAX. 
+
+[flowjax](https://github.com/danielward27/flowjax): Normalizing flows in JAX.
 
 [Optimistix](https://github.com/patrick-kidger/optimistix): root finding, minimisation, fixed points, and least squares.  
 
