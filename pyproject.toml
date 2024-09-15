@@ -28,8 +28,8 @@ urls = {repository = "https://github.com/lockwo/distreqx"}
 dependencies = ["jax>=0.4.11", "jaxtyping>=0.2.20", "equinox>=0.11.0"]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
 
 [tool.hatch.build]
 include = ["distreqx/*"]
