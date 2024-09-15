@@ -34,6 +34,8 @@ Available at https://lockwo.github.io/distreqx/.
 ## Quick example
 
 ```python
+import jax
+from jax import numpy as jnp
 from distreqx import distributions
 
 key = jax.random.PRNGKey(1234)
@@ -42,9 +44,9 @@ sigma = jnp.array([0.1, 0.2, 0.3])
 
 dist = distributions.MultivariateNormalDiag(mu, sigma)
 
-samples = dist_distrax.sample(key)
+samples = dist.sample(key)
 
-print(dist_distrax.log_prob(samples))
+print(dist.log_prob(samples))
 ```
 
 ## Differences with Distrax
