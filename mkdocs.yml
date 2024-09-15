@@ -93,6 +93,7 @@ nav:
     - Examples:
         - Binary MNIST VAE: 'examples/01_vae.ipynb'
         - GMM/BMM: 'examples/02_mixture_models.ipynb'
+        - Normalizing Flows: 'examples/03_normalizing_flow.ipynb'
     - API:
         - Distributions:
             - Gaussians:
