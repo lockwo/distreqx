@@ -14,6 +14,12 @@ Current features include:
 ## Installation
 
 ```
+pip install distreqx
+```
+
+or
+
+```
 git clone https://github.com/lockwo/distreqx.git
 cd distreqx
 pip install -e .
