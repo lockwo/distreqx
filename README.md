@@ -1,6 +1,8 @@
 <h1 align='center'>distreqx</h1>
 <h2 align='center'>Distrax + Equinox = distreqx. Easy Pytree probability distributions and bijectors.</h2>
 
+[![DOI](https://zenodo.org/badge/789896382.svg)](https://zenodo.org/doi/10.5281/zenodo.13764511)
+
 distreqx (pronounced "dist-rex") is a [JAX](https://github.com/google/jax)-based library providing implementations of distributions, bijectors, and tools for statistical and probabilistic machine learning with all benefits of jax (native GPU/TPU acceleration, differentiability, vectorization, distributing workloads, XLA compilation, etc.).
 
 The origin of this package is a reimplementation of [distrax](https://github.com/google-deepmind/distrax), (which is a subset of [TensorFlow Probability (TFP)](https://github.com/tensorflow/probability), with some new features and emphasis on jax compatibility) using [equinox](https://github.com/patrick-kidger/equinox). As a result, much of the original code/comments/documentation/tests are directly taken or adapted from distrax (original distrax copyright available at end of README.)
@@ -65,7 +67,7 @@ If you found this library useful in academic research, please cite:
   title = {distreqx: Distributions and Bijectors in Jax},
   author = {Owen Lockwood},
   url = {https://github.com/lockwo/distreqx},
-  doi = {[tbd]},
+  doi = {10.5281/zenodo.13764512},
 }
 ```
 
