@@ -152,7 +152,9 @@ class OneHotCategoricalTest(TestCase):
         samples = samples[0] if method == "sample_and_log_prob" else samples
         self.assertEqual(samples.shape, (n_samples,) + probs.shape)
         samples_arg = jnp.argmax(samples, axis=-1)
-        self.assertTrue(np.all(np.logical_and(samples_arg >= 0, samples_arg < num_categories)))
+        self.assertTrue(
+            np.all(np.logical_and(samples_arg >= 0, samples_arg < num_categories))
+        )
         np.testing.assert_array_equal(jnp.floor(samples_arg), samples_arg)
         np.testing.assert_allclose(np.mean(samples, axis=0), probs, rtol=0.1)
 
@@ -212,9 +214,7 @@ class OneHotCategoricalTest(TestCase):
         probs = jnp.asarray([0.2, 0.3, 0.5])
         dist = self.dist(probs=probs)
         value = jnp.asarray([0, 0, 0])
-        np.testing.assert_allclose(
-            dist.prob(value), np.asarray(0.0), atol=1e-5
-        )
+        np.testing.assert_allclose(dist.prob(value), np.asarray(0.0), atol=1e-5)
         self.assertTrue(np.all(dist.log_prob(value) == 0.0))
 
     @parameterized.expand(
