@@ -1,4 +1,4 @@
-"""Categorical distribution."""
+"""One hot categorical distribution."""
 
 from typing import Optional, Union
 
@@ -14,24 +14,19 @@ from ._distribution import (
 )
 
 
-class Categorical(
+class OneHotCategorical(
     AbstractSTDDistribution,
     AbstractSampleLogProbDistribution,
     AbstractSurivialDistribution,
     strict=True,
 ):
-    """Categorical distribution over integers.
-
-    The Categorical distribution is parameterized by either probabilities (`probs`) or
-    unormalized log-probabilities (`logits`) of a set of `K` classes.
-    It is defined over the integers `{0, 1, ..., K-1}`.
-    """
+    """OneHotCategorical distribution."""
 
     _logits: Union[Array, None]
     _probs: Union[Array, None]
 
     def __init__(self, logits: Optional[Array] = None, probs: Optional[Array] = None):
-        """Initializes a Categorical distribution.
+        """Initializes a OneHotCategorical distribution.
 
         **Arguments:**
 
@@ -54,7 +49,7 @@ class Categorical(
     @property
     def event_shape(self) -> tuple:
         """Shape of event of distribution samples."""
-        return ()
+        return (self.num_categories,)
 
     @property
     def logits(self) -> Array:
@@ -92,32 +87,22 @@ class Categorical(
     def sample(self, key: PRNGKeyArray) -> Array:
         """See `Distribution.sample`."""
         is_valid = jnp.logical_and(
-            jnp.all(jnp.isfinite(self.probs), axis=-1),
-            jnp.all(self.probs >= 0, axis=-1),
+            jnp.all(jnp.isfinite(self.probs), axis=-1, keepdims=True),
+            jnp.all(self.probs >= 0, axis=-1, keepdims=True),
         )
-        draws = jax.random.categorical(key=key, logits=self.logits, axis=-1).astype(
-            "int8"
-        )
-        return jnp.where(is_valid, draws, jnp.ones_like(draws) * -1)
+        draws = jax.random.categorical(key=key, logits=self.logits, axis=-1)
+        draws_one_hot = jax.nn.one_hot(draws, num_classes=self.num_categories)
+        return jnp.where(
+            is_valid, draws_one_hot, jnp.ones_like(draws_one_hot) * -1
+        ).astype(jnp.int8)
 
     def log_prob(self, value: Array) -> Array:
         """See `Distribution.log_prob`."""
-        value_one_hot = jax.nn.one_hot(
-            value, self.num_categories, dtype=self.logits.dtype
-        )
-        mask_outside_domain = jnp.logical_or(value < 0, value > self.num_categories - 1)
-        return jnp.where(
-            mask_outside_domain,
-            -jnp.inf,
-            jnp.sum(multiply_no_nan(self.logits, value_one_hot), axis=-1),
-        )
+        return jnp.sum(multiply_no_nan(self.logits, value), axis=-1)
 
     def prob(self, value: Array) -> Array:
         """See `Distribution.prob`."""
-        value_one_hot = jax.nn.one_hot(
-            value, self.num_categories, dtype=self.probs.dtype
-        )
-        return jnp.sum(multiply_no_nan(self.probs, value_one_hot), axis=-1)
+        return jnp.sum(multiply_no_nan(self.probs, value), axis=-1)
 
     def entropy(self) -> Array:
         """See `Distribution.entropy`."""
@@ -133,33 +118,14 @@ class Categorical(
 
     def mode(self) -> Array:
         """See `Distribution.mode`."""
-        if self._logits is None:
-            if self._probs is None:
-                raise ValueError(
-                    "_probs and _logits are None!"
-                )  # TODO: useless but needed for pyright
-            parameter = self.probs
-        else:
-            parameter = self.logits
-        return jnp.argmax(parameter, axis=-1).astype("int8")
+        preferences = self._probs if self._logits is None else self._logits
+        assert preferences is not None
+        greedy_index = jnp.argmax(preferences, axis=-1)
+        return jax.nn.one_hot(greedy_index, self.num_categories)
 
     def cdf(self, value: Array) -> Array:
         """See `Distribution.cdf`."""
-        # For value < 0 the output should be zero because support = {0, ..., K-1}.
-        should_be_zero = value < 0
-        # For value >= K-1 the output should be one. Explicitly accounting for this
-        # case addresses potential numerical issues that may arise when evaluating
-        # derived methods (mainly, `log_survival_function`) for `value >= K-1`.
-        should_be_one = value >= self.num_categories - 1
-        # Will use value as an index below, so clip it to {0, ..., K-1}.
-        value = jnp.clip(value, 0, self.num_categories - 1)
-        value_one_hot = jax.nn.one_hot(
-            value, self.num_categories, dtype=self.probs.dtype
-        )
-        cdf = jnp.sum(
-            multiply_no_nan(jnp.cumsum(self.probs, axis=-1), value_one_hot), axis=-1
-        )
-        return jnp.where(should_be_zero, 0.0, jnp.where(should_be_one, 1.0, cdf))
+        return jnp.sum(multiply_no_nan(jnp.cumsum(self.probs, axis=-1), value), axis=-1)
 
     def log_cdf(self, value: Array) -> Array:
         """See `Distribution.log_cdf`."""
@@ -192,7 +158,7 @@ class Categorical(
 
         ValueError if the two distributions have different number of categories.
         """
-        if not isinstance(other_dist, Categorical):
+        if not isinstance(other_dist, OneHotCategorical):
             raise TypeError("Only valid KL for both categoricals.")
         logits1 = self.logits
         logits2 = other_dist.logits

@@ -17,6 +17,7 @@ from .mvn_from_bijector import (
 )
 from .mvn_tri import MultivariateNormalTri as MultivariateNormalTri
 from .normal import Normal as Normal
+from .one_hot_categorical import OneHotCategorical as OneHotCategorical
 from .transformed import (
     AbstractTransformed as AbstractTransformed,
     Transformed as Transformed,
