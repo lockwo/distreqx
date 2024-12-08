@@ -88,12 +88,13 @@ class OneHotCategorical(
         """See `Distribution.sample`."""
         is_valid = jnp.logical_and(
             jnp.all(jnp.isfinite(self.probs), axis=-1, keepdims=True),
-            jnp.all(self.probs >= 0, axis=-1, keepdims=True))
-        draws = jax.random.categorical(
-            key=key, logits=self.logits, axis=-1)
-        draws_one_hot = jax.nn.one_hot(
-            draws, num_classes=self.num_categories)
-        return jnp.where(is_valid, draws_one_hot, jnp.ones_like(draws_one_hot) * -1).astype(jnp.int8)
+            jnp.all(self.probs >= 0, axis=-1, keepdims=True),
+        )
+        draws = jax.random.categorical(key=key, logits=self.logits, axis=-1)
+        draws_one_hot = jax.nn.one_hot(draws, num_classes=self.num_categories)
+        return jnp.where(
+            is_valid, draws_one_hot, jnp.ones_like(draws_one_hot) * -1
+        ).astype(jnp.int8)
 
     def log_prob(self, value: Array) -> Array:
         """See `Distribution.log_prob`."""
