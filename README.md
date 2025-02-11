@@ -87,7 +87,7 @@ If you found this library useful in academic research, please cite:
 
 [diffrax](https://github.com/patrick-kidger/diffrax): numerical differential equation solvers in JAX. Autodifferentiable and GPU-capable.
 
-[Awesome JAX](https://github.com/n2cholas/awesome-jax): a longer list of other JAX projects.  
+[Awesome JAX](https://github.com/lockwo/awesome-jax): a longer list of other JAX projects.  
 
 ## Original distrax copyright
 
