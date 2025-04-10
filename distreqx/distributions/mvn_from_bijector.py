@@ -107,7 +107,30 @@ class AbstractMultivariateNormalFromBijector(AbstractTransformed, strict=True):
 
         The KL divergence `KL(self || other_dist)`.
         """
-        return _kl_divergence_mvn_mvn(self, other_dist)
+        dist1 = self
+        dist2 = other_dist
+
+        num_dims = dist1.event_shape[-1]
+
+        # Calculation is based on:
+        # https://github.com/tensorflow/probability/blob/v0.12.1/tensorflow_probability/python/distributions/mvn_linear_operator.py#L384
+        # If C_1 = AA.T, C_2 = BB.T, then
+        #   tr[inv(C_2) C_1] = ||inv(B) A||_F^2
+        # where ||.||_F^2 is the squared Frobenius norm.
+        diff_lob_abs_det = _log_abs_determinant(dist2) - _log_abs_determinant(dist1)
+        if _has_diagonal_scale(dist1) and _has_diagonal_scale(dist2):
+            # This avoids instantiating the full scale matrix when it is diagonal.
+            b_inv_a = jnp.expand_dims(dist1.stddev() / dist2.stddev(), axis=-1)
+        else:
+            b_inv_a = _inv_scale_operator(dist2)(_scale_matrix(dist1))
+        diff_mean_expanded = jnp.expand_dims(dist2.mean() - dist1.mean(), axis=-1)
+        b_inv_diff_mean = _inv_scale_operator(dist2)(diff_mean_expanded)
+        kl_divergence = diff_lob_abs_det + 0.5 * (
+            -num_dims
+            + _squared_frobenius_norm(b_inv_a)
+            + _squared_frobenius_norm(b_inv_diff_mean)
+        )
+        return kl_divergence
 
 
 class MultivariateNormalFromBijector(AbstractMultivariateNormalFromBijector):
@@ -192,43 +215,3 @@ def _has_diagonal_scale(d: AbstractMultivariateNormalFromBijector) -> bool:
     ):
         return True
     return False
-
-
-def _kl_divergence_mvn_mvn(
-    dist1: AbstractMultivariateNormalFromBijector,
-    dist2: AbstractMultivariateNormalFromBijector,
-    *unused_args,
-    **unused_kwargs,
-) -> Array:
-    """Divergence KL(dist1 || dist2) between multivariate normal distributions.
-
-    **Arguments:**
-
-    - `dist1`: A multivariate normal distribution.
-    - `dist2`: A multivariate normal distribution.
-
-    **Returns:**
-
-    -  `KL(dist1 || dist2)`.
-    """
-    num_dims = dist1.event_shape[-1]
-
-    # Calculation is based on:
-    # https://github.com/tensorflow/probability/blob/v0.12.1/tensorflow_probability/python/distributions/mvn_linear_operator.py#L384
-    # If C_1 = AA.T, C_2 = BB.T, then
-    #   tr[inv(C_2) C_1] = ||inv(B) A||_F^2
-    # where ||.||_F^2 is the squared Frobenius norm.
-    diff_lob_abs_det = _log_abs_determinant(dist2) - _log_abs_determinant(dist1)
-    if _has_diagonal_scale(dist1) and _has_diagonal_scale(dist2):
-        # This avoids instantiating the full scale matrix when it is diagonal.
-        b_inv_a = jnp.expand_dims(dist1.stddev() / dist2.stddev(), axis=-1)
-    else:
-        b_inv_a = _inv_scale_operator(dist2)(_scale_matrix(dist1))
-    diff_mean_expanded = jnp.expand_dims(dist2.mean() - dist1.mean(), axis=-1)
-    b_inv_diff_mean = _inv_scale_operator(dist2)(diff_mean_expanded)
-    kl_divergence = diff_lob_abs_det + 0.5 * (
-        -num_dims
-        + _squared_frobenius_norm(b_inv_a)
-        + _squared_frobenius_norm(b_inv_diff_mean)
-    )
-    return kl_divergence

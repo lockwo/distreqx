@@ -153,7 +153,18 @@ class Bernoulli(
 
         The KL divergence `KL(self || other_dist)`.
         """
-        return _kl_divergence_bernoulli_bernoulli(self, other_dist)
+        dist1 = self
+        dist2 = other_dist
+        one_minus_p1, p1, log_one_minus_p1, log_p1 = _probs_and_log_probs(dist1)
+        _, _, log_one_minus_p2, log_p2 = _probs_and_log_probs(dist2)
+        # KL[a || b] = Pa * Log[Pa / Pb] + (1 - Pa) * Log[(1 - Pa) / (1 - Pb)]
+        # Multiply each factor individually to avoid Inf - Inf
+        return (
+            multiply_no_nan(log_p1, p1)
+            - multiply_no_nan(log_p2, p1)
+            + multiply_no_nan(log_one_minus_p1, one_minus_p1)
+            - multiply_no_nan(log_one_minus_p2, one_minus_p1)
+        )
 
 
 def _probs_and_log_probs(
@@ -180,22 +191,3 @@ def _probs_and_log_probs(
         log_probs0 = -jax.nn.softplus(dist._logits)
         log_probs1 = -jax.nn.softplus(-1.0 * dist._logits)
     return probs0, probs1, log_probs0, log_probs1
-
-
-def _kl_divergence_bernoulli_bernoulli(
-    dist1: Bernoulli,
-    dist2: Bernoulli,
-    *unused_args,
-    **unused_kwargs,
-) -> Array:
-    """KL divergence `KL(dist1 || dist2)` between two Bernoulli distributions."""
-    one_minus_p1, p1, log_one_minus_p1, log_p1 = _probs_and_log_probs(dist1)
-    _, _, log_one_minus_p2, log_p2 = _probs_and_log_probs(dist2)
-    # KL[a || b] = Pa * Log[Pa / Pb] + (1 - Pa) * Log[(1 - Pa) / (1 - Pb)]
-    # Multiply each factor individually to avoid Inf - Inf
-    return (
-        multiply_no_nan(log_p1, p1)
-        - multiply_no_nan(log_p2, p1)
-        + multiply_no_nan(log_one_minus_p1, one_minus_p1)
-        - multiply_no_nan(log_one_minus_p2, one_minus_p1)
-    )
