@@ -153,42 +153,6 @@ class AbstractTransformed(
             )
 
 
-def _kl_divergence_transformed_transformed(
-    dist1: AbstractTransformed,
-    dist2: AbstractTransformed,
-    *unused_args,
-    input_hint: Optional[Array] = None,
-    **unused_kwargs,
-) -> Array:
-    if dist1.distribution.event_shape != dist2.distribution.event_shape:
-        raise ValueError(
-            f"The two base distributions do not have the same event shape: "
-            f"{dist1.distribution.event_shape} and "
-            f"{dist2.distribution.event_shape}."
-        )
-
-    bij1 = dist1.bijector
-    bij2 = dist2.bijector
-
-    # Check if the bijectors are different.
-    if bij1 != bij2 and not bij1.same_as(bij2):
-        if input_hint is None:
-            input_hint = jnp.zeros(
-                dist1.distribution.event_shape, dtype=dist1.distribution.dtype
-            )
-        jaxpr_bij1 = jax.make_jaxpr(bij1.forward)(input_hint).jaxpr
-        jaxpr_bij2 = jax.make_jaxpr(bij2.forward)(input_hint).jaxpr
-        if str(jaxpr_bij1) != str(jaxpr_bij2):
-            raise NotImplementedError(
-                f"The KL divergence cannot be obtained because it is not possible to "
-                f"guarantee that the bijectors {dist1.bijector.name} and "
-                f"{dist2.bijector.name} of the Transformed distributions are "
-                f"equal. If possible, use the same instance of a distreqx bijector."
-            )
-
-    return dist1.distribution.kl_divergence(dist2.distribution)
-
-
 class Transformed(AbstractTransformed, AbstractSTDDistribution, strict=True):
     """Distribution of a random variable transformed by a bijective function.
 
@@ -308,4 +272,33 @@ class Transformed(AbstractTransformed, AbstractSTDDistribution, strict=True):
         - `NotImplementedError`: If bijectors are not known to be equal.
         - `ValueError`: If the base distributions do not have the same `event_shape`.
         """
-        return _kl_divergence_transformed_transformed(self, other_dist, **kwargs)
+        dist1 = self
+        dist2 = other_dist
+        input_hint = kwargs.get("input_hint", None)
+        if dist1.distribution.event_shape != dist2.distribution.event_shape:
+            raise ValueError(
+                f"The two base distributions do not have the same event shape: "
+                f"{dist1.distribution.event_shape} and "
+                f"{dist2.distribution.event_shape}."
+            )
+
+        bij1 = dist1.bijector
+        bij2 = dist2.bijector
+
+        # Check if the bijectors are different.
+        if bij1 != bij2 and not bij1.same_as(bij2):
+            if input_hint is None:
+                input_hint = jnp.zeros(
+                    dist1.distribution.event_shape, dtype=dist1.distribution.dtype
+                )
+            jaxpr_bij1 = jax.make_jaxpr(bij1.forward)(input_hint).jaxpr
+            jaxpr_bij2 = jax.make_jaxpr(bij2.forward)(input_hint).jaxpr
+            if str(jaxpr_bij1) != str(jaxpr_bij2):
+                raise NotImplementedError(
+                    f"The KL divergence cannot be obtained because it is not possible "
+                    "to guarantee that the bijectors {dist1.bijector.name} and "
+                    f"{dist2.bijector.name} of the Transformed distributions are "
+                    f"equal. If possible, use the same instance of a distreqx bijector."
+                )
+
+        return dist1.distribution.kl_divergence(dist2.distribution)

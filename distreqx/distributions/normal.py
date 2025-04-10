@@ -123,27 +123,11 @@ class Normal(AbstractProbDistribution, strict=True):
 
         The KL divergence `KL(self || other_dist)`.
         """
-        return _kl_divergence_normal_normal(self, other_dist)
-
-
-def _kl_divergence_normal_normal(
-    dist1: Normal,
-    dist2: Normal,
-    *unused_args,
-    **unused_kwargs,
-) -> Array:
-    """Obtain the batched KL divergence KL(dist1 || dist2) between two Normals.
-
-    **Arguments:**
-    - `dist1`: A Normal distribution.
-    - `dist2`: A Normal distribution.
-
-    **Returns:**
-    - `KL(dist1 || dist2)`.
-    """
-    diff_log_scale = jnp.log(dist1.scale) - jnp.log(dist2.scale)
-    return (
-        0.5 * jnp.square(dist1.loc / dist2.scale - dist2.loc / dist2.scale)
-        + 0.5 * jnp.expm1(2.0 * diff_log_scale)
-        - diff_log_scale
-    )
+        dist1 = self
+        dist2 = other_dist
+        diff_log_scale = jnp.log(dist1.scale) - jnp.log(dist2.scale)
+        return (
+            0.5 * jnp.square(dist1.loc / dist2.scale - dist2.loc / dist2.scale)
+            + 0.5 * jnp.expm1(2.0 * diff_log_scale)
+            - diff_log_scale
+        )

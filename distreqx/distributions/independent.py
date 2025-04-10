@@ -104,42 +104,24 @@ class Independent(
 
         The KL divergence `KL(self || other_dist)`.
         """
-        return _kl_divergence_independent_independent(self, other_dist)
+        dist1 = self
+        dist2 = other_dist
+        p = dist1.distribution
+        q = dist2.distribution
 
-
-def _kl_divergence_independent_independent(
-    dist1: Independent,
-    dist2: Independent,
-    *args,
-    **kwargs,
-) -> Array:
-    """Batched KL divergence `KL(dist1 || dist2)` for Independent distributions.
-
-    **Arguments:**
-    - `dist1`: instance of an Independent distribution.
-    - dist2`: instance of an Independent distribution.
-    - `*args`: Additional args.
-    - `**kwargs`: Additional kwargs.
-
-    **Returns:**
-    - `KL(dist1 || dist2)`
-    """
-    p = dist1.distribution
-    q = dist2.distribution
-
-    if dist1.event_shape == dist2.event_shape:
-        if p.event_shape == q.event_shape:
-            kl_divergence = _reduce_helper(p.kl_divergence(q))
+        if dist1.event_shape == dist2.event_shape:
+            if p.event_shape == q.event_shape:
+                kl_divergence = _reduce_helper(p.kl_divergence(q))
+            else:
+                raise NotImplementedError(
+                    f"KL between Independents whose inner distributions have different "
+                    f"event shapes is not supported: obtained {p.event_shape} and "
+                    f"{q.event_shape}."
+                )
         else:
-            raise NotImplementedError(
-                f"KL between Independents whose inner distributions have different "
-                f"event shapes is not supported: obtained {p.event_shape} and "
-                f"{q.event_shape}."
+            raise ValueError(
+                f"Event shapes {dist1.event_shape} and {dist2.event_shape}"
+                f" do not match."
             )
-    else:
-        raise ValueError(
-            f"Event shapes {dist1.event_shape} and {dist2.event_shape}"
-            f" do not match."
-        )
 
-    return kl_divergence
+        return kl_divergence
