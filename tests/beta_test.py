@@ -17,7 +17,10 @@ class BetaTest(TestCase):
 
     @parameterized.expand(
         [
-            ("0d params", (),),
+            (
+                "0d params",
+                (),
+            ),
             ("1d params", (4,)),
             ("2d params", (3, 4)),
         ]
@@ -46,8 +49,10 @@ class BetaTest(TestCase):
         alpha_arr = np.asarray(alpha)
         beta_arr = np.asarray(beta)
         expected_mean = alpha_arr / (alpha_arr + beta_arr)
-        expected_var = alpha_arr * beta_arr / (
-            np.square(alpha_arr + beta_arr) * (alpha_arr + beta_arr + 1.0)
+        expected_var = (
+            alpha_arr
+            * beta_arr
+            / (np.square(alpha_arr + beta_arr) * (alpha_arr + beta_arr + 1.0))
         )
         np.testing.assert_allclose(dist.mean(), expected_mean, rtol=1e-6)
         np.testing.assert_allclose(dist.variance(), expected_var, rtol=1e-6)

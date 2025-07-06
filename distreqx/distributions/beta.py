@@ -1,16 +1,17 @@
 """Beta distribution."""
 
 from typing import Union
+
 import jax
 import jax.numpy as jnp
-from jaxtyping import Float, Array, PRNGKeyArray
+from jaxtyping import Array, Float, PRNGKeyArray
 
 from ..utils.math import log_beta
 from ._distribution import (
+    AbstractProbDistribution,
     AbstractSampleLogProbDistribution,
     AbstractSTDDistribution,
     AbstractSurvivalDistribution,
-    AbstractProbDistribution,
 )
 
 
