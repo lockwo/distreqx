@@ -12,12 +12,12 @@ from ._distribution import (
     AbstractDistribution,
     AbstractProbDistribution,
     AbstractSTDDistribution,
-    AbstractSurivialDistribution,
+    AbstractSurvivalDistribution,
 )
 
 
 class AbstractTransformed(
-    AbstractSurivialDistribution,
+    AbstractSurvivalDistribution,
     AbstractProbDistribution,
     strict=True,
 ):

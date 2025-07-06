@@ -11,7 +11,7 @@ from ._distribution import (
     AbstractProbDistribution,
     AbstractSampleLogProbDistribution,
     AbstractSTDDistribution,
-    AbstractSurivialDistribution,
+    AbstractSurvivalDistribution,
 )
 from .categorical import Categorical
 
@@ -19,7 +19,7 @@ from .categorical import Categorical
 class MixtureSameFamily(
     AbstractSTDDistribution,
     AbstractSampleLogProbDistribution,
-    AbstractSurivialDistribution,
+    AbstractSurvivalDistribution,
     AbstractProbDistribution,
     AbstractCDFDistribution,
     strict=True,

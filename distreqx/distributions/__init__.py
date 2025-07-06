@@ -4,9 +4,10 @@ from ._distribution import (
     AbstractProbDistribution as AbstractProbDistribution,
     AbstractSampleLogProbDistribution as AbstractSampleLogProbDistribution,
     AbstractSTDDistribution as AbstractSTDDistribution,
-    AbstractSurivialDistribution as AbstractSurivialDistribution,
+    AbstractSurvivalDistribution as AbstractSurvivalDistribution,
 )
 from .bernoulli import Bernoulli as Bernoulli
+from .beta import Beta as Beta
 from .categorical import Categorical as Categorical
 from .independent import Independent as Independent
 from .mixture_same_family import MixtureSameFamily as MixtureSameFamily

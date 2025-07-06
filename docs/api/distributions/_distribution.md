@@ -32,7 +32,7 @@
         members:
             - stddev
 
-::: distreqx.distributions._distribution.AbstractSurivialDistribution
+::: distreqx.distributions._distribution.AbstractSurvivalDistribution
     selection:
         members:
             - survival_function

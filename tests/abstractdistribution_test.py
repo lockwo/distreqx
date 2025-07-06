@@ -9,7 +9,7 @@ from distreqx.distributions import _distribution
 
 
 class AbstractAll(
-    _distribution.AbstractSurivialDistribution,
+    _distribution.AbstractSurvivalDistribution,
     _distribution.AbstractSTDDistribution,
     _distribution.AbstractSampleLogProbDistribution,
     _distribution.AbstractCDFDistribution,

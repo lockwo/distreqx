@@ -291,7 +291,7 @@ class AbstractSTDDistribution(AbstractDistribution, strict=True):
         return jnp.sqrt(self.variance())
 
 
-class AbstractSurivialDistribution(AbstractDistribution, strict=True):
+class AbstractSurvivalDistribution(AbstractDistribution, strict=True):
     """Abstract distribution + concrete `survival_function` and
     `log_survival_function`."""
 
