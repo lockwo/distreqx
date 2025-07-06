@@ -10,14 +10,14 @@ from ..utils.math import mul_exp, multiply_no_nan, normalize
 from ._distribution import (
     AbstractSampleLogProbDistribution,
     AbstractSTDDistribution,
-    AbstractSurivialDistribution,
+    AbstractSurvivalDistribution,
 )
 
 
 class OneHotCategorical(
     AbstractSTDDistribution,
     AbstractSampleLogProbDistribution,
-    AbstractSurivialDistribution,
+    AbstractSurvivalDistribution,
     strict=True,
 ):
     """OneHotCategorical distribution."""

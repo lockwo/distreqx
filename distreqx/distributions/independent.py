@@ -10,7 +10,7 @@ from ._distribution import (
     AbstractCDFDistribution,
     AbstractDistribution,
     AbstractProbDistribution,
-    AbstractSurivialDistribution,
+    AbstractSurvivalDistribution,
 )
 
 
@@ -22,7 +22,7 @@ def _reduce_helper(pytree: PyTree) -> Array:
 class Independent(
     AbstractProbDistribution,
     AbstractCDFDistribution,
-    AbstractSurivialDistribution,
+    AbstractSurvivalDistribution,
     strict=True,
 ):
     """Independent distribution obtained from child distributions."""

@@ -14,7 +14,7 @@ class BernoulliTest(TestCase):
         self.dist = bernoulli.Bernoulli
         self.p = np.asarray([0.2, 0.4, 0.6, 0.8])
         self.logits = sp_special.logit(self.p)
-        self.key = jax.random.PRNGKey(0)
+        self.key = jax.random.key(0)
 
     @parameterized.expand(
         [

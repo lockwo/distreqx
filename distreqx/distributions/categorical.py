@@ -10,14 +10,14 @@ from ..utils.math import mul_exp, multiply_no_nan, normalize
 from ._distribution import (
     AbstractSampleLogProbDistribution,
     AbstractSTDDistribution,
-    AbstractSurivialDistribution,
+    AbstractSurvivalDistribution,
 )
 
 
 class Categorical(
     AbstractSTDDistribution,
     AbstractSampleLogProbDistribution,
-    AbstractSurivialDistribution,
+    AbstractSurvivalDistribution,
     strict=True,
 ):
     """Categorical distribution over integers.

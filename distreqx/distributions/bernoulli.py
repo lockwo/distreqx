@@ -10,14 +10,14 @@ from ..utils.math import multiply_no_nan
 from ._distribution import (
     AbstractSampleLogProbDistribution,
     AbstractSTDDistribution,
-    AbstractSurivialDistribution,
+    AbstractSurvivalDistribution,
 )
 
 
 class Bernoulli(
     AbstractSampleLogProbDistribution,
     AbstractSTDDistribution,
-    AbstractSurivialDistribution,
+    AbstractSurvivalDistribution,
     strict=True,
 ):
     """Bernoulli distribution of shape dims.
