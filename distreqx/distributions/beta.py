@@ -48,9 +48,10 @@ class Beta(
     ):
         """Initializes a Beta distribution.
 
-        Args:
-        alpha: Shape parameter `alpha` of the distribution. Must be positive.
-        beta: Shape parameter `beta` of the distribution. Must be positive.
+        **Arguments:**
+
+        - `alpha`: Shape parameter `alpha` of the distribution. Must be positive.
+        - `beta`: Shape parameter `beta` of the distribution. Must be positive.
         """
         super().__init__()
         self.alpha = jnp.array(alpha)
