@@ -1,3 +1,4 @@
+# type: ignore
 from dataclasses import dataclass
 
 import equinox as eqx
@@ -11,8 +12,8 @@ try:
             return super().__new__(mcs, name, bases, namespace, **kwargs)
 
     @dataclass(frozen=True)
-    class StrictModule(eqx.Module, ihoop.Strict, metaclass=_StrictEqxMeta):  # type: ignore[reportRedeclaration]
-        def __init_subclass__(cls, *, strict: bool | None = None, **kwargs):
+    class StrictModule(eqx.Module, ihoop.Strict, metaclass=_StrictEqxMeta):
+        def __init_subclass__(cls, *, strict: bool = False, **kwargs):
             super().__init_subclass__(**kwargs)
 except Exception:
 
