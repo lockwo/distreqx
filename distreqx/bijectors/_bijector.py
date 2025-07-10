@@ -3,8 +3,10 @@ from abc import abstractmethod
 import equinox as eqx
 from jaxtyping import Array, PyTree
 
+from .._custom_meta import StrictModule
 
-class AbstractBijector(eqx.Module, strict=True):
+
+class AbstractBijector(StrictModule, strict=True):
     """Differentiable bijection that knows to compute its Jacobian determinant.
 
     A bijector implements a differentiable and bijective transformation `f`, whose
