@@ -17,5 +17,5 @@ try:
             super().__init_subclass__(**kwargs)
 except Exception:
 
-    class StrictModule(eqx.Module):
+    class StrictModule(eqx.Module, strict=True):
         pass
