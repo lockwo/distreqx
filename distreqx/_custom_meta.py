@@ -17,5 +17,4 @@ try:
             super().__init_subclass__(**kwargs)
 except Exception:
 
-    class AbstractStrictModule(eqx.Module, strict=eqx.StrictConfig(force_abstact=True)):
-        pass
+    AbstractStrictModule = eqx.Module
