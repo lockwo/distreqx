@@ -2,15 +2,15 @@
 
 from abc import abstractmethod
 
-import equinox as eqx
 import jax
 from jax import numpy as jnp
 from jaxtyping import Array, PRNGKeyArray, PyTree
 
+from .._custom_meta import AbstractStrictModule
 from .._custom_types import EventT
 
 
-class AbstractDistribution(eqx.Module, strict=True):
+class AbstractDistribution(AbstractStrictModule, strict=True):
     """Base class for all distreqx distributions."""
 
     @abstractmethod
