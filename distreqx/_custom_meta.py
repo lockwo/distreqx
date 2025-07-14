@@ -16,5 +16,4 @@ try:
         def __init_subclass__(cls, *, strict: bool = False, **kwargs):
             super().__init_subclass__(**kwargs)
 except Exception:
-
     AbstractStrictModule = eqx.Module
