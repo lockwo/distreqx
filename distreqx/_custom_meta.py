@@ -12,10 +12,10 @@ try:
             return super().__new__(mcs, name, bases, namespace, **kwargs)
 
     @dataclass(frozen=True)
-    class StrictModule(eqx.Module, ihoop.Strict, metaclass=_StrictEqxMeta):
+    class AbstractStrictModule(eqx.Module, ihoop.Strict, metaclass=_StrictEqxMeta):
         def __init_subclass__(cls, *, strict: bool = False, **kwargs):
             super().__init_subclass__(**kwargs)
 except Exception:
 
-    class StrictModule(eqx.Module, strict=True):
+    class AbstractStrictModule(eqx.Module, strict=True):
         pass
