@@ -25,7 +25,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 urls = {repository = "https://github.com/lockwo/distreqx"}
-dependencies = ["jax>=0.4.11", "jaxtyping>=0.2.20", "equinox>=0.11.0", "ihoop>=0.1.1"]
+dependencies = ["jax>=0.4.11", "jaxtyping>=0.2.20", "equinox>=0.11.2", "ihoop>=0.1.1"]
 
 [build-system]
 requires = ["setuptools >= 61.0"]
