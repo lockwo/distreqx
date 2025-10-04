@@ -146,7 +146,7 @@ class UniformTest(TestCase):
         result = getattr(dist1, function_string)(dist2)
         expected_shape = jnp.broadcast_shapes(
             jnp.broadcast_shapes(dist1_kwargs["low"].shape, dist1_kwargs["high"].shape),
-            jnp.broadcast_shapes(dist2_kwargs["low"].shape, dist2_kwargs["high"].shape)
+            jnp.broadcast_shapes(dist2_kwargs["low"].shape, dist2_kwargs["high"].shape),
         )
         self.assertEqual(result.shape, expected_shape)
 
@@ -175,16 +175,10 @@ class UniformTest(TestCase):
 
         # Check mean and variance
         np.testing.assert_allclose(
-            np.mean(np.asarray(samples), axis=0),
-            dist.mean(),
-            rtol=1e-2,
-            atol=1e-2
+            np.mean(np.asarray(samples), axis=0), dist.mean(), rtol=1e-2, atol=1e-2
         )
         np.testing.assert_allclose(
-            np.var(np.asarray(samples), axis=0),
-            dist.variance(),
-            rtol=1e-2,
-            atol=1e-2
+            np.var(np.asarray(samples), axis=0), dist.variance(), rtol=1e-2, atol=1e-2
         )
 
         # Check that all samples are within bounds
@@ -228,7 +222,7 @@ class UniformTest(TestCase):
 
         # Test log_cdf
         log_cdf = dist.log_cdf(x)
-        with np.errstate(divide='ignore'):
+        with np.errstate(divide="ignore"):
             expected_log_cdf = jnp.log(expected_cdf)
         np.testing.assert_allclose(log_cdf, expected_log_cdf, rtol=1e-6)
 

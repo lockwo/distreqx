@@ -28,12 +28,10 @@ def _check_parameters(loc: Optional[Array], scale_diag: Optional[Array]) -> None
     """Checks that the `loc` and `scale_diag` parameters are correct."""
     if scale_diag is not None and not scale_diag.shape:
         raise ValueError(
-            "If provided, argument `scale_diag` must have at least " "1 dimension."
+            "If provided, argument `scale_diag` must have at least 1 dimension."
         )
     if loc is not None and not loc.shape:
-        raise ValueError(
-            "If provided, argument `loc` must have at least " "1 dimension."
-        )
+        raise ValueError("If provided, argument `loc` must have at least 1 dimension.")
     if (
         loc is not None
         and scale_diag is not None

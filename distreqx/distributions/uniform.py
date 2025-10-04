@@ -1,9 +1,8 @@
 """Uniform distribution."""
 
-
 import jax
 import jax.numpy as jnp
-from jaxtyping import Array, PRNGKeyArray, Float
+from jaxtyping import Array, Float, PRNGKeyArray
 
 from ._distribution import (
     AbstractSTDDistribution,
@@ -32,7 +31,12 @@ class Uniform(
     def sample(self, key: PRNGKeyArray) -> Array:
         """See `Distribution.sample`."""
         uniform = jax.random.uniform(
-            key=key, shape=self.low.shape, dtype=self.range.dtype, minval=0., maxval=1.)
+            key=key,
+            shape=self.low.shape,
+            dtype=self.range.dtype,
+            minval=0.0,
+            maxval=1.0,
+        )
         return self.low + self.range * uniform
 
     def sample_and_log_prob(self, key: PRNGKeyArray) -> tuple[Array, Array]:
@@ -51,14 +55,16 @@ class Uniform(
         return jnp.where(
             jnp.logical_or(value < self.low, value > self.high),
             jnp.zeros_like(value),
-            jnp.ones_like(value) / self.range)
+            jnp.ones_like(value) / self.range,
+        )
 
     def cdf(self, value: Array) -> Array:
         """See `Distribution.cdf`."""
         ones = jnp.ones_like(self.range)
         zeros = jnp.zeros_like(ones)
         result_if_not_big = jnp.where(
-            value < self.low, zeros, (value - self.low) / self.range)
+            value < self.low, zeros, (value - self.low) / self.range
+        )
         return jnp.where(value > self.high, ones, result_if_not_big)
 
     def log_cdf(self, value: Array) -> Array:
@@ -71,7 +77,7 @@ class Uniform(
 
     def mean(self) -> Array:
         """See `Distribution.mean`."""
-        return (self.low + self.high) / 2.
+        return (self.low + self.high) / 2.0
 
     def median(self) -> Array:
         """See `Distribution.median`."""
@@ -79,7 +85,7 @@ class Uniform(
 
     def variance(self) -> Array:
         """See `Distribution.variance`."""
-        return jnp.square(self.range) / 12.
+        return jnp.square(self.range) / 12.0
 
     def mode(self) -> Array:
         """See `Distribution.probs`."""
@@ -100,4 +106,5 @@ class Uniform(
         return jnp.where(
             jnp.logical_and(other_dist.low <= self.low, self.high <= other_dist.high),
             jnp.log(other_dist.high - other_dist.low) - jnp.log(self.high - self.low),
-            jnp.inf)
+            jnp.inf,
+        )
