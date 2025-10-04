@@ -105,6 +105,7 @@ nav:
             - 'api/distributions/categorical.md'
             - 'api/distributions/independent.md'
             - 'api/distributions/mixture_same_family.md'
+            - 'api/distributions/uniform.md'
             - 'api/distributions/transformed.md'
             - 'api/distributions/_distribution.md'
         - Bijectors:

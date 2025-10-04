@@ -23,3 +23,4 @@ from .transformed import (
     AbstractTransformed as AbstractTransformed,
     Transformed as Transformed,
 )
+from .uniform import Uniform as Uniform
