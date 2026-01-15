@@ -15,7 +15,7 @@ RTOL = 1e-5
 
 class SigmoidTest(TestCase):
     def setUp(self):
-        self.seed = jax.random.PRNGKey(1234)
+        self.seed = jax.random.key(1234)
 
     def test_properties(self):
         bijector = Sigmoid()
@@ -51,14 +51,14 @@ class SigmoidTest(TestCase):
         self.assertEqual(logdet2.shape, y_shape)
 
     def test_forward(self):
-        prng = jax.random.PRNGKey(42)
+        prng = jax.random.key(42)
         x = jax.random.normal(prng, (100,))
         bijector = Sigmoid()
         y = bijector.forward(x)
         np.testing.assert_allclose(y, jax.nn.sigmoid(x), rtol=RTOL)
 
     def test_forward_log_det_jacobian(self):
-        prng = jax.random.PRNGKey(42)
+        prng = jax.random.key(42)
         x = jax.random.normal(prng, (100,))
         bijector = Sigmoid()
         fwd_logdet = bijector.forward_log_det_jacobian(x)
@@ -66,7 +66,7 @@ class SigmoidTest(TestCase):
         np.testing.assert_allclose(fwd_logdet, actual, rtol=1e-3)
 
     def test_forward_and_log_det(self):
-        prng = jax.random.PRNGKey(42)
+        prng = jax.random.key(42)
         x = jax.random.normal(prng, (100,))
         bijector = Sigmoid()
         y1 = bijector.forward(x)
@@ -76,7 +76,7 @@ class SigmoidTest(TestCase):
         np.testing.assert_allclose(logdet1, logdet2, rtol=RTOL)
 
     def test_inverse(self):
-        prng = jax.random.PRNGKey(42)
+        prng = jax.random.key(42)
         x = jax.random.normal(prng, (100,))
         bijector = Sigmoid()
         y = bijector.forward(x)
@@ -84,7 +84,7 @@ class SigmoidTest(TestCase):
         np.testing.assert_allclose(x_rec, x, rtol=1e-3)
 
     def test_inverse_log_det_jacobian(self):
-        prng = jax.random.PRNGKey(42)
+        prng = jax.random.key(42)
         x = jax.random.normal(prng, (100,))
         bijector = Sigmoid()
         y = bijector.forward(x)
@@ -93,7 +93,7 @@ class SigmoidTest(TestCase):
         np.testing.assert_allclose(inv_logdet, -fwd_logdet, rtol=1e-4)
 
     def test_inverse_and_log_det(self):
-        prng = jax.random.PRNGKey(42)
+        prng = jax.random.key(42)
         y = jax.random.normal(prng, (100,))
         bijector = Sigmoid()
         x1 = bijector.inverse(y)

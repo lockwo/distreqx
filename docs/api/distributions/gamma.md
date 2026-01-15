@@ -1,6 +1,6 @@
-# Chain Bijector
+# Gamma
 
-::: distreqx.bijectors.Chain
+::: distreqx.distributions.Gamma
     options:
         members:
             - __init__

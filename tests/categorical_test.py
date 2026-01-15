@@ -8,14 +8,14 @@ import jax.numpy as jnp
 import numpy as np
 from parameterized import parameterized  # type: ignore
 
-from distreqx.distributions import categorical
+from distreqx.distributions import Categorical
 from distreqx.utils import math
 
 
 class CategoricalTest(TestCase):
     def setUp(self):
-        self.dist = categorical.Categorical
-        self.key = jax.random.PRNGKey(0)
+        self.dist = Categorical
+        self.key = jax.random.key(0)
 
     @parameterized.expand(
         [
@@ -359,7 +359,7 @@ class CategoricalTest(TestCase):
     def test_jittable(self):
         @eqx.filter_jit
         def f(dist):
-            return dist.sample(key=jax.random.PRNGKey(0))
+            return dist.sample(key=jax.random.key(0))
 
         dist_params = {"logits": jnp.array([0.0, 4.0, -1.0, 4.0])}
         dist = self.dist(**dist_params)

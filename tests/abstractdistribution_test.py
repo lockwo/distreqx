@@ -97,7 +97,7 @@ class DistributionTest(TestCase):
 
     def test_sample_univariate_shape(self):
         sample_fn = self.uni_dist.sample
-        samples = sample_fn(jax.random.PRNGKey(0))
+        samples = sample_fn(jax.random.key(0))
         np.testing.assert_equal(samples.shape, ())
 
     @parameterized.expand(
@@ -110,13 +110,13 @@ class DistributionTest(TestCase):
     def test_sample_multivariate_shape(self, name, var_dim, expected_shape):
         mult_dist = DummyMultivariateDist(var_dim)
         sample_fn = mult_dist.sample
-        samples = sample_fn(jax.random.PRNGKey(0))
+        samples = sample_fn(jax.random.key(0))
         np.testing.assert_equal(samples.shape, expected_shape)
 
     def test_jittable(self):
         dist = DummyMultivariateDist((5,))
         sampler = jax.jit(dist.sample)
-        seed = jax.random.PRNGKey(0)
+        seed = jax.random.key(0)
         np.testing.assert_array_equal(sampler(seed), dist.sample(seed))
 
     def test_multivariate_survival_function_raises(self):

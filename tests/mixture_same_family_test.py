@@ -15,7 +15,7 @@ from distreqx.distributions import (
 class MixtureSameFamilyTest(unittest.TestCase):
     def setUp(self):
         super().setUp()
-        self.key = jax.random.PRNGKey(0)
+        self.key = jax.random.key(0)
         self.num_components = 3
         self.logits_shape = (self.num_components,)
         self.logits = jax.random.normal(key=self.key, shape=self.logits_shape)

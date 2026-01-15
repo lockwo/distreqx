@@ -1,6 +1,6 @@
 """Chain Bijector for composing a sequence of Bijector transformations."""
 
-from typing import Sequence
+from collections.abc import Sequence
 
 from jaxtyping import Array
 
@@ -18,20 +18,21 @@ class Chain(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector, strict=T
     a bijector. Given a sequence of bijectors `[f1, ..., fN]`, this class
     implements the bijector defined by `fN o ... o f1`.
 
-    NOTE: the bijectors are applied in reverse order from the order they appear in
-    the sequence. For example, consider the following code where `f` and `g` are
-    two bijectors:
+    !!! warning "Bijectors are applied in reverse order"
 
-    ```python
-    layers = []
-    layers.append(f)
-    layers.append(g)
-    bijector = distrax.Chain(layers)
-    y = bijector.forward(x)
-    ```
+        Given a sequence `[f, g]`, the `Chain` bijector computes `f(g(x))`, not
+        `g(f(x))`. This matches the mathematical convention for function
+        composition but may be counterintuitive when building layers sequentially.
 
-    The above code will transform `x` by first applying `g`, then `f`, so that
-    `y = f(g(x))`.
+    !!! example
+
+        ```python
+        layers = []
+        layers.append(f)
+        layers.append(g)
+        bijector = distreqx.Chain(layers)
+        y = bijector.forward(x)  # y = f(g(x))
+        ```
     """
 
     bijectors: list[AbstractBijector]

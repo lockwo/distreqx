@@ -4,7 +4,7 @@ from typing import Optional, Union
 
 import jax
 import jax.numpy as jnp
-from jaxtyping import Array, PRNGKeyArray
+from jaxtyping import Array, Key
 
 from ..utils.math import mul_exp, multiply_no_nan, normalize
 from ._distribution import (
@@ -84,7 +84,7 @@ class OneHotCategorical(
             )  # TODO: useless but needed for pyright
         return self._logits.shape[-1]
 
-    def sample(self, key: PRNGKeyArray) -> Array:
+    def sample(self, key: Key[Array, ""]) -> Array:
         """See `Distribution.sample`."""
         is_valid = jnp.logical_and(
             jnp.all(jnp.isfinite(self.probs), axis=-1, keepdims=True),

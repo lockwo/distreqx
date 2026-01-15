@@ -35,6 +35,12 @@ build-backend = "setuptools.build_meta"
 include = ["distreqx/*"]
 
 [project.optional-dependencies]
+test = [
+  "beartype",
+  "jax[cpu]",
+  "parameterized",
+  "pytest",
+]
 docs = [
   "hippogriffe==0.2.2",
   "mkdocs==1.6.1",

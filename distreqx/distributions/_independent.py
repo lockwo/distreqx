@@ -4,7 +4,7 @@ import operator
 
 import jax.numpy as jnp
 import jax.tree_util as jtu
-from jaxtyping import Array, PRNGKeyArray, PyTree
+from jaxtyping import Array, Key, PyTree
 
 from ._distribution import (
     AbstractCDFDistribution,
@@ -25,7 +25,15 @@ class Independent(
     AbstractSurvivalDistribution,
     strict=True,
 ):
-    """Independent distribution obtained from child distributions."""
+    """Independent distribution obtained from child distributions.
+
+    !!! tip
+
+        `Independent` reinterprets batch dimensions as event dimensions. This is
+        useful when you want to model a multivariate distribution as independent
+        univariate distributions (e.g., diagonal Gaussian) but still want
+        `log_prob` to return a single scalar per sample.
+    """
 
     distribution: AbstractDistribution
 
@@ -46,11 +54,11 @@ class Independent(
         """Shape of event of distribution samples."""
         return self.distribution.event_shape
 
-    def sample(self, key: PRNGKeyArray) -> Array:
+    def sample(self, key: Key[Array, ""]) -> Array:
         """See `Distribution.sample`."""
         return self.distribution.sample(key)
 
-    def sample_and_log_prob(self, key: PRNGKeyArray) -> tuple[Array, Array]:
+    def sample_and_log_prob(self, key: Key[Array, ""]) -> tuple[Array, Array]:
         """See `Distribution.sample_and_log_prob`."""
         samples, log_prob = self.distribution.sample_and_log_prob(key)
         log_prob = _reduce_helper(log_prob)

@@ -25,10 +25,12 @@ class TriangularLinear(AbstractLinearBijector, strict=True):
 
     The inverse is computed in $O(D^2)$ by solving the triangular system $Ax = y$.
 
-    The bijector is invertible if and only if all diagonal elements of `A` are
-    non-zero. It is the responsibility of the user to make sure that this is the
-    case; the class will make no attempt to verify that the bijector is
-    invertible.
+    !!! note
+
+        The bijector is invertible if and only if all diagonal elements of $A$ are
+        non-zero. It is the responsibility of the user to make sure that this is the
+        case; the class will make no attempt to verify that the bijector is
+        invertible.
     """
 
     _matrix: Array

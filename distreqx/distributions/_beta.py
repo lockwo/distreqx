@@ -4,7 +4,7 @@ from typing import Union
 
 import jax
 import jax.numpy as jnp
-from jaxtyping import Array, Float, PRNGKeyArray
+from jaxtyping import Array, Float, Key
 
 from ..utils.math import log_beta
 from ._distribution import (
@@ -62,7 +62,7 @@ class Beta(
     def event_shape(self) -> tuple:
         return ()
 
-    def sample(self, key: PRNGKeyArray) -> Array:
+    def sample(self, key: Key[Array, ""]) -> Array:
         """See `Distribution.sample`."""
         dtype = jnp.result_type(self.alpha, self.beta)
         return jax.random.beta(key, a=self.alpha, b=self.beta, dtype=dtype)

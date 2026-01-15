@@ -5,7 +5,7 @@ from typing import Optional
 import equinox as eqx
 import jax
 import jax.numpy as jnp
-from jaxtyping import Array, PRNGKeyArray, PyTree
+from jaxtyping import Array, Key, PyTree
 
 from ..bijectors import AbstractBijector
 from ._distribution import (
@@ -21,37 +21,9 @@ class AbstractTransformed(
     AbstractProbDistribution,
     strict=True,
 ):
-    r"""Distribution of a random variable transformed by a bijective function.
+    """Abstract base class for transformed distributions.
 
-    Let $X$ be a continuous random variable and $Y = f(X)$ be a random variable
-    transformed by a differentiable bijection $f$ (a "bijector"). Given the
-    distribution of $X$ (the "base distribution") and the bijector $f$, this class
-    implements the distribution of $Y$ (also known as the pushforward of the base
-    distribution through $f$).
-
-    The probability density of $Y$ can be computed by:
-
-    $$\log p(y) = \log p(x) - \log|\det J(f)(x)|$$
-
-    where $p(x)$ is the probability density of $X$ (the "base density") and
-    $J(f)(x)$ is the Jacobian matrix of $f$, both evaluated at $x = f^{-1}(y)$.
-
-    Sampling from a Transformed distribution involves two steps: sampling from the
-    base distribution $x \sim p(x)$ and then evaluating $y = f(x)$. For example:
-
-    ```python
-      dist = distrax.Normal(loc=0., scale=1.)
-      bij = distrax.ScalarAffine(shift=jnp.asarray([3., 3., 3.]))
-      transformed_dist = distrax.Transformed(distribution=dist, bijector=bij)
-      samples = transformed_dist.sample(jax.random.PRNGKey(0))
-      print(samples)  # [2.7941577, 2.7941577, 2.7941577]
-    ```
-
-    This assumes that the `forward` function of the bijector is traceable; that is,
-    it is a pure function that does not contain run-time branching. Functions that
-    do not strictly meet this requirement can still be used, but we cannot guarantee
-    that the shapes, dtype, and KL computations involving the transformed distribution
-    can be correctly obtained.
+    See [`distreqx.distributions.Transformed`][] for full documentation.
     """
 
     distribution: eqx.AbstractVar[AbstractDistribution]
@@ -81,13 +53,13 @@ class AbstractTransformed(
         lp_y = lp_x + ildj_y
         return lp_y
 
-    def sample(self, key: PRNGKeyArray) -> Array:
+    def sample(self, key: Key[Array, ""]) -> Array:
         """Return a sample."""
         x = self.distribution.sample(key)
         y = self.bijector.forward(x)
         return y
 
-    def sample_and_log_prob(self, key: PRNGKeyArray) -> tuple[Array, Array]:
+    def sample_and_log_prob(self, key: Key[Array, ""]) -> tuple[Array, Array]:
         """Return a sample and log prob.
 
         This function is more efficient than calling `sample` and `log_prob`
@@ -166,7 +138,7 @@ class Transformed(AbstractTransformed, AbstractSTDDistribution, strict=True):
       dist = distrax.Normal(loc=0., scale=1.)
       bij = distrax.ScalarAffine(shift=jnp.asarray([3., 3., 3.]))
       transformed_dist = distrax.Transformed(distribution=dist, bijector=bij)
-      samples = transformed_dist.sample(jax.random.PRNGKey(0))
+      samples = transformed_dist.sample(jax.random.key(0))
       print(samples)  # [2.7941577, 2.7941577, 2.7941577]
     ```
 
@@ -175,6 +147,19 @@ class Transformed(AbstractTransformed, AbstractSTDDistribution, strict=True):
     do not strictly meet this requirement can still be used, but we cannot guarantee
     that the shapes, dtype, and KL computations involving the transformed distribution
     can be correctly obtained.
+
+    !!! tip
+
+        `Transformed` is the foundation for building normalizing flows. Chain
+        together multiple bijectors using [`distreqx.bijectors.Chain`][] to create
+        complex transformations.
+
+    !!! warning
+
+        Computing `entropy`, `mean`, and `mode` only works when the bijector has
+        a constant Jacobian determinant. For bijectors with non-constant Jacobians
+        (e.g., neural network-based flows), these methods will raise
+        `NotImplementedError`.
     """
 
     distribution: AbstractDistribution

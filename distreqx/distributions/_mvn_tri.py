@@ -51,11 +51,16 @@ def _check_parameters(loc: Optional[Array], scale_tri: Optional[Array]) -> None:
 
 
 class MultivariateNormalTri(AbstractMultivariateNormalFromBijector, strict=True):
-    """Multivariate normal distribution on `R^k`.
+    r"""Multivariate normal distribution on $\mathbb{R}^k$.
 
-    The `MultivariateNormalTri` distribution is parameterized by a `k`-length
-    location (mean) vector `b` and a (lower or upper) triangular scale matrix `S`
-    of size `k x k`. The covariance matrix is `C = S @ S.T`.
+    The `MultivariateNormalTri` distribution is parameterized by a $k$-length
+    location (mean) vector $b$ and a (lower or upper) triangular scale matrix $S$
+    of size $k \times k$. The covariance matrix is $C = SS^T$.
+
+    !!! note
+
+        The `scale_tri` matrix must have non-zero diagonal elements for the
+        distribution to be valid. This class does not verify this condition.
     """
 
     scale_tri: Array

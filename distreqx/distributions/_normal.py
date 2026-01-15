@@ -4,7 +4,7 @@ import math
 
 import jax
 import jax.numpy as jnp
-from jaxtyping import Array, PRNGKeyArray
+from jaxtyping import Array, Key
 
 from ._distribution import AbstractProbDistribution
 
@@ -34,16 +34,16 @@ class Normal(AbstractProbDistribution, strict=True):
         """Shape of event of distribution samples."""
         return self.loc.shape
 
-    def _sample_from_std_normal(self, key: PRNGKeyArray) -> Array:
+    def _sample_from_std_normal(self, key: Key[Array, ""]) -> Array:
         dtype = jnp.result_type(self.loc, self.scale)
         return jax.random.normal(key, shape=self.event_shape, dtype=dtype)
 
-    def sample(self, key: PRNGKeyArray) -> Array:
+    def sample(self, key: Key[Array, ""]) -> Array:
         """See `Distribution.sample`."""
         rnd = self._sample_from_std_normal(key)
         return self.scale * rnd + self.loc
 
-    def sample_and_log_prob(self, key: PRNGKeyArray) -> tuple[Array, Array]:
+    def sample_and_log_prob(self, key: Key[Array, ""]) -> tuple[Array, Array]:
         """See `Distribution.sample_and_log_prob`."""
         rnd = self._sample_from_std_normal(key)
         samples = self.scale * rnd + self.loc

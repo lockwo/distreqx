@@ -14,7 +14,7 @@ RTOL = 1e-2
 
 class ChainTest(TestCase):
     def setUp(self):
-        self.seed = jax.random.PRNGKey(1234)
+        self.seed = jax.random.key(1234)
 
     def test_properties(self):
         bijector = Chain([Tanh()])

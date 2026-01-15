@@ -108,6 +108,7 @@ nav:
             - 'api/distributions/bernoulli.md'
             - 'api/distributions/beta.md'
             - 'api/distributions/categorical.md'
+            - 'api/distributions/gamma.md'
             - 'api/distributions/independent.md'
             - 'api/distributions/mixture_same_family.md'
             - 'api/distributions/uniform.md'

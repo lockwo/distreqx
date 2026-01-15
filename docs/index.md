@@ -41,7 +41,7 @@ import jax
 from jax import numpy as jnp
 from distreqx import distributions
 
-key = jax.random.PRNGKey(1234)
+key = jax.random.key(1234)
 mu = jnp.array([-1., 0., 1.])
 sigma = jnp.array([0.1, 0.2, 0.3])
 

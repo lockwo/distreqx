@@ -15,7 +15,7 @@ RTOL = 1e-5
 
 class TanhTest(TestCase):
     def setUp(self):
-        self.seed = jax.random.PRNGKey(1234)
+        self.seed = jax.random.key(1234)
 
     def test_properties(self):
         bijector = Tanh()

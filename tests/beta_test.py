@@ -5,12 +5,12 @@ import jax.numpy as jnp
 import numpy as np
 from parameterized import parameterized  # type: ignore
 
-from distreqx.distributions import beta as beta_module
+from distreqx.distributions import Beta
 
 
 class BetaTest(TestCase):
     def setUp(self):
-        self.dist_cls = beta_module.Beta
+        self.dist_cls = Beta
         self.alpha = np.asarray([0.5, 1.0, 2.5, 5.0])
         self.beta = np.asarray([0.5, 2.0, 1.5, 1.0])
         self.key = jax.random.key(0)

@@ -7,20 +7,24 @@ from ._bijector import AbstractBijector
 
 
 class UnconstrainedAffine(AbstractBijector, strict=True):
-    """An unconstrained affine bijection.
+    r"""An unconstrained affine bijection.
 
-    This bijector is a linear-plus-bias transformation `f(x) = Ax + b`, where `A`
-    is a `D x D` square matrix and `b` is a `D`-dimensional vector.
+    This bijector is a linear-plus-bias transformation $f(x) = Ax + b$, where $A$
+    is a $D \times D$ square matrix and $b$ is a $D$-dimensional vector.
 
-    The bijector is invertible if and only if `A` is an invertible matrix. It is
+    The bijector is invertible if and only if $A$ is an invertible matrix. It is
     the responsibility of the user to make sure that this is the case; the class
     will make no attempt to verify that the bijector is invertible.
 
-    The Jacobian determinant is equal to `det(A)`. The inverse is computed by
-    solving the linear system `Ax = y - b`.
+    The Jacobian determinant is equal to $\det(A)$. The inverse is computed by
+    solving the linear system $Ax = y - b$.
 
-    WARNING: Both the determinant and the inverse cost `O(D^3)` to compute. Thus,
-    this bijector is recommended only for small `D`.
+    !!! warning
+
+        Both the determinant and the inverse cost $O(D^3)$ to compute. Thus,
+        this bijector is recommended only for small $D$. For larger dimensions,
+        consider using [`distreqx.TriangularLinear`][] which has $O(D^2)$ inverse
+        and $O(D)$ log-determinant.
     """
 
     matrix: Array

@@ -9,6 +9,7 @@ from ._distribution import (
     AbstractSTDDistribution as AbstractSTDDistribution,
     AbstractSurvivalDistribution as AbstractSurvivalDistribution,
 )
+from ._gamma import Gamma as Gamma
 from ._independent import Independent as Independent
 from ._mixture_same_family import MixtureSameFamily as MixtureSameFamily
 from ._mvn_diag import MultivariateNormalDiag as MultivariateNormalDiag
