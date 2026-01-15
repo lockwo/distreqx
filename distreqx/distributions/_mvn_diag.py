@@ -16,12 +16,12 @@ from ..bijectors import (
     Shift,
 )
 from ._distribution import AbstractDistribution
-from .independent import Independent
-from .mvn_from_bijector import (
+from ._independent import Independent
+from ._mvn_from_bijector import (
     _check_input_parameters_are_valid,
     AbstractMultivariateNormalFromBijector,
 )
-from .normal import Normal
+from ._normal import Normal
 
 
 def _check_parameters(loc: Optional[Array], scale_diag: Optional[Array]) -> None:
@@ -47,12 +47,11 @@ def _check_parameters(loc: Optional[Array], scale_diag: Optional[Array]) -> None
 class MultivariateNormalDiag(AbstractMultivariateNormalFromBijector, strict=True):
     """Multivariate normal distribution on `R^k` with diagonal covariance."""
 
-    _loc: Array
-    _scale: AbstractLinearBijector
-    _event_shape: tuple[int, ...]
-    _distribution: AbstractDistribution
-    _bijector: AbstractBijector
-    _scale_diag: Array
+    loc: Array
+    scale: AbstractLinearBijector
+    distribution: AbstractDistribution
+    bijector: AbstractBijector
+    scale_diag: Array
 
     def __init__(self, loc: Optional[Array] = None, scale_diag: Optional[Array] = None):
         """Initializes a MultivariateNormalDiag distribution.
@@ -89,20 +88,14 @@ class MultivariateNormalDiag(AbstractMultivariateNormalFromBijector, strict=True
         )
         # Form the bijector `f(x) = Ax + b`.
         bijector = Chain([Block(Shift(loc), ndims=loc.ndim), scale])
-        self._distribution = std_mvn_dist
-        self._bijector = bijector
-        self._scale = scale
-        self._loc = loc
-        self._event_shape = loc.shape[-1:]
-        self._scale_diag = scale_diag
-
-    @property
-    def scale_diag(self) -> Array:
-        """Scale of the distribution."""
-        return jnp.broadcast_to(self._scale_diag, self.event_shape)
+        self.distribution = std_mvn_dist
+        self.bijector = bijector
+        self.scale = scale
+        self.loc = loc
+        self.scale_diag = scale_diag
 
     def _standardize(self, value: Array) -> Array:
-        return (value - self._loc) / self._scale_diag
+        return (value - self.loc) / self.scale_diag
 
     def cdf(self, value: Array) -> Array:
         """See `Distribution.cdf`."""

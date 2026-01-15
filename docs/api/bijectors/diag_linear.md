@@ -1,7 +1,7 @@
 # Diagonal Linear Bijector
 
-::: distreqx.bijectors.diag_linear.DiagLinear
-    selection:
+::: distreqx.bijectors.DiagLinear
+    options:
         members:
             - __init__
 ---

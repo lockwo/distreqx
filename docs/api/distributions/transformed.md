@@ -1,7 +1,7 @@
 # Transformed
 
-::: distreqx.distributions.transformed.Transformed
-    selection:
+::: distreqx.distributions.Transformed
+    options:
         members:
             - __init__
             - mean

@@ -16,7 +16,7 @@ from distreqx.distributions import MultivariateNormalDiag
 
 class MultivariateNormalDiagTest(TestCase):
     def setUp(self):
-        self.key = jax.random.PRNGKey(0)
+        self.key = jax.random.key(0)
 
     def _test_raises_error(self, dist_kwargs):
         with self.assertRaises(ValueError):
@@ -53,7 +53,7 @@ class MultivariateNormalDiagTest(TestCase):
     def test_jittable(self):
         @eqx.filter_jit
         def f(dist):
-            return dist.sample(key=jax.random.PRNGKey(0))
+            return dist.sample(key=jax.random.key(0))
 
         dist_params = {"loc": jnp.zeros(2), "scale_diag": jnp.ones(2)}
         dist = MultivariateNormalDiag(**dist_params)

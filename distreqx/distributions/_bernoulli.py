@@ -4,7 +4,7 @@ from typing import Optional, Union
 
 import jax
 import jax.numpy as jnp
-from jaxtyping import Array, PRNGKeyArray
+from jaxtyping import Array, Key
 
 from ..utils.math import multiply_no_nan
 from ._distribution import (
@@ -86,7 +86,7 @@ class Bernoulli(
             raise ValueError("_logits is None!")
         return (-jax.nn.softplus(self._logits), -jax.nn.softplus(-1.0 * self._logits))
 
-    def sample(self, key: PRNGKeyArray) -> Array:
+    def sample(self, key: Key[Array, ""]) -> Array:
         """See `Distribution.sample`."""
         probs = self.probs
         return jax.random.bernoulli(key=key, p=probs).astype("int8")

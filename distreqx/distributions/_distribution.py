@@ -4,7 +4,7 @@ from abc import abstractmethod
 
 import jax
 from jax import numpy as jnp
-from jaxtyping import Array, PRNGKeyArray, PyTree
+from jaxtyping import Array, Key, PyTree
 
 from .._custom_meta import AbstractStrictModule
 from .._custom_types import EventT
@@ -16,7 +16,7 @@ class AbstractDistribution(AbstractStrictModule, strict=True):
     @abstractmethod
     def sample_and_log_prob(
         self,
-        key: PRNGKeyArray,
+        key: Key[Array, ""],
     ) -> tuple[PyTree[Array], PyTree[Array]]:
         """Returns sample and its log prob.
 
@@ -59,7 +59,7 @@ class AbstractDistribution(AbstractStrictModule, strict=True):
     @property
     def dtype(self) -> jnp.dtype:
         """Data type of a sample"""
-        sample_spec = jax.eval_shape(self.sample, jax.random.PRNGKey(0))
+        sample_spec = jax.eval_shape(self.sample, jax.random.key(0))
         return jax.tree_util.tree_map(lambda x: x.dtype, sample_spec)
 
     @property
@@ -82,7 +82,7 @@ class AbstractDistribution(AbstractStrictModule, strict=True):
         raise NotImplementedError
 
     @abstractmethod
-    def sample(self, key: PRNGKeyArray) -> PyTree[Array]:
+    def sample(self, key: Key[Array, ""]) -> PyTree[Array]:
         """Samples an event."""
         raise NotImplementedError
 
@@ -226,7 +226,7 @@ class AbstractSampleLogProbDistribution(AbstractDistribution, strict=True):
 
     def sample_and_log_prob(
         self,
-        key: PRNGKeyArray,
+        key: Key[Array, ""],
     ) -> tuple[PyTree[Array], PyTree[Array]]:
         """Returns sample and its log prob.
 

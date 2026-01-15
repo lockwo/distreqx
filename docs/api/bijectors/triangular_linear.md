@@ -1,7 +1,7 @@
 # Triangular Linear Bijector
 
-::: distreqx.bijectors.triangular_linear.TriangularLinear
-    selection:
+::: distreqx.bijectors.TriangularLinear
+    options:
         members:
             - __init__
 ---

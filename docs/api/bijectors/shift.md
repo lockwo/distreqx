@@ -1,7 +1,7 @@
 # Shift  Bijector
 
-::: distreqx.bijectors.shift.Shift
-    selection:
+::: distreqx.bijectors.Shift
+    options:
         members:
             - __init__
 ---

@@ -34,7 +34,7 @@ class TriangularLinearTest(TestCase):
             TriangularLinear(matrix=jnp.zeros((3, 4)))
 
     def test_parameters(self):
-        prng = jax.random.PRNGKey(42)
+        prng = jax.random.key(42)
         prng = jax.random.split(prng, 2)
         matrix = jax.random.uniform(prng[0], (4, 4)) + jnp.eye(4)
         bijector = TriangularLinear(matrix)
@@ -51,7 +51,7 @@ class TriangularLinearTest(TestCase):
     def test_identity_initialization(self):
         for is_lower in [True, False]:
             bijector = TriangularLinear(matrix=jnp.eye(4), is_lower=is_lower)
-            prng = jax.random.PRNGKey(42)
+            prng = jax.random.key(42)
             x = jax.random.normal(prng, (4,))
 
             # Forward methods.
@@ -66,7 +66,7 @@ class TriangularLinearTest(TestCase):
 
     def test_inverse_methods(self):
         for is_lower in [True, False]:
-            prng = jax.random.PRNGKey(42)
+            prng = jax.random.key(42)
             prng = jax.random.split(prng, 2)
             matrix = jax.random.uniform(prng[0], (4, 4)) + jnp.eye(4)
             bijector = TriangularLinear(matrix=matrix, is_lower=is_lower)
@@ -78,7 +78,7 @@ class TriangularLinearTest(TestCase):
 
     def test_forward_jacobian_det(self):
         for is_lower in [True, False]:
-            prng = jax.random.PRNGKey(42)
+            prng = jax.random.key(42)
             prng = jax.random.split(prng, 3)
             matrix = jax.random.uniform(prng[0], (4, 4)) + jnp.eye(4)
             bijector = TriangularLinear(matrix, is_lower)
@@ -96,7 +96,7 @@ class TriangularLinearTest(TestCase):
 
     def test_inverse_jacobian_det(self):
         for is_lower in [True, False]:
-            prng = jax.random.PRNGKey(42)
+            prng = jax.random.key(42)
             prng = jax.random.split(prng, 3)
             matrix = jax.random.uniform(prng[0], (4, 4)) + jnp.eye(4)
             bijector = TriangularLinear(matrix, is_lower)

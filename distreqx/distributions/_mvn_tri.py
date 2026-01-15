@@ -16,9 +16,9 @@ from ..bijectors import (
     TriangularLinear,
 )
 from ._distribution import AbstractDistribution
-from .independent import Independent
-from .mvn_from_bijector import AbstractMultivariateNormalFromBijector
-from .normal import Normal
+from ._independent import Independent
+from ._mvn_from_bijector import AbstractMultivariateNormalFromBijector
+from ._normal import Normal
 
 
 def _check_parameters(loc: Optional[Array], scale_tri: Optional[Array]) -> None:
@@ -51,20 +51,24 @@ def _check_parameters(loc: Optional[Array], scale_tri: Optional[Array]) -> None:
 
 
 class MultivariateNormalTri(AbstractMultivariateNormalFromBijector, strict=True):
-    """Multivariate normal distribution on `R^k`.
+    r"""Multivariate normal distribution on $\mathbb{R}^k$.
 
-    The `MultivariateNormalTri` distribution is parameterized by a `k`-length
-    location (mean) vector `b` and a (lower or upper) triangular scale matrix `S`
-    of size `k x k`. The covariance matrix is `C = S @ S.T`.
+    The `MultivariateNormalTri` distribution is parameterized by a $k$-length
+    location (mean) vector $b$ and a (lower or upper) triangular scale matrix $S$
+    of size $k \times k$. The covariance matrix is $C = SS^T$.
+
+    !!! note
+
+        The `scale_tri` matrix must have non-zero diagonal elements for the
+        distribution to be valid. This class does not verify this condition.
     """
 
-    _scale_tri: Array
-    _is_lower: bool
-    _loc: Array
-    _scale: AbstractLinearBijector
-    _event_shape: tuple[int, ...]
-    _distribution: AbstractDistribution
-    _bijector: AbstractBijector
+    scale_tri: Array
+    is_lower: bool
+    loc: Array
+    scale: AbstractLinearBijector
+    distribution: AbstractDistribution
+    bijector: AbstractBijector
 
     def __init__(
         self,
@@ -103,13 +107,12 @@ class MultivariateNormalTri(AbstractMultivariateNormalFromBijector, strict=True)
             loc = jnp.zeros((num_dims,), dtype=dtype)
 
         if scale_tri is None:
-            self._scale_tri = jnp.eye(num_dims, dtype=dtype)
+            scale_tri_val = jnp.eye(num_dims, dtype=dtype)
             scale = DiagLinear(diag=jnp.ones(loc.shape[-1:], dtype=dtype))
         else:
             tri_fn = jnp.tril if is_lower else jnp.triu
-            self._scale_tri = tri_fn(scale_tri)
-            scale = TriangularLinear(matrix=self._scale_tri, is_lower=is_lower)
-        self._is_lower = is_lower
+            scale_tri_val = tri_fn(scale_tri)
+            scale = TriangularLinear(matrix=scale_tri_val, is_lower=is_lower)
 
         # Build a standard multivariate Gaussian.
         std_mvn_dist = Independent(
@@ -119,21 +122,12 @@ class MultivariateNormalTri(AbstractMultivariateNormalFromBijector, strict=True)
         )
         # Form the bijector `f(x) = Ax + b`.
         bijector = Chain([Block(Shift(loc), ndims=loc.ndim), scale])
-        self._distribution = std_mvn_dist
-        self._bijector = bijector
-        self._scale = scale
-        self._loc = loc
-        self._event_shape = loc.shape[-1:]
-
-    @property
-    def scale_tri(self) -> Array:
-        """Triangular scale matrix `S`."""
-        return self._scale_tri
-
-    @property
-    def is_lower(self) -> bool:
-        """Whether the `scale_tri` matrix is lower triangular."""
-        return self._is_lower
+        self.distribution = std_mvn_dist
+        self.bijector = bijector
+        self.scale = scale
+        self.loc = loc
+        self.scale_tri = scale_tri_val
+        self.is_lower = is_lower
 
     def log_cdf(self, value: PyTree[Array]) -> PyTree[Array]:
         raise NotImplementedError

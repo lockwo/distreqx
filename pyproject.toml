@@ -3,7 +3,7 @@ name = "distreqx"
 version = "0.0.1"
 description = "Lightweight JAX library of probability distributions and bijectors."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = {file = "LICENSE"}
 authors = [
   {name = "Owen Lockwood"},
@@ -33,6 +33,24 @@ build-backend = "setuptools.build_meta"
 
 [tool.hatch.build]
 include = ["distreqx/*"]
+
+[project.optional-dependencies]
+test = [
+  "beartype",
+  "jax[cpu]",
+  "parameterized",
+  "pytest",
+]
+docs = [
+  "hippogriffe==0.2.2",
+  "mkdocs==1.6.1",
+  "mkdocs-include-exclude-files==0.1.0",
+  "mkdocs-ipynb==0.1.1",
+  "mkdocs-material==9.6.7",
+  "mkdocstrings==0.28.3",
+  "mkdocstrings-python==1.16.8",
+  "pymdown-extensions==10.14.3"
+]
 
 [tool.pytest.ini_options]
 addopts = "--jaxtyping-packages=distreqx,beartype.beartype(conf=beartype.BeartypeConf(strategy=beartype.BeartypeStrategy.On))"

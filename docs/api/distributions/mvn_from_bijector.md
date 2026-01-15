@@ -1,7 +1,7 @@
 # Multivariate Normal from Bijector
 
-::: distreqx.distributions.mvn_from_bijector.MultivariateNormalFromBijector
-    selection:
+::: distreqx.distributions.MultivariateNormalFromBijector
+    options:
         members:
             - __init__
 ---

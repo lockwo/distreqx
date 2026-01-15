@@ -1,7 +1,7 @@
 # Triangular Multivariate Normal
 
-::: distreqx.distributions.mvn_tri.MultivariateNormalTri
-    selection:
+::: distreqx.distributions.MultivariateNormalTri
+    options:
         members:
             - __init__
 ---

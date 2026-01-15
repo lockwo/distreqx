@@ -21,10 +21,10 @@ class MockLinear(
 ):
     _is_constant_jacobian: bool
     _is_constant_log_det: bool
-    _event_dims: int
+    event_dims: int
 
     def __init__(self, dims):
-        self._event_dims = dims
+        self.event_dims = dims
         self._is_constant_jacobian = True
         self._is_constant_log_det = True
 

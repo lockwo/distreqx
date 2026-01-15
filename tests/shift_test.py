@@ -31,7 +31,7 @@ class ShiftTest(TestCase):
     def test_forward_methods(self, name, kwargs):
         param_shape = kwargs["param_shape"]
         bijector = Shift(jnp.ones(param_shape))
-        prng = jax.random.PRNGKey(42)
+        prng = jax.random.key(42)
         x = jax.random.normal(prng, param_shape)
         output_shape = param_shape
         y1 = bijector.forward(x)
@@ -55,7 +55,7 @@ class ShiftTest(TestCase):
     )
     def test_inverse_methods(self, name, param_shape):
         bijector = Shift(jnp.ones(param_shape))
-        prng = jax.random.PRNGKey(42)
+        prng = jax.random.key(42)
         y = jax.random.normal(prng, param_shape)
         output_shape = param_shape
         x1 = bijector.inverse(y)

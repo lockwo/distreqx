@@ -2,7 +2,7 @@
 
 import jax
 import jax.numpy as jnp
-from jaxtyping import Array, Float, PRNGKeyArray
+from jaxtyping import Array, Float, Key
 
 from ._distribution import (
     AbstractSTDDistribution,
@@ -28,7 +28,7 @@ class Uniform(
     def event_shape(self) -> tuple[int, ...]:
         return self.low.shape
 
-    def sample(self, key: PRNGKeyArray) -> Array:
+    def sample(self, key: Key[Array, ""]) -> Array:
         """See `Distribution.sample`."""
         uniform = jax.random.uniform(
             key=key,
@@ -39,7 +39,7 @@ class Uniform(
         )
         return self.low + self.range * uniform
 
-    def sample_and_log_prob(self, key: PRNGKeyArray) -> tuple[Array, Array]:
+    def sample_and_log_prob(self, key: Key[Array, ""]) -> tuple[Array, Array]:
         samples = self.sample(key)
         # broadcast this?
         log_prob = -jnp.log(self.range)

@@ -25,7 +25,7 @@ class ScalarAffineTest(TestCase):
             )
 
     def test_shapes_are_correct(self):
-        k1, k2, k3, k4 = jax.random.split(jax.random.PRNGKey(42), 4)
+        k1, k2, k3, k4 = jax.random.split(jax.random.key(42), 4)
         x = jax.random.normal(k1, (3, 4, 5))
         shift = jax.random.normal(k2, (3, 4, 5))
         scale = jax.random.uniform(k3, (3, 4, 5)) + 0.1
@@ -44,7 +44,7 @@ class ScalarAffineTest(TestCase):
             self.assertEqual(logdet.shape, (3, 4, 5))
 
     def test_forward_methods_are_correct(self):
-        key = jax.random.PRNGKey(42)
+        key = jax.random.key(42)
         x = jax.random.normal(key, (2, 3, 4, 5))
         bij_no_scale = ScalarAffine(shift=jnp.array(3.0))
         bij_with_scale = ScalarAffine(shift=jnp.array(3.0), scale=jnp.array(1.0))
@@ -57,7 +57,7 @@ class ScalarAffineTest(TestCase):
             np.testing.assert_allclose(logdet, 0.0, atol=1e-8)
 
     def test_inverse_methods_are_correct(self):
-        k1, k2, k3, k4 = jax.random.split(jax.random.PRNGKey(42), 4)
+        k1, k2, k3, k4 = jax.random.split(jax.random.key(42), 4)
         x = jax.random.normal(k1, (2, 3, 4, 5))
         shift = jax.random.normal(k2, (4, 5))
         scale = jax.random.uniform(k3, (3, 4, 5)) + 0.1
@@ -72,7 +72,7 @@ class ScalarAffineTest(TestCase):
             np.testing.assert_allclose(logdet_fwd, -logdet_inv, atol=3e-6)
 
     def test_composite_methods_are_consistent(self):
-        k1, k2, k3, k4 = jax.random.split(jax.random.PRNGKey(42), 4)
+        k1, k2, k3, k4 = jax.random.split(jax.random.key(42), 4)
         bij = ScalarAffine(
             shift=jax.random.normal(k1, (4, 5)), log_scale=jax.random.normal(k2, (4, 5))
         )

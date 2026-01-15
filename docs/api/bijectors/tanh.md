@@ -1,6 +1,6 @@
 # TanH Bijector
 
-::: distreqx.bijectors.tanh.Tanh
-    selection:
-        members: None
+::: distreqx.bijectors.Tanh
+    options:
+        members: false
 ---

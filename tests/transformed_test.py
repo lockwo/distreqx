@@ -13,7 +13,7 @@ from distreqx.distributions import Normal, Transformed
 
 class TransformedTest(TestCase):
     def setUp(self):
-        self.seed = jax.random.PRNGKey(1234)
+        self.seed = jax.random.key(1234)
 
     @parameterized.expand(
         [

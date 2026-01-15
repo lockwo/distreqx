@@ -8,14 +8,14 @@ import jax.numpy as jnp
 import numpy as np
 from parameterized import parameterized  # type: ignore
 
-from distreqx.distributions import one_hot_categorical
+from distreqx.distributions import OneHotCategorical
 from distreqx.utils import math
 
 
 class OneHotCategoricalTest(TestCase):
     def setUp(self):
-        self.dist = one_hot_categorical.OneHotCategorical
-        self.key = jax.random.PRNGKey(0)
+        self.dist = OneHotCategorical
+        self.key = jax.random.key(0)
         self.p = jnp.asarray([0.1, 0.4, 0.2, 0.3])
         self.logits = jnp.log(self.p) - 1.0  # intended unnormalization
         self.assertion_fn = lambda x: lambda a, b: self.assertTrue(
@@ -304,7 +304,7 @@ class OneHotCategoricalTest(TestCase):
     def test_jittable(self):
         @eqx.filter_jit
         def f(dist):
-            return dist.sample(key=jax.random.PRNGKey(0))
+            return dist.sample(key=jax.random.key(0))
 
         dist_params = {"logits": jnp.array([0.0, 4.0, -1.0, 4.0])}
         dist = self.dist(**dist_params)

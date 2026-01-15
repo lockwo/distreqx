@@ -1,6 +1,6 @@
 # Sigmoid Bijector
 
-::: distreqx.bijectors.sigmoid.Sigmoid
-    selection:
-        members: None
+::: distreqx.bijectors.Sigmoid
+    options:
+        members: false
 ---

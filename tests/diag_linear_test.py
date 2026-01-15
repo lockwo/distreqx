@@ -30,7 +30,7 @@ class DiagLinearTest(TestCase):
             DiagLinear(diag=jnp.ones(()))
 
     def test_parameters(self):
-        prng = jax.random.PRNGKey(42)
+        prng = jax.random.key(42)
         prng = jax.random.split(prng, 2)
         diag = jax.random.uniform(prng[0], (4,)) + 0.5
         bij = DiagLinear(diag)
@@ -46,7 +46,7 @@ class DiagLinearTest(TestCase):
 
     def test_identity_initialization(self):
         bij = DiagLinear(diag=jnp.ones((4,)))
-        prng = jax.random.PRNGKey(42)
+        prng = jax.random.key(42)
         x = jax.random.normal(prng, (4,))
 
         # Forward methods.
@@ -60,7 +60,7 @@ class DiagLinearTest(TestCase):
         np.testing.assert_array_equal(logdet, jnp.zeros(1))
 
     def test_inverse_methods(self):
-        prng = jax.random.PRNGKey(42)
+        prng = jax.random.key(42)
         prng = jax.random.split(prng, 2)
         diag = jax.random.uniform(prng[0], (4,)) + 0.5
         bij = DiagLinear(diag)
@@ -71,7 +71,7 @@ class DiagLinearTest(TestCase):
         np.testing.assert_allclose(logdet_fwd, -logdet_inv, atol=1e-6)
 
     def test_forward_jacobian_det(self):
-        prng = jax.random.PRNGKey(42)
+        prng = jax.random.key(42)
         prng = jax.random.split(prng, 3)
         diag = jax.random.uniform(prng[0], (4,)) + 0.5
         bij = DiagLinear(diag)
@@ -86,7 +86,7 @@ class DiagLinearTest(TestCase):
             np.testing.assert_allclose(logdet, logdet_numerical, atol=5e-4)
 
     def test_inverse_jacobian_det(self):
-        prng = jax.random.PRNGKey(42)
+        prng = jax.random.key(42)
         prng = jax.random.split(prng, 3)
         diag = jax.random.uniform(prng[0], (4,)) + 0.5
         bij = DiagLinear(diag)

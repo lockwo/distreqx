@@ -1,7 +1,7 @@
 # Diagonal Multivariate Normal
 
-::: distreqx.distributions.mvn_diag.MultivariateNormalDiag
-    selection:
+::: distreqx.distributions.MultivariateNormalDiag
+    options:
         members:
             - __init__
 ---

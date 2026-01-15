@@ -27,10 +27,10 @@ class MockLinear(
 ):
     _is_constant_jacobian: bool
     _is_constant_log_det: bool
-    _event_dims: int
+    event_dims: int
 
     def __init__(self, dims):
-        self._event_dims = dims
+        self.event_dims = dims
         self._is_constant_jacobian = True
         self._is_constant_log_det = True
 
@@ -68,7 +68,7 @@ class MultivariateNormalFromBijectorTest(TestCase):
         self.assertEqual(dist.event_shape, (4,))
 
     def test_sample(self):
-        prng = jax.random.PRNGKey(42)
+        prng = jax.random.key(42)
         keys = jax.random.split(prng, 2)
         diag = 0.5 + jax.random.uniform(keys[0], (4,))
         loc = jax.random.normal(keys[1], (4,))
@@ -87,7 +87,7 @@ class MultivariateNormalFromBijectorTest(TestCase):
         ]
     )
     def test_mean_median_mode(self, name, diag_shape, loc_shape):
-        prng = jax.random.PRNGKey(42)
+        prng = jax.random.key(42)
         diag = jax.random.normal(prng, diag_shape)
         loc = jax.random.normal(prng, loc_shape)
         scale = DiagLinear(diag)

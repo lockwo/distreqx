@@ -29,8 +29,8 @@ class Block(AbstractBijector, strict=True):
     last k dimensions.
     """
 
-    _ndims: int
-    _bijector: AbstractBijector
+    ndims: int
+    bijector: AbstractBijector
     _is_constant_jacobian: bool
     _is_constant_log_det: bool
 
@@ -45,53 +45,43 @@ class Block(AbstractBijector, strict=True):
         """
         if ndims < 0:
             raise ValueError(f"`ndims` must be non-negative; got {ndims}.")
-        self._bijector = bijector
-        self._ndims = ndims
-        self._is_constant_jacobian = self._bijector.is_constant_jacobian
-        self._is_constant_log_det = self._bijector.is_constant_log_det
-
-    @property
-    def bijector(self) -> AbstractBijector:
-        """The base bijector, without promoting to a block bijector."""
-        return self._bijector
-
-    @property
-    def ndims(self) -> int:
-        """The number of batch dimensions promoted to event dimensions."""
-        return self._ndims
+        self.bijector = bijector
+        self.ndims = ndims
+        self._is_constant_jacobian = self.bijector.is_constant_jacobian
+        self._is_constant_log_det = self.bijector.is_constant_log_det
 
     def forward(self, x: Array) -> Array:
         """Computes y = f(x)."""
-        return self._bijector.forward(x)
+        return self.bijector.forward(x)
 
     def inverse(self, y: Array) -> Array:
         """Computes x = f^{-1}(y)."""
-        return self._bijector.inverse(y)
+        return self.bijector.inverse(y)
 
     def forward_log_det_jacobian(self, x: Array) -> Array:
         """Computes log|det J(f)(x)|."""
-        log_det = self._bijector.forward_log_det_jacobian(x)
-        return sum_last(log_det, self._ndims)
+        log_det = self.bijector.forward_log_det_jacobian(x)
+        return sum_last(log_det, self.ndims)
 
     def inverse_log_det_jacobian(self, y: Array) -> Array:
         """Computes log|det J(f^{-1})(y)|."""
-        log_det = self._bijector.inverse_log_det_jacobian(y)
-        return sum_last(log_det, self._ndims)
+        log_det = self.bijector.inverse_log_det_jacobian(y)
+        return sum_last(log_det, self.ndims)
 
     def forward_and_log_det(self, x: Array) -> tuple[Array, Array]:
         """Computes y = f(x) and log|det J(f)(x)|."""
-        y, log_det = self._bijector.forward_and_log_det(x)
-        return y, sum_last(log_det, self._ndims)
+        y, log_det = self.bijector.forward_and_log_det(x)
+        return y, sum_last(log_det, self.ndims)
 
     def inverse_and_log_det(self, y: Array) -> tuple[Array, Array]:
         """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
-        x, log_det = self._bijector.inverse_and_log_det(y)
-        return x, sum_last(log_det, self._ndims)
+        x, log_det = self.bijector.inverse_and_log_det(y)
+        return x, sum_last(log_det, self.ndims)
 
     @property
     def name(self) -> str:
         """Name of the bijector."""
-        return self.__class__.__name__ + self._bijector.name
+        return self.__class__.__name__ + self.bijector.name
 
     def same_as(self, other: AbstractBijector) -> bool:
         """Returns True if this bijector is guaranteed to be the same as `other`."""

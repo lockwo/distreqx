@@ -1,7 +1,7 @@
 # Independent Distribution
 
-::: distreqx.distributions.independent.Independent
-    selection:
+::: distreqx.distributions.Independent
+    options:
         members:
             - __init__
 ---

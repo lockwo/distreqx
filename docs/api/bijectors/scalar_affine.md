@@ -1,7 +1,7 @@
 # Scalar Affine Bijector
 
-::: distreqx.bijectors.scalar_affine.ScalarAffine
-    selection:
+::: distreqx.bijectors.ScalarAffine
+    options:
         members:
             - __init__
 ---

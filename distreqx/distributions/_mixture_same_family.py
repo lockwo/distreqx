@@ -5,6 +5,7 @@ import jax
 import jax.numpy as jnp
 from jaxtyping import Array, PyTree
 
+from ._categorical import Categorical
 from ._distribution import (
     AbstractCDFDistribution,
     AbstractDistribution,
@@ -13,7 +14,6 @@ from ._distribution import (
     AbstractSTDDistribution,
     AbstractSurvivalDistribution,
 )
-from .categorical import Categorical
 
 
 class MixtureSameFamily(
@@ -26,8 +26,8 @@ class MixtureSameFamily(
 ):
     """Mixture with components provided from a single vmapped distribution."""
 
-    _mixture_distribution: Categorical
-    _components_distribution: AbstractDistribution
+    mixture_distribution: Categorical
+    components_distribution: AbstractDistribution
 
     def __init__(
         self,
@@ -41,30 +41,20 @@ class MixtureSameFamily(
         - `mixture_distribution`: Distribution over selecting components.
         - `components_distribution`: Component distribution.
         """
-        self._mixture_distribution = mixture_distribution
-        self._components_distribution = components_distribution
-
-    @property
-    def components_distribution(self) -> AbstractDistribution:
-        """The components distribution."""
-        return self._components_distribution
-
-    @property
-    def mixture_distribution(self):
-        """The mixture distribution."""
-        return self._mixture_distribution
+        self.mixture_distribution = mixture_distribution
+        self.components_distribution = components_distribution
 
     @property
     def event_shape(self):
         """Shape of event of distribution samples."""
-        return self._components_distribution.event_shape
+        return self.components_distribution.event_shape
 
     def sample(self, key) -> Array:
         """See `AbstractDistribution._sample`."""
         key_mix, key_components = jax.random.split(key)
         mix_sample = self.mixture_distribution.sample(key_mix)
 
-        num_components = self._mixture_distribution.num_categories
+        num_components = self.mixture_distribution.num_categories
 
         # Sample from all components, then multiply with a one-hot mask and sum.
         # While this does computation that is not used eventually, it is faster on
@@ -82,7 +72,7 @@ class MixtureSameFamily(
     def mean(self) -> Array:
         """Calculates the mean."""
         means = self.components_distribution.mean()
-        weights = self._mixture_distribution.probs
+        weights = self.mixture_distribution.probs
         # Broadcast weights over event shape, and average over component axis.
         weights = weights.reshape(weights.shape + (1,) * len(self.event_shape))
         return jnp.sum(means * weights, axis=-1 - len(self.event_shape))
@@ -91,7 +81,7 @@ class MixtureSameFamily(
         """Calculates the variance."""
         means = self.components_distribution.mean()
         variances = self.components_distribution.variance()
-        weights = self._mixture_distribution.probs
+        weights = self.mixture_distribution.probs
         # Make weights broadcast over event shape.
         weights = weights.reshape(weights.shape + (1,) * len(self.event_shape))
         # Component axis to reduce over.
@@ -113,7 +103,7 @@ class MixtureSameFamily(
             lambda dist, x: dist.log_prob(x), in_axes=(eqx.if_array(0), None)
         )(self.components_distribution, value)
         # Last axis of mixture log probs are components.
-        return lp + jax.nn.log_softmax(self._mixture_distribution.logits, axis=-1)
+        return lp + jax.nn.log_softmax(self.mixture_distribution.logits, axis=-1)
 
     def log_prob(self, value: Array) -> Array:
         # Reduce last axis of mixture log probs are components

@@ -11,7 +11,7 @@ from distreqx.bijectors import AbstractBijector, Block, ScalarAffine, Tanh
 
 
 RTOL = 1e-6
-seed = jax.random.PRNGKey(1234)
+seed = jax.random.key(1234)
 
 
 class BlockTest(TestCase):

@@ -1,7 +1,7 @@
 # Normal
 
-::: distreqx.distributions.normal.Normal
-    selection:
+::: distreqx.distributions.Normal
+    options:
         members:
             - __init__
             - entropy

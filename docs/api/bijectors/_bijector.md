@@ -1,7 +1,7 @@
 # Abstract Bijectors
 
-::: distreqx.bijectors._bijector.AbstractBijector
-    selection:
+::: distreqx.bijectors.AbstractBijector
+    options:
         members:
             - __init__
             - forward
@@ -12,24 +12,24 @@
             - inverse_and_log_det
             - same_as
 
-::: distreqx.bijectors._bijector.AbstractInvLogDetJacBijector
-    selection:
+::: distreqx.bijectors.AbstractInvLogDetJacBijector
+    options:
         members:
             - inverse_log_det_jacobian
 
-::: distreqx.bijectors._bijector.AbstractFwdLogDetJacBijector
-    selection:
+::: distreqx.bijectors.AbstractFwdLogDetJacBijector
+    options:
         members:
             - forward_log_det_jacobian
 
-::: distreqx.bijectors._bijector.AbstractFowardInverseBijector
-    selection:
+::: distreqx.bijectors.AbstractFowardInverseBijector
+    options:
         members:
             - forward
             - inverse
 
-::: distreqx.bijectors._linear.AbstractLinearBijector
-    selection:
+::: distreqx.bijectors.AbstractLinearBijector
+    options:
         members:
             - __init__
             - matrix

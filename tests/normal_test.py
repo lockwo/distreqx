@@ -34,7 +34,7 @@ class NormalTest(TestCase):
             jnp.asarray(distr_params[0], dtype=jnp.float32),
             jnp.asarray(distr_params[1], dtype=jnp.float32),
         )
-        key = jax.random.PRNGKey(0)
+        key = jax.random.key(0)
         self.assertEqual(
             distr_params[0].shape,
             Normal(distr_params[0], distr_params[1]).sample(key).shape,
@@ -53,7 +53,7 @@ class NormalTest(TestCase):
             jnp.asarray(distr_params[0], dtype=jnp.float32),
             jnp.asarray(distr_params[1], dtype=jnp.float32),
         )
-        key = jax.random.PRNGKey(0)
+        key = jax.random.key(0)
         dist = Normal(distr_params[0], distr_params[1])
         result = dist.sample_and_log_prob(key)
         self.assertEqual(
