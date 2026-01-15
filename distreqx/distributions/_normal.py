@@ -15,8 +15,8 @@ _half_log2pi = 0.5 * math.log(2 * math.pi)
 class Normal(AbstractProbDistribution, strict=True):
     """Normal distribution with location `loc` and `scale` parameters."""
 
-    _loc: Array
-    _scale: Array
+    loc: Array
+    scale: Array
 
     def __init__(self, loc: Array, scale: Array):
         """Initializes a Normal distribution.
@@ -26,44 +26,34 @@ class Normal(AbstractProbDistribution, strict=True):
         - `loc`: Mean of the distribution.
         - `scale`: Standard deviation of the distribution.
         """
-        self._loc = jnp.array(loc)
-        self._scale = jnp.array(scale)
+        self.loc = jnp.array(loc)
+        self.scale = jnp.array(scale)
 
     @property
     def event_shape(self) -> tuple[int, ...]:
         """Shape of event of distribution samples."""
-        return self._loc.shape
-
-    @property
-    def loc(self) -> Array:
-        """Mean of the distribution."""
-        return self._loc
-
-    @property
-    def scale(self) -> Array:
-        """Scale of the distribution."""
-        return self._scale
+        return self.loc.shape
 
     def _sample_from_std_normal(self, key: PRNGKeyArray) -> Array:
-        dtype = jnp.result_type(self._loc, self._scale)
+        dtype = jnp.result_type(self.loc, self.scale)
         return jax.random.normal(key, shape=self.event_shape, dtype=dtype)
 
     def sample(self, key: PRNGKeyArray) -> Array:
         """See `Distribution.sample`."""
         rnd = self._sample_from_std_normal(key)
-        return self._scale * rnd + self._loc
+        return self.scale * rnd + self.loc
 
     def sample_and_log_prob(self, key: PRNGKeyArray) -> tuple[Array, Array]:
         """See `Distribution.sample_and_log_prob`."""
         rnd = self._sample_from_std_normal(key)
-        samples = self._scale * rnd + self._loc
-        log_prob = -0.5 * jnp.square(rnd) - _half_log2pi - jnp.log(self._scale)
+        samples = self.scale * rnd + self.loc
+        log_prob = -0.5 * jnp.square(rnd) - _half_log2pi - jnp.log(self.scale)
         return samples, log_prob
 
     def log_prob(self, value: Array) -> Array:
         """See `Distribution.log_prob`."""
         log_unnormalized = -0.5 * jnp.square(self._standardize(value))
-        log_normalization = _half_log2pi + jnp.log(self._scale)
+        log_normalization = _half_log2pi + jnp.log(self.scale)
         return log_unnormalized - log_normalization
 
     def cdf(self, value: Array) -> Array:
@@ -83,7 +73,7 @@ class Normal(AbstractProbDistribution, strict=True):
         return jax.scipy.special.log_ndtr(-self._standardize(value))  # pyright: ignore[reportGeneralTypeIssues]
 
     def _standardize(self, value: Array) -> Array:
-        return (value - self._loc) / self._scale
+        return (value - self.loc) / self.scale
 
     def entropy(self) -> Array:
         """Calculates the Shannon entropy (in nats)."""

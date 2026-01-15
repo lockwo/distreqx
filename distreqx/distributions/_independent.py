@@ -27,7 +27,7 @@ class Independent(
 ):
     """Independent distribution obtained from child distributions."""
 
-    _distribution: AbstractDistribution
+    distribution: AbstractDistribution
 
     def __init__(
         self,
@@ -39,58 +39,54 @@ class Independent(
 
         - `distribution`: Base distribution instance.
         """
-        self._distribution = distribution
+        self.distribution = distribution
 
     @property
     def event_shape(self) -> tuple:
         """Shape of event of distribution samples."""
-        return self._distribution.event_shape
-
-    @property
-    def distribution(self):
-        return self._distribution
+        return self.distribution.event_shape
 
     def sample(self, key: PRNGKeyArray) -> Array:
         """See `Distribution.sample`."""
-        return self._distribution.sample(key)
+        return self.distribution.sample(key)
 
     def sample_and_log_prob(self, key: PRNGKeyArray) -> tuple[Array, Array]:
         """See `Distribution.sample_and_log_prob`."""
-        samples, log_prob = self._distribution.sample_and_log_prob(key)
+        samples, log_prob = self.distribution.sample_and_log_prob(key)
         log_prob = _reduce_helper(log_prob)
         return samples, log_prob
 
     def log_prob(self, value: PyTree) -> Array:
         """See `Distribution.log_prob`."""
-        return _reduce_helper(self._distribution.log_prob(value))
+        return _reduce_helper(self.distribution.log_prob(value))
 
     def entropy(self) -> Array:
         """See `Distribution.entropy`."""
-        return _reduce_helper(self._distribution.entropy())
+        return _reduce_helper(self.distribution.entropy())
 
     def log_cdf(self, value: PyTree) -> Array:
         """See `Distribution.log_cdf`."""
-        return _reduce_helper(self._distribution.log_cdf(value))
+        return _reduce_helper(self.distribution.log_cdf(value))
 
     def mean(self) -> Array:
         """Calculates the mean."""
-        return self._distribution.mean()
+        return self.distribution.mean()
 
     def median(self) -> Array:
         """Calculates the median."""
-        return self._distribution.median()
+        return self.distribution.median()
 
     def variance(self) -> Array:
         """Calculates the variance."""
-        return self._distribution.variance()
+        return self.distribution.variance()
 
     def stddev(self) -> Array:
         """Calculates the standard deviation."""
-        return self._distribution.stddev()
+        return self.distribution.stddev()
 
     def mode(self) -> Array:
         """Calculates the mode."""
-        return self._distribution.mode()
+        return self.distribution.mode()
 
     def kl_divergence(self, other_dist, **kwargs) -> Array:
         """Calculates the KL divergence to another distribution.

@@ -21,23 +21,23 @@ class AbstractTransformed(
     AbstractProbDistribution,
     strict=True,
 ):
-    """Distribution of a random variable transformed by a bijective function.
+    r"""Distribution of a random variable transformed by a bijective function.
 
-    Let `X` be a continuous random variable and `Y = f(X)` be a random variable
-    transformed by a differentiable bijection `f` (a "bijector"). Given the
-    distribution of `X` (the "base distribution") and the bijector `f`, this class
-    implements the distribution of `Y` (also known as the pushforward of the base
-    distribution through `f`).
+    Let $X$ be a continuous random variable and $Y = f(X)$ be a random variable
+    transformed by a differentiable bijection $f$ (a "bijector"). Given the
+    distribution of $X$ (the "base distribution") and the bijector $f$, this class
+    implements the distribution of $Y$ (also known as the pushforward of the base
+    distribution through $f$).
 
-    The probability density of `Y` can be computed by:
+    The probability density of $Y$ can be computed by:
 
-    `log p(y) = log p(x) - log|det J(f)(x)|`
+    $$\log p(y) = \log p(x) - \log|\det J(f)(x)|$$
 
-    where `p(x)` is the probability density of `X` (the "base density") and
-    `J(f)(x)` is the Jacobian matrix of `f`, both evaluated at `x = f^{-1}(y)`.
+    where $p(x)$ is the probability density of $X$ (the "base density") and
+    $J(f)(x)$ is the Jacobian matrix of $f$, both evaluated at $x = f^{-1}(y)$.
 
     Sampling from a Transformed distribution involves two steps: sampling from the
-    base distribution `x ~ p(x)` and then evaluating `y = f(x)`. For example:
+    base distribution $x \sim p(x)$ and then evaluating $y = f(x)$. For example:
 
     ```python
       dist = distrax.Normal(loc=0., scale=1.)
@@ -54,18 +54,8 @@ class AbstractTransformed(
     can be correctly obtained.
     """
 
-    _distribution: eqx.AbstractVar[AbstractDistribution]
-    _bijector: eqx.AbstractVar[AbstractBijector]
-
-    @property
-    def distribution(self):
-        """The base distribution."""
-        return self._distribution
-
-    @property
-    def bijector(self):
-        """The bijector representing the transformation."""
-        return self._bijector
+    distribution: eqx.AbstractVar[AbstractDistribution]
+    bijector: eqx.AbstractVar[AbstractBijector]
 
     def _infer_shapes_and_dtype(self):
         """Infer the event shape by tracing `forward`."""
@@ -154,23 +144,23 @@ class AbstractTransformed(
 
 
 class Transformed(AbstractTransformed, AbstractSTDDistribution, strict=True):
-    """Distribution of a random variable transformed by a bijective function.
+    r"""Distribution of a random variable transformed by a bijective function.
 
-    Let `X` be a continuous random variable and `Y = f(X)` be a random variable
-    transformed by a differentiable bijection `f` (a "bijector"). Given the
-    distribution of `X` (the "base distribution") and the bijector `f`, this class
-    implements the distribution of `Y` (also known as the pushforward of the base
-    distribution through `f`).
+    Let $X$ be a continuous random variable and $Y = f(X)$ be a random variable
+    transformed by a differentiable bijection $f$ (a "bijector"). Given the
+    distribution of $X$ (the "base distribution") and the bijector $f$, this class
+    implements the distribution of $Y$ (also known as the pushforward of the base
+    distribution through $f$).
 
-    The probability density of `Y` can be computed by:
+    The probability density of $Y$ can be computed by:
 
-    `log p(y) = log p(x) - log|det J(f)(x)|`
+    $$\log p(y) = \log p(x) - \log|\det J(f)(x)|$$
 
-    where `p(x)` is the probability density of `X` (the "base density") and
-    `J(f)(x)` is the Jacobian matrix of `f`, both evaluated at `x = f^{-1}(y)`.
+    where $p(x)$ is the probability density of $X$ (the "base density") and
+    $J(f)(x)$ is the Jacobian matrix of $f$, both evaluated at $x = f^{-1}(y)$.
 
     Sampling from a Transformed distribution involves two steps: sampling from the
-    base distribution `x ~ p(x)` and then evaluating `y = f(x)`. For example:
+    base distribution $x \sim p(x)$ and then evaluating $y = f(x)$. For example:
 
     ```python
       dist = distrax.Normal(loc=0., scale=1.)
@@ -187,8 +177,8 @@ class Transformed(AbstractTransformed, AbstractSTDDistribution, strict=True):
     can be correctly obtained.
     """
 
-    _distribution: AbstractDistribution
-    _bijector: AbstractBijector
+    distribution: AbstractDistribution
+    bijector: AbstractBijector
 
     def __init__(self, distribution: AbstractDistribution, bijector: AbstractBijector):
         """Initializes a Transformed distribution.
@@ -198,8 +188,8 @@ class Transformed(AbstractTransformed, AbstractSTDDistribution, strict=True):
         - `bijector`: a differentiable bijective transformation. Can be a bijector or
             a callable to be wrapped by `Lambda` bijector.
         """
-        self._distribution = distribution
-        self._bijector = bijector
+        self.distribution = distribution
+        self.bijector = bijector
 
     def mean(self) -> Array:
         """Calculates the mean."""

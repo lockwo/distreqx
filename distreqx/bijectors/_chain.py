@@ -34,7 +34,7 @@ class Chain(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector, strict=T
     `y = f(g(x))`.
     """
 
-    _bijectors: list[AbstractBijector]
+    bijectors: list[AbstractBijector]
     _is_constant_jacobian: bool
     _is_constant_log_det: bool
 
@@ -49,10 +49,10 @@ class Chain(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector, strict=T
         """
         if not bijectors:
             raise ValueError("The sequence of bijectors cannot be empty.")
-        self._bijectors = list(bijectors)
+        self.bijectors = list(bijectors)
 
-        is_constant_jacobian = all(b.is_constant_jacobian for b in self._bijectors)
-        is_constant_log_det = all(b.is_constant_log_det for b in self._bijectors)
+        is_constant_jacobian = all(b.is_constant_jacobian for b in self.bijectors)
+        is_constant_log_det = all(b.is_constant_log_det for b in self.bijectors)
         if is_constant_log_det is None:
             is_constant_log_det = is_constant_jacobian
         if is_constant_jacobian and not is_constant_log_det:
@@ -63,35 +63,30 @@ class Chain(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector, strict=T
         self._is_constant_jacobian = is_constant_jacobian
         self._is_constant_log_det = is_constant_log_det
 
-    @property
-    def bijectors(self) -> list[AbstractBijector]:
-        """The list of bijectors in the chain."""
-        return self._bijectors
-
     def forward(self, x: Array) -> Array:
         """Computes y = f(x)."""
-        for bijector in reversed(self._bijectors):
+        for bijector in reversed(self.bijectors):
             x = bijector.forward(x)
         return x
 
     def inverse(self, y: Array) -> Array:
         """Computes x = f^{-1}(y)."""
-        for bijector in self._bijectors:
+        for bijector in self.bijectors:
             y = bijector.inverse(y)
         return y
 
     def forward_and_log_det(self, x: Array) -> tuple[Array, Array]:
         """Computes y = f(x) and log|det J(f)(x)|."""
-        x, log_det = self._bijectors[-1].forward_and_log_det(x)
-        for bijector in reversed(self._bijectors[:-1]):
+        x, log_det = self.bijectors[-1].forward_and_log_det(x)
+        for bijector in reversed(self.bijectors[:-1]):
             x, ld = bijector.forward_and_log_det(x)
             log_det += ld
         return x, log_det
 
     def inverse_and_log_det(self, y: Array) -> tuple[Array, Array]:
         """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
-        y, log_det = self._bijectors[0].inverse_and_log_det(y)
-        for bijector in self._bijectors[1:]:
+        y, log_det = self.bijectors[0].inverse_and_log_det(y)
+        for bijector in self.bijectors[1:]:
             y, ld = bijector.inverse_and_log_det(y)
             log_det += ld
         return y, log_det

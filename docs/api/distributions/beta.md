@@ -1,7 +1,7 @@
 # Beta
 
-::: distreqx.distributions.beta.Beta
-    selection:
+::: distreqx.distributions.Beta
+    options:
         members:
             - __init__
 ---

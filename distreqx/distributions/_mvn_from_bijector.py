@@ -16,9 +16,9 @@ from ..bijectors import (
     Shift,
 )
 from ._distribution import AbstractDistribution
-from .independent import Independent
-from .normal import Normal
-from .transformed import AbstractTransformed
+from ._independent import Independent
+from ._normal import Normal
+from ._transformed import AbstractTransformed
 
 
 def _check_input_parameters_are_valid(
@@ -36,21 +36,8 @@ def _check_input_parameters_are_valid(
 
 
 class AbstractMultivariateNormalFromBijector(AbstractTransformed, strict=True):
-    _loc: eqx.AbstractVar[Array]
-    _scale: eqx.AbstractVar[AbstractLinearBijector]
-    _event_shape: eqx.AbstractVar[tuple[int, ...]]
-    _distribution: eqx.AbstractVar[AbstractDistribution]
-    _bijector: eqx.AbstractVar[AbstractBijector]
-
-    @property
-    def scale(self) -> AbstractLinearBijector:
-        """The scale bijector."""
-        return self._scale
-
-    @property
-    def loc(self) -> Array:
-        """The `loc` parameter of the distribution."""
-        return self._loc
+    loc: eqx.AbstractVar[Array]
+    scale: eqx.AbstractVar[AbstractLinearBijector]
 
     def mean(self) -> Array:
         """Calculates the mean."""
@@ -74,7 +61,7 @@ class AbstractMultivariateNormalFromBijector(AbstractTransformed, strict=True):
             result = jnp.diag(self.variance())
         else:
             result = jax.vmap(self.scale.forward, in_axes=-2, out_axes=-2)(
-                self._scale.matrix
+                self.scale.matrix
             )
         return result
 
@@ -83,7 +70,7 @@ class AbstractMultivariateNormalFromBijector(AbstractTransformed, strict=True):
         if isinstance(self.scale, DiagLinear):
             result = jnp.square(self.scale.diag)
         else:
-            scale_matrix = self._scale.matrix
+            scale_matrix = self.scale.matrix
             result = jnp.sum(scale_matrix * scale_matrix, axis=-1)
         return result
 
@@ -134,25 +121,25 @@ class AbstractMultivariateNormalFromBijector(AbstractTransformed, strict=True):
 
 
 class MultivariateNormalFromBijector(AbstractMultivariateNormalFromBijector):
-    """Multivariate normal distribution on `R^k`.
+    r"""Multivariate normal distribution on $\mathbb{R}^k$.
 
-    The multivariate normal over `x` is characterized by an invertible affine
-    transformation `x = f(z) = A @ z + b`, where `z` is a random variable that
-    follows a standard multivariate normal on `R^k`, i.e., `p(z) = N(0, I_k)`,
-    `A` is a `k x k` transformation matrix, and `b` is a `k`-dimensional vector.
+    The multivariate normal over $x$ is characterized by an invertible affine
+    transformation $x = f(z) = Az + b$, where $z$ is a random variable that
+    follows a standard multivariate normal on $\mathbb{R}^k$, i.e.,
+    $p(z) = \mathcal{N}(0, I_k)$,
+    $A$ is a $k \times k$ transformation matrix, and $b$ is a $k$-dimensional vector.
 
-    The resulting PDF on `x` is a multivariate normal, `p(x) = N(b, C)`, where
-    `C = A @ A.T` is the covariance matrix.
+    The resulting PDF on $x$ is a multivariate normal, $p(x) = \mathcal{N}(b, C)$, where
+    $C = AA^T$ is the covariance matrix.
 
-    The transformation `x = f(z)` must be specified by a linear scale bijector
-    implementing the operation `A @ z` and a shift (or location) term `b`.
+    The transformation $x = f(z)$ must be specified by a linear scale bijector
+    implementing the operation $Az$ and a shift (or location) term $b$.
     """
 
-    _loc: Array
-    _scale: AbstractLinearBijector
-    _event_shape: tuple[int, ...]
-    _distribution: AbstractDistribution
-    _bijector: AbstractBijector
+    loc: Array
+    scale: AbstractLinearBijector
+    distribution: AbstractDistribution
+    bijector: AbstractBijector
 
     def __init__(self, loc: Array, scale: AbstractLinearBijector):
         """Initializes the distribution.
@@ -173,11 +160,10 @@ class MultivariateNormalFromBijector(AbstractMultivariateNormalFromBijector):
         )
         # Form the bijector `f(x) = Ax + b`.
         bijector = Chain([Block(Shift(loc), ndims=loc.ndim), scale])
-        self._distribution = std_mvn_dist
-        self._bijector = bijector
-        self._scale = scale
-        self._loc = loc
-        self._event_shape = loc.shape[-1:]
+        self.distribution = std_mvn_dist
+        self.bijector = bijector
+        self.scale = scale
+        self.loc = loc
 
     def log_cdf(self, value: PyTree[Array]) -> PyTree[Array]:
         raise NotImplementedError

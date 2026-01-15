@@ -14,15 +14,16 @@ def _triangular_logdet(matrix: Array) -> Array:
 
 
 class TriangularLinear(AbstractLinearBijector, strict=True):
-    """A linear bijector whose weight matrix is triangular.
+    r"""A linear bijector whose weight matrix is triangular.
 
-    The bijector is defined as `f(x) = Ax` where `A` is a DxD triangular matrix.
+    The bijector is defined as $f(x) = Ax$ where $A$ is a $D \times D$ triangular
+    matrix.
 
-    The Jacobian determinant can be computed in O(D) as follows:
+    The Jacobian determinant can be computed in $O(D)$ as follows:
 
-    log|det J(x)| = log|det A| = sum(log|diag(A)|)
+    $$\log|\det J(x)| = \log|\det A| = \sum \log|\text{diag}(A)|$$
 
-    The inverse is computed in O(D^2) by solving the triangular system `Ax = y`.
+    The inverse is computed in $O(D^2)$ by solving the triangular system $Ax = y$.
 
     The bijector is invertible if and only if all diagonal elements of `A` are
     non-zero. It is the responsibility of the user to make sure that this is the
@@ -31,10 +32,10 @@ class TriangularLinear(AbstractLinearBijector, strict=True):
     """
 
     _matrix: Array
-    _is_lower: bool
+    is_lower: bool
     _is_constant_jacobian: bool
     _is_constant_log_det: bool
-    _event_dims: int
+    event_dims: int
 
     def __init__(self, matrix: Array, is_lower: bool = True):
         """Initializes a `TriangularLinear` bijector.
@@ -57,19 +58,14 @@ class TriangularLinear(AbstractLinearBijector, strict=True):
             raise ValueError(
                 f"`matrix` must be square; instead, it has shape {matrix.shape[-2:]}."
             )
-        self._event_dims = matrix.shape[-1]
+        self.event_dims = matrix.shape[-1]
         self._matrix = jnp.tril(matrix) if is_lower else jnp.triu(matrix)
-        self._is_lower = is_lower
+        self.is_lower = is_lower
 
     @property
     def matrix(self) -> Array:
         """The triangular matrix `A` of the transformation."""
         return self._matrix
-
-    @property
-    def is_lower(self) -> bool:
-        """True if `A` is lower triangular, False if upper triangular."""
-        return self._is_lower
 
     def forward(self, x: Array) -> Array:
         """Computes y = f(x)."""
@@ -85,7 +81,7 @@ class TriangularLinear(AbstractLinearBijector, strict=True):
 
     def inverse(self, y: Array) -> Array:
         """Computes x = f^{-1}(y)."""
-        return jax.scipy.linalg.solve_triangular(self._matrix, y, lower=self.is_lower)
+        return jax.scipy.linalg.solve_triangular(self.matrix, y, lower=self.is_lower)
 
     def inverse_log_det_jacobian(self, y: Array) -> Array:
         """Computes log|det J(f^{-1})(y)|."""

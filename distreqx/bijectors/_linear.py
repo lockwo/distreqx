@@ -13,7 +13,7 @@ class AbstractLinearBijector(AbstractBijector, strict=True):
     where `A` is a `DxD` matrix and `x` is a `D`-dimensional vector.
     """
 
-    _event_dims: eqx.AbstractVar[int]
+    event_dims: eqx.AbstractVar[int]
 
     @property
     def matrix(self) -> Array:
@@ -28,8 +28,3 @@ class AbstractLinearBijector(AbstractBijector, strict=True):
         raise NotImplementedError(
             f"Linear bijector {self.name} does not implement `matrix`."
         )
-
-    @property
-    def event_dims(self) -> int:
-        """The dimensionality `D` of the event `x`."""
-        return self._event_dims

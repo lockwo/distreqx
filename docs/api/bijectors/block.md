@@ -1,7 +1,7 @@
 # Block Bijector
 
-::: distreqx.bijectors.block.Block
-    selection:
+::: distreqx.bijectors.Block
+    options:
         members:
             - __init__
 ---

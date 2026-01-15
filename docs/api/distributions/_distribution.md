@@ -1,7 +1,7 @@
 # Abstract Distributions
 
-::: distreqx.distributions._distribution.AbstractDistribution
-    selection:
+::: distreqx.distributions.AbstractDistribution
+    options:
         members:
             - _sample_n_and_log_prob
             - log_prob
@@ -12,34 +12,34 @@
             - kl_divergence
             - cross_entropy
 
-::: distreqx.distributions._distribution.AbstractSampleLogProbDistribution
-    selection:
+::: distreqx.distributions.AbstractSampleLogProbDistribution
+    options:
         members:
             - _sample_n_and_log_prob
 
-::: distreqx.distributions._distribution.AbstractProbDistribution
-    selection:
+::: distreqx.distributions.AbstractProbDistribution
+    options:
         members:
             - prob
 
-::: distreqx.distributions._distribution.AbstractCDFDistribution
-    selection:
+::: distreqx.distributions.AbstractCDFDistribution
+    options:
         members:
             - cdf
 
-::: distreqx.distributions._distribution.AbstractSTDDistribution
-    selection:
+::: distreqx.distributions.AbstractSTDDistribution
+    options:
         members:
             - stddev
 
-::: distreqx.distributions._distribution.AbstractSurvivalDistribution
-    selection:
+::: distreqx.distributions.AbstractSurvivalDistribution
+    options:
         members:
             - survival_function
             - log_survival_function
 
-::: distreqx.distributions.transformed.AbstractTransformed
-    selection:
+::: distreqx.distributions.AbstractTransformed
+    options:
         members:
             - distribution
             - bijector
@@ -50,8 +50,8 @@
             - sample_and_log_prob
             - entropy
 
-::: distreqx.distributions.mvn_from_bijector.AbstractMultivariateNormalFromBijector
-    selection:
+::: distreqx.distributions.AbstractMultivariateNormalFromBijector
+    options:
         members:
             - scale
             - loc

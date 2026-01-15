@@ -1,7 +1,7 @@
 # Bernoulli
 
-::: distreqx.distributions.bernoulli.Bernoulli
-    selection:
+::: distreqx.distributions.Bernoulli
+    options:
         members:
             - __init__
 ---

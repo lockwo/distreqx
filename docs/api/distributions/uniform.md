@@ -1,6 +1,6 @@
 # Uniform
 
-::: distreqx.distributions.uniform.Uniform
-    selection:
+::: distreqx.distributions.Uniform
+    options:
         members: false
 ---

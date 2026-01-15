@@ -4,19 +4,19 @@ import jax.numpy as jnp
 from jaxtyping import Array
 
 from ._bijector import AbstractBijector
+from ._block import Block
 from ._linear import AbstractLinearBijector
-from .block import Block
-from .scalar_affine import ScalarAffine
+from ._scalar_affine import ScalarAffine
 
 
 class DiagLinear(AbstractLinearBijector, strict=True):
-    """Linear bijector with a diagonal weight matrix.
+    r"""Linear bijector with a diagonal weight matrix.
 
-    The bijector is defined as `f(x) = Ax` where `A` is a `DxD` diagonal matrix.
+    The bijector is defined as $f(x) = Ax$ where $A$ is a $D \times D$ diagonal matrix.
     Additional dimensions, if any, index batches.
 
     The Jacobian determinant is trivially computed by taking the product of the
-    diagonal entries in `A`. The inverse transformation `x = f^{-1}(y)` is
+    diagonal entries in $A$. The inverse transformation $x = f^{-1}(y)$ is
     computed element-wise.
 
     The bijector is invertible if and only if the diagonal entries of `A` are all
@@ -25,11 +25,11 @@ class DiagLinear(AbstractLinearBijector, strict=True):
     invertible.
     """
 
-    _diag: Array
+    diag: Array
     _bijector: AbstractBijector
     _is_constant_jacobian: bool
     _is_constant_log_det: bool
-    _event_dims: int
+    event_dims: int
 
     def __init__(self, diag: Array):
         """Initializes the bijector.
@@ -43,8 +43,8 @@ class DiagLinear(AbstractLinearBijector, strict=True):
         self._bijector = Block(
             ScalarAffine(shift=jnp.zeros_like(diag), scale=diag), ndims=diag.ndim
         )
-        self._event_dims = diag.shape[-1]
-        self._diag = diag
+        self.event_dims = diag.shape[-1]
+        self.diag = diag
         self._is_constant_jacobian = True
         self._is_constant_log_det = True
 
@@ -71,11 +71,6 @@ class DiagLinear(AbstractLinearBijector, strict=True):
     def forward_and_log_det(self, x: Array) -> tuple[Array, Array]:
         """Computes y = f(x) and log|det J(f)(x)|."""
         return self._bijector.forward_and_log_det(x)
-
-    @property
-    def diag(self) -> Array:
-        """Vector of length D, the diagonal of matrix `A`."""
-        return self._diag
 
     @property
     def matrix(self) -> Array:

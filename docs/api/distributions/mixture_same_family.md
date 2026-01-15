@@ -1,7 +1,7 @@
 # Mixture Distribution
 
-::: distreqx.distributions.mixture_same_family.MixtureSameFamily
-    selection:
+::: distreqx.distributions.MixtureSameFamily
+    options:
         members:
             - __init__
             - posterior_marginal
