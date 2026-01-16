@@ -1,6 +1,6 @@
 [project]
 name = "distreqx"
-version = "0.0.1"
+version = "0.0.2"
 description = "Lightweight JAX library of probability distributions and bijectors."
 readme = "README.md"
 requires-python = ">=3.10"
