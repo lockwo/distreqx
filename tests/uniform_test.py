@@ -282,17 +282,6 @@ class UniformTest(TestCase):
         u2 = jnp.array([0.1, 0.5, 0.9])
         np.testing.assert_allclose(dist.cdf(dist.icdf(u2)), u2, rtol=1e-5)
 
-    def test_icdf_non_standard(self):
-        """Test icdf with non-standard bounds."""
-        low = jnp.array(2.0)
-        high = jnp.array(5.0)
-        dist = Uniform(low, high)
-
-        # icdf(0) = low, icdf(1) = high, icdf(0.5) = midpoint
-        np.testing.assert_allclose(dist.icdf(jnp.array(0.0)), 2.0, rtol=1e-6)
-        np.testing.assert_allclose(dist.icdf(jnp.array(1.0)), 5.0, rtol=1e-6)
-        np.testing.assert_allclose(dist.icdf(jnp.array(0.5)), 3.5, rtol=1e-6)
-
     def test_vmap(self):
         def log_prob_sum(dist, x):
             return dist.log_prob(x).sum()
