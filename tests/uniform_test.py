@@ -257,6 +257,42 @@ class UniformTest(TestCase):
         kl_self = dist1.kl_divergence(dist1)
         np.testing.assert_allclose(kl_self, 0.0, rtol=1e-6)
 
+    def test_icdf_shape(self):
+        low = jnp.array([0.0, -1.0, 2.0])
+        high = jnp.array([1.0, 1.0, 5.0])
+        dist = Uniform(low, high)
+        u = jnp.array([0.25, 0.5, 0.75])
+        result = dist.icdf(u)
+        self.assertEqual(result.shape, u.shape)
+
+    def test_icdf_values(self):
+        low = jnp.array(0.0)
+        high = jnp.array(1.0)
+        dist = Uniform(low, high)
+
+        u = jnp.array([0.0, 0.25, 0.5, 0.75, 1.0])
+        expected = jnp.array([0.0, 0.25, 0.5, 0.75, 1.0])
+        np.testing.assert_allclose(dist.icdf(u), expected, rtol=1e-6)
+
+        # icdf(cdf(x)) should be x for x
+        x = jnp.array([0.1, 0.3, 0.7, 0.9])
+        np.testing.assert_allclose(dist.icdf(dist.cdf(x)), x, rtol=1e-5)
+
+        # cdf(icdf(u)) should be u
+        u2 = jnp.array([0.1, 0.5, 0.9])
+        np.testing.assert_allclose(dist.cdf(dist.icdf(u2)), u2, rtol=1e-5)
+
+    def test_icdf_non_standard(self):
+        """Test icdf with non-standard bounds."""
+        low = jnp.array(2.0)
+        high = jnp.array(5.0)
+        dist = Uniform(low, high)
+
+        # icdf(0) = low, icdf(1) = high, icdf(0.5) = midpoint
+        np.testing.assert_allclose(dist.icdf(jnp.array(0.0)), 2.0, rtol=1e-6)
+        np.testing.assert_allclose(dist.icdf(jnp.array(1.0)), 5.0, rtol=1e-6)
+        np.testing.assert_allclose(dist.icdf(jnp.array(0.5)), 3.5, rtol=1e-6)
+
     def test_vmap(self):
         def log_prob_sum(dist, x):
             return dist.log_prob(x).sum()

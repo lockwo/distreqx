@@ -4,10 +4,7 @@ import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Float, Key
 
-from ._distribution import (
-    AbstractSTDDistribution,
-    AbstractSurvivalDistribution,
-)
+from ._distribution import AbstractSTDDistribution, AbstractSurvivalDistribution
 
 
 class Uniform(
@@ -57,6 +54,10 @@ class Uniform(
             jnp.zeros_like(value),
             jnp.ones_like(value) / self.range,
         )
+
+    def icdf(self, value: Array) -> Array:
+        """See `Distribution.icdf`."""
+        return self.low + value * self.range
 
     def cdf(self, value: Array) -> Array:
         """See `Distribution.cdf`."""

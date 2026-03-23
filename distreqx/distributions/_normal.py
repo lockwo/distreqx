@@ -8,7 +8,6 @@ from jaxtyping import Array, Key
 
 from ._distribution import AbstractProbDistribution
 
-
 _half_log2pi = 0.5 * math.log(2 * math.pi)
 
 
@@ -56,13 +55,19 @@ class Normal(AbstractProbDistribution, strict=True):
         log_normalization = _half_log2pi + jnp.log(self.scale)
         return log_unnormalized - log_normalization
 
+    def icdf(self, value: Array) -> Array:
+        """See `Distribution.icdf`."""
+        return jax.scipy.special.ndtri(value) * self.scale + self.loc
+
     def cdf(self, value: Array) -> Array:
         """See `Distribution.cdf`."""
         return jax.scipy.special.ndtr(self._standardize(value))
 
     def log_cdf(self, value: Array) -> Array:
         """See `Distribution.log_cdf`."""
-        return jax.scipy.special.log_ndtr(self._standardize(value))  # pyright: ignore[reportGeneralTypeIssues]
+        return jax.scipy.special.log_ndtr(
+            self._standardize(value)
+        )  # pyright: ignore[reportGeneralTypeIssues]
 
     def survival_function(self, value: Array) -> Array:
         """See `Distribution.survival_function`."""
@@ -70,7 +75,9 @@ class Normal(AbstractProbDistribution, strict=True):
 
     def log_survival_function(self, value: Array) -> Array:
         """See `Distribution.log_survival_function`."""
-        return jax.scipy.special.log_ndtr(-self._standardize(value))  # pyright: ignore[reportGeneralTypeIssues]
+        return jax.scipy.special.log_ndtr(
+            -self._standardize(value)
+        )  # pyright: ignore[reportGeneralTypeIssues]
 
     def _standardize(self, value: Array) -> Array:
         return (value - self.loc) / self.scale

@@ -6,6 +6,7 @@
             - _sample_n_and_log_prob
             - log_prob
             - prob
+            - icdf
             - cdf
             - survival_function
             - log_survival_function

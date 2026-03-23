@@ -152,6 +152,36 @@ class NormalTest(TestCase):
         elif name == "cross-ent":
             np.testing.assert_allclose(dist1.entropy(), result)
 
+    @parameterized.expand(
+        [
+            ("1d std normal", (jnp.array(0.0), jnp.array(1.0))),
+            ("2d std normal", (jnp.zeros(2), jnp.ones(2))),
+            ("rank 2 std normal", (jnp.zeros((3, 2)), jnp.ones((3, 2)))),
+        ]
+    )
+    def test_icdf_shape(self, name, distr_params):
+        distr_params = (
+            jnp.asarray(distr_params[0], dtype=jnp.float32),
+            jnp.asarray(distr_params[1], dtype=jnp.float32),
+        )
+        value = 0.5 * jnp.ones_like(distr_params[0])
+        dist = Normal(distr_params[0], distr_params[1])
+        result = dist.icdf(value)
+        self.assertEqual(value.shape, result.shape)
+
+    def test_icdf_values(self):
+        loc = jnp.array([0.0, 1.0, -2.0])
+        scale = jnp.array([1.0, 2.0, 0.5])
+        dist = Normal(loc, scale)
+
+        # icdf(cdf(x)) should be x
+        x = jnp.array([0.5, -1.0, -1.5])
+        np.testing.assert_allclose(dist.icdf(dist.cdf(x)), x, rtol=1e-5)
+
+        # cdf(icdf(u)) should be u
+        u = jnp.array([0.1, 0.5, 0.9])
+        np.testing.assert_allclose(dist.cdf(dist.icdf(u)), u, rtol=1e-5)
+
     def test_vmap_inputs(self):
         def log_prob_sum(dist, x):
             return dist.log_prob(x).sum()

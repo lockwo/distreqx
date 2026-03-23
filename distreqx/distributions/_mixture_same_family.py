@@ -141,6 +141,10 @@ class MixtureSameFamily(
         """
         return jnp.argmax(self._per_mixture_component_log_prob(observation), axis=-1)
 
+    def icdf(self, value: Array) -> Array:
+        """See `Distribution.icdf`."""
+        raise NotImplementedError
+
     def median(self):
         raise NotImplementedError
 
