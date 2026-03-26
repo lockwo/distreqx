@@ -97,6 +97,10 @@ class MultivariateNormalDiag(AbstractMultivariateNormalFromBijector, strict=True
     def _standardize(self, value: Array) -> Array:
         return (value - self.loc) / self.scale_diag
 
+    def icdf(self, value: Array) -> Array:
+        """See `Distribution.icdf`."""
+        raise NotImplementedError
+
     def cdf(self, value: Array) -> Array:
         """See `Distribution.cdf`."""
         return jnp.prod(jax.scipy.special.ndtr(self._standardize(value)), axis=-1)
@@ -105,4 +109,6 @@ class MultivariateNormalDiag(AbstractMultivariateNormalFromBijector, strict=True
         """See `Distribution.log_cdf`."""
         # TODO: in normal and here we have a pyright ignore,
         # jax has a weird return value for log_ndtr
-        return jnp.sum(jax.scipy.special.log_ndtr(self._standardize(value)), axis=-1)  # pyright: ignore[reportGeneralTypeIssues]
+        return jnp.sum(
+            jax.scipy.special.log_ndtr(self._standardize(value)), axis=-1
+        )  # pyright: ignore[reportGeneralTypeIssues]

@@ -197,6 +197,9 @@ class Transformed(AbstractTransformed, AbstractSTDDistribution, strict=True):
                 "constant."
             )
 
+    def icdf(self, value: PyTree[Array]) -> PyTree[Array]:
+        raise NotImplementedError
+
     def log_cdf(self, value: PyTree[Array]) -> PyTree[Array]:
         raise NotImplementedError
 

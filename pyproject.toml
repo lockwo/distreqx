@@ -55,17 +55,12 @@ docs = [
 [tool.pytest.ini_options]
 addopts = "--jaxtyping-packages=distreqx,beartype.beartype(conf=beartype.BeartypeConf(strategy=beartype.BeartypeStrategy.On))"
 
-[tool.ruff]
-[tool.ruff.lint]
-select = ["E", "F", "I001"]
-ignore = ["E402", "E721", "E731", "E741", "F722"]
-fixable = ["I001", "F401"]
-
-[tool.ruff.lint.isort]
-combine-as-imports = true
-lines-after-imports = 2
-extra-standard-library = ["typing_extensions"]
-order-by-type = false
+[tool.isort]
+profile = "black"
+combine_as_imports = true
+lines_after_imports = -1
+extra_standard_library = ["typing_extensions"]
+order_by_type = false
 
 [tool.pyright]
 reportIncompatibleMethodOverride = true

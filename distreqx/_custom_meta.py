@@ -4,7 +4,6 @@ from dataclasses import dataclass
 import equinox as eqx
 import ihoop
 
-
 try:
 
     class _StrictEqxMeta(ihoop.strict._StrictMeta, eqx._module._module._ModuleMeta):
@@ -15,5 +14,6 @@ try:
     class AbstractStrictModule(eqx.Module, ihoop.Strict, metaclass=_StrictEqxMeta):
         def __init_subclass__(cls, *, strict: bool = False, **kwargs):
             super().__init_subclass__(**kwargs)
+
 except Exception:
     AbstractStrictModule = eqx.Module

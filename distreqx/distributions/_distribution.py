@@ -89,17 +89,30 @@ class AbstractDistribution(AbstractStrictModule, strict=True):
     @abstractmethod
     def entropy(self) -> PyTree[Array]:
         """Calculates the Shannon entropy (in nats)."""
-        raise NotImplementedError(
-            f"Distribution `{self.name}` does not implement `entropy`."
-        )
+        raise NotImplementedError
+
+    @abstractmethod
+    def icdf(self, value: PyTree[Array]) -> PyTree[Array]:
+        """Evaluates the inverse cumulative distribution function at `value`.
+
+        For a given probability `u`, returns the value `x` such that
+        `P[X <= x] = u`.
+
+        **Arguments:**
+
+        - `value`: A probability value in [0, 1].
+
+        **Returns:**
+
+        - The ICDF evaluated at value, i.e. `x` such that `CDF(x) = value`.
+        """
+        raise NotImplementedError
 
     @abstractmethod
     def log_cdf(self, value: PyTree[Array]) -> PyTree[Array]:
         """Evaluates the log cumulative distribution function at
         `value` i.e. log P[X <= value]."""
-        raise NotImplementedError(
-            f"Distribution `{self.name}` does not implement `log_cdf`."
-        )
+        raise NotImplementedError
 
     @abstractmethod
     def cdf(self, value: PyTree[Array]) -> PyTree[Array]:
@@ -171,23 +184,17 @@ class AbstractDistribution(AbstractStrictModule, strict=True):
     @abstractmethod
     def variance(self) -> PyTree[Array]:
         """Calculates the variance."""
-        raise NotImplementedError(
-            f"Distribution `{self.name}` does not implement `variance`."
-        )
+        raise NotImplementedError
 
     @abstractmethod
     def stddev(self) -> PyTree[Array]:
         """Calculates the standard deviation."""
-        raise NotImplementedError(
-            f"Distribution `{self.name}` does not implement `stddev`."
-        )
+        raise NotImplementedError
 
     @abstractmethod
     def mode(self) -> PyTree[Array]:
         """Calculates the mode."""
-        raise NotImplementedError(
-            f"Distribution `{self.name}` does not implement `mode`."
-        )
+        raise NotImplementedError
 
     @abstractmethod
     def kl_divergence(self, other_dist, **kwargs) -> PyTree[Array]:
@@ -202,9 +209,7 @@ class AbstractDistribution(AbstractStrictModule, strict=True):
 
         - The KL divergence `KL(self || other_dist)`.
         """
-        raise NotImplementedError(
-            f"Distribution `{self.name}` does not implement `kl_divergence`."
-        )
+        raise NotImplementedError
 
     def cross_entropy(self, other_dist, **kwargs) -> Array:
         """Calculates the cross entropy to another distribution.
