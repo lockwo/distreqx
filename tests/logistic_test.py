@@ -164,16 +164,13 @@ class LogisticTest(TestCase):
         dist = Logistic(jnp.array(0.0), jnp.array(1.0))
         np.testing.assert_allclose(dist.entropy(), 2.0, rtol=1e-5)
 
-
     def test_log_cdf_consistency(self):
         """log_cdf should be log of cdf."""
         loc = jnp.array([0.0, 1.0])
         scale = jnp.array([1.0, 2.0])
         dist = Logistic(loc, scale)
         x = jnp.array([0.5, -1.0])
-        np.testing.assert_allclose(
-            dist.log_cdf(x), jnp.log(dist.cdf(x)), rtol=1e-5
-        )
+        np.testing.assert_allclose(dist.log_cdf(x), jnp.log(dist.cdf(x)), rtol=1e-5)
 
     def test_vmap_inputs(self):
         def log_prob_sum(dist, x):
@@ -216,14 +213,10 @@ class LogisticTest(TestCase):
         np.testing.assert_equal(actual.event_shape, expected.event_shape)
 
         x = jnp.array([[[1.0]], [[2.0]], [[3.0]]])
-        np.testing.assert_allclose(
-            actual.log_prob(x), expected.log_prob(x), rtol=1e-6
-        )
+        np.testing.assert_allclose(actual.log_prob(x), expected.log_prob(x), rtol=1e-6)
 
     def test_jit(self):
         dist = Logistic(jnp.array(0.0), jnp.array(1.0))
         x = jnp.array(0.5)
         jitted_log_prob = eqx.filter_jit(dist.log_prob)
-        np.testing.assert_allclose(
-            jitted_log_prob(x), dist.log_prob(x), rtol=1e-5
-        )
+        np.testing.assert_allclose(jitted_log_prob(x), dist.log_prob(x), rtol=1e-5)
