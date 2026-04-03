@@ -38,6 +38,9 @@ class DummyUnivariateDist(AbstractAll):
     def kl_divergence(self, other_dist, **kwargs):
         raise NotImplementedError
 
+    def icdf(self, value):
+        raise NotImplementedError
+
     def log_cdf(self, value):
         raise NotImplementedError
 
@@ -73,6 +76,9 @@ class DummyMultivariateDist(AbstractAll):
         raise NotImplementedError
 
     def kl_divergence(self, other_dist, **kwargs):
+        raise NotImplementedError
+
+    def icdf(self, value):
         raise NotImplementedError
 
     def log_cdf(self, value):

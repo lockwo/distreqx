@@ -131,6 +131,10 @@ class OneHotCategorical(
         """See `Distribution.log_cdf`."""
         return jnp.log(self.cdf(value))
 
+    def icdf(self, value: Array) -> Array:
+        """See `Distribution.icdf`."""
+        raise NotImplementedError
+
     def median(self):
         raise NotImplementedError
 

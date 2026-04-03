@@ -121,7 +121,7 @@ class Bernoulli(
 
     def entropy(self) -> Array:
         """See `Distribution.entropy`."""
-        (probs0, probs1, log_probs0, log_probs1) = _probs_and_log_probs(self)
+        probs0, probs1, log_probs0, log_probs1 = _probs_and_log_probs(self)
         return -1.0 * (
             multiply_no_nan(log_probs0, probs0) + multiply_no_nan(log_probs1, probs1)
         )
@@ -129,6 +129,10 @@ class Bernoulli(
     def mean(self) -> Array:
         """See `Distribution.mean`."""
         return self.probs
+
+    def icdf(self, value: Array) -> Array:
+        """See `Distribution.icdf`."""
+        raise NotImplementedError
 
     def median(self) -> None:
         raise NotImplementedError

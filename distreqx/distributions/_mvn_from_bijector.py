@@ -165,6 +165,9 @@ class MultivariateNormalFromBijector(AbstractMultivariateNormalFromBijector):
         self.scale = scale
         self.loc = loc
 
+    def icdf(self, value: PyTree[Array]) -> PyTree[Array]:
+        raise NotImplementedError
+
     def log_cdf(self, value: PyTree[Array]) -> PyTree[Array]:
         raise NotImplementedError
 

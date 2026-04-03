@@ -9,7 +9,6 @@ from parameterized import parameterized  # type: ignore
 
 from distreqx.bijectors import Sigmoid, Tanh
 
-
 RTOL = 1e-5
 
 
