@@ -11,6 +11,7 @@ from ._distribution import (
 )
 from ._gamma import Gamma as Gamma
 from ._independent import Independent as Independent
+from ._logistic import Logistic as Logistic
 from ._mixture_same_family import MixtureSameFamily as MixtureSameFamily
 from ._mvn_diag import MultivariateNormalDiag as MultivariateNormalDiag
 from ._mvn_from_bijector import (
