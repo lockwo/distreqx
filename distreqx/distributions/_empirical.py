@@ -39,9 +39,7 @@ class AbstractEmpirical(AbstractDistribution, strict=True):
     def _slack(self, value: Array) -> Array:
         """Calculates the tolerance window around a specific value."""
         return jnp.where(
-            self.rtol == 0,
-            self.atol,
-            self.atol + self.rtol * jnp.abs(value)
+            self.rtol == 0, self.atol, self.atol + self.rtol * jnp.abs(value)
         )
 
     def sample_and_log_prob(self, key: Key[Array, ""]) -> tuple[Array, Array]:
@@ -51,14 +49,12 @@ class AbstractEmpirical(AbstractDistribution, strict=True):
 
     def sample(self, key: Key[Array, ""]) -> Array:
         """Samples an event based on the normalized weights."""
-        idx = jax.random.choice(
-            key, a=self.samples.shape[0], p=self.normalized_weights
-        )
+        idx = jax.random.choice(key, a=self.samples.shape[0], p=self.normalized_weights)
         return self.samples[idx]
 
     def prob(self, value: PyTree[Array]) -> Array:
         """Calculates the probability of an event.
-        
+
         For multivariate events, all dimensions must fall within the tolerance
         slack to be considered a match.
         """
@@ -130,15 +126,15 @@ class AbstractEmpirical(AbstractDistribution, strict=True):
             raise NotImplementedError(
                 "Inverse CDF is intractable and undefined for multivariate events."
             )
-            
+
         sort_idx = jnp.argsort(self.samples)
         sorted_samples = self.samples[sort_idx]
         sorted_weights = self.normalized_weights[sort_idx]
-        
+
         cum_weights = jnp.cumsum(sorted_weights)
         idx = jnp.searchsorted(cum_weights, value)
         idx = jnp.clip(idx, 0, self.samples.shape[0] - 1)
-        
+
         return jnp.where((value >= 0.0) & (value <= 1.0), sorted_samples[idx], jnp.nan)
 
     def kl_divergence(self, other_dist, **kwargs) -> Array:
@@ -160,7 +156,9 @@ class Empirical(AbstractEmpirical, strict=True):
         self.rtol = jnp.asarray(rtol)
 
         if self.samples.ndim < 1:
-            raise ValueError("Samples must have at least one dimension (the dataset axis).")
+            raise ValueError(
+                "Samples must have at least one dimension (the dataset axis)."
+            )
         if self.samples.shape[0] == 0:
             raise ValueError("The `samples` array cannot be empty.")
 
@@ -188,9 +186,13 @@ class WeightedEmpirical(AbstractEmpirical, strict=True):
         self.rtol = jnp.asarray(rtol)
 
         if self.samples.ndim < 1:
-            raise ValueError("Samples must have at least one dimension (the dataset axis).")
+            raise ValueError(
+                "Samples must have at least one dimension (the dataset axis)."
+            )
         if self.weights.ndim != 1:
-            raise ValueError("Weights must be a 1D array corresponding to the dataset axis.")
+            raise ValueError(
+                "Weights must be a 1D array corresponding to the dataset axis."
+            )
         if self.samples.shape[0] != self.weights.shape[0]:
             raise ValueError(
                 f"Number of weights ({self.weights.shape[0]}) must match "

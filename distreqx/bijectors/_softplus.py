@@ -1,4 +1,3 @@
-import equinox as eqx
 import jax.nn as jnn
 import jax.numpy as jnp
 from jaxtyping import Array
@@ -17,7 +16,10 @@ class Softplus(
     AbstractFwdLogDetJacBijector,
     strict=True,
 ):
-    """Transforms the real line to the positive domain using softplus y = log(1 + exp(x))."""
+    """
+    Transforms the real line to the positive domain using
+    softplus y = log(1 + exp(x)).
+    """
 
     _is_constant_jacobian: bool = True
     _is_constant_log_det: bool = True

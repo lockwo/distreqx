@@ -6,8 +6,8 @@ from ._distribution import AbstractDistribution
 
 class Deterministic(AbstractDistribution, strict=True):
     """Scalar Deterministic distribution on the real line.
-    
-    Represents a distribution that places all its probability mass on a single 
+
+    Represents a distribution that places all its probability mass on a single
     point (the `loc`).
     """
 
@@ -44,9 +44,7 @@ class Deterministic(AbstractDistribution, strict=True):
     def slack(self) -> Array:
         """Calculates the tolerance window around the location."""
         return jnp.where(
-            self.rtol == 0,
-            self.atol,
-            self.atol + self.rtol * jnp.abs(self.loc)
+            self.rtol == 0, self.atol, self.atol + self.rtol * jnp.abs(self.loc)
         )
 
     def sample_and_log_prob(self, key: Key[Array, ""]) -> tuple[Array, Array]:
@@ -116,7 +114,7 @@ class Deterministic(AbstractDistribution, strict=True):
             raise NotImplementedError(
                 "KL divergence is only implemented for two Deterministic distributions."
             )
-            
+
         slack2 = other_dist.atol + other_dist.rtol * jnp.abs(other_dist.loc)
         return -jnp.log(
             jnp.where(jnp.abs(self.loc - other_dist.loc) <= slack2, 1.0, 0.0)

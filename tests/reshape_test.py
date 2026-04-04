@@ -30,11 +30,11 @@ class ReshapeTest(TestCase):
 
         self.assertion_fn()(y, jnp.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], dtype=dtype))
         self.assertEqual(y.shape, (6,))
-        
+
         # log_det must be an unbatched scalar 0.0 of the matching dtype
         self.assertEqual(log_det.shape, ())
         self.assertEqual(log_det, 0.0)
-        
+
         self.assertEqual(y.dtype, dtype)
         self.assertEqual(log_det.dtype, dtype)
 
@@ -43,7 +43,9 @@ class ReshapeTest(TestCase):
         y = jnp.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], dtype=dtype)
         x, log_det = self.bij.inverse_and_log_det(y)
 
-        self.assertion_fn()(x, jnp.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]], dtype=dtype))
+        self.assertion_fn()(
+            x, jnp.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]], dtype=dtype)
+        )
         self.assertEqual(x.shape, (2, 3))
         self.assertEqual(log_det, 0.0)
         self.assertEqual(x.dtype, dtype)
@@ -62,6 +64,6 @@ class ReshapeTest(TestCase):
     def test_same_as(self):
         same_bij = Reshape(in_shape=(2, 3), out_shape=(6,))
         diff_bij = Reshape(in_shape=(6,), out_shape=(2, 3))
-        
+
         self.assertTrue(self.bij.same_as(same_bij))
         self.assertFalse(self.bij.same_as(diff_bij))

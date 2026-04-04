@@ -9,7 +9,7 @@ import jax.numpy as jnp
 import numpy as np
 from parameterized import parameterized  # type: ignore
 
-from distreqx.bijectors import Exp, Permute
+from distreqx.bijectors import Permute
 
 
 class PermuteTest(TestCase):
@@ -22,10 +22,10 @@ class PermuteTest(TestCase):
     def test_invalid_permutation(self):
         with self.assertRaisesRegex(ValueError, "1D array"):
             Permute([[0, 1], [2, 3]])
-            
+
         with self.assertRaisesRegex(ValueError, "exactly once"):
             Permute([0, 1, 1])  # Duplicate 1, missing 2
-            
+
         with self.assertRaisesRegex(ValueError, "exactly once"):
             Permute([0, 2, 3])  # Missing 1
 
@@ -33,7 +33,7 @@ class PermuteTest(TestCase):
     def test_forward_and_inverse(self, name, dtype):
         # Original: [A, B, C] -> Permuted: [C, A, B]
         x = jnp.array([10.0, 20.0, 30.0], dtype=dtype)
-        
+
         y, log_det_fwd = self.bij.forward_and_log_det(x)
         self.assertion_fn()(y, jnp.array([30.0, 10.0, 20.0], dtype=dtype))
         self.assertEqual(log_det_fwd, 0.0)

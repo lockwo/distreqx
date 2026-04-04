@@ -1,4 +1,3 @@
-import equinox as eqx
 import jax.numpy as jnp
 import numpy as np
 from jaxtyping import Array
@@ -35,10 +34,12 @@ class Permute(
         """
         # Convert to numpy first to validate shapes/values before JIT compilation
         perm_np = np.asarray(permutation, dtype=int)
-        
+
         if perm_np.ndim != 1:
-            raise ValueError(f"Permutation must be a 1D array, got shape {perm_np.shape}.")
-            
+            raise ValueError(
+                f"Permutation must be a 1D array, got shape {perm_np.shape}."
+            )
+
         expected_elements = np.arange(perm_np.size)
         if not np.array_equal(np.sort(perm_np), expected_elements):
             raise ValueError(
@@ -59,6 +60,7 @@ class Permute(
 
     def same_as(self, other: AbstractBijector) -> bool:
         """Returns True if this bijector is guaranteed to be the same as `other`."""
-        return type(other) is Permute and jnp.array_equal(
-            self.permutation, other.permutation
+        return bool(
+            type(other) is Permute
+            and jnp.array_equal(self.permutation, other.permutation)
         )

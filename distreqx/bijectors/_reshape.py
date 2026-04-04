@@ -28,21 +28,22 @@ class Reshape(
 
     def __init__(self, in_shape: tuple[int, ...], out_shape: tuple[int, ...]):
         """Initializes a Reshape bijector.
-        
+
         **Arguments:**
-        
+
         - `in_shape`: The shape of the input event.
         - `out_shape`: The desired shape of the output event.
         """
         in_size = math.prod(in_shape)
         out_size = math.prod(out_shape)
-        
+
         if in_size != out_size:
             raise ValueError(
                 f"Shapes are incompatible: in_shape {in_shape} (size {in_size}) and "
-                f"out_shape {out_shape} (size {out_size}) must have the same total number of elements."
+                f"out_shape {out_shape} (size {out_size}) must have the same total "
+                f"number of elements."
             )
-            
+
         self.in_shape = in_shape
         self.out_shape = out_shape
 

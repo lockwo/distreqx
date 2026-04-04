@@ -6,9 +6,7 @@ from jaxtyping import Array
 from ._mvn_tri import MultivariateNormalTri
 
 
-def _check_parameters(
-    loc: Optional[Array], covariance_matrix: Optional[Array]
-) -> None:
+def _check_parameters(loc: Optional[Array], covariance_matrix: Optional[Array]) -> None:
     """Checks that the inputs are correct for a single event."""
     if loc is None and covariance_matrix is None:
         raise ValueError(
@@ -84,9 +82,7 @@ class MultivariateNormalFullCovariance(MultivariateNormalTri, strict=True):
         else:
             raise ValueError
 
-        dtype = jnp.result_type(
-            *[x for x in [loc, covariance_matrix] if x is not None]
-        )
+        dtype = jnp.result_type(*[x for x in [loc, covariance_matrix] if x is not None])
 
         if covariance_matrix is None:
             covariance_matrix = jnp.eye(num_dims, dtype=dtype)
@@ -96,7 +92,7 @@ class MultivariateNormalFullCovariance(MultivariateNormalTri, strict=True):
 
         # Let MultivariateNormalTri handle the bijector and std_mvn_dist logic
         super().__init__(loc=loc, scale_tri=scale_tri, is_lower=True)
-        
+
         self._covariance_matrix = covariance_matrix
 
     @property

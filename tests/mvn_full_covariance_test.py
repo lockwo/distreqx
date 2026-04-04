@@ -23,17 +23,17 @@ class MultivariateNormalFullCovarianceTest(TestCase):
     def test_invalid_parameters(self):
         # Neither specified
         self._test_raises_error(dist_kwargs={"loc": None, "covariance_matrix": None})
-        
+
         # 0D loc (distreqx expects explicitly 1D for events)
         self._test_raises_error(
             dist_kwargs={"loc": jnp.array(1.0), "covariance_matrix": None}
         )
-        
+
         # 1D covariance matrix
         self._test_raises_error(
             dist_kwargs={"loc": None, "covariance_matrix": jnp.array([1.0, 1.0])}
         )
-        
+
         # 3D batched covariance matrix (distreqx users should use vmap instead)
         self._test_raises_error(
             dist_kwargs={
@@ -41,7 +41,7 @@ class MultivariateNormalFullCovarianceTest(TestCase):
                 "covariance_matrix": jnp.array([[[1.0, 0.0], [0.0, 1.0]]]),
             }
         )
-        
+
         # Non-square covariance matrix
         self._test_raises_error(
             dist_kwargs={
@@ -49,7 +49,7 @@ class MultivariateNormalFullCovarianceTest(TestCase):
                 "covariance_matrix": jnp.array([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0]]),
             }
         )
-        
+
         # Mismatched event shapes
         self._test_raises_error(
             dist_kwargs={"loc": jnp.zeros((5,)), "covariance_matrix": jnp.eye(4)}
@@ -68,10 +68,8 @@ class MultivariateNormalFullCovarianceTest(TestCase):
 
     def test_covariance_and_variance(self):
         cov = jnp.array([[2.0, 0.5], [0.5, 3.0]])
-        dist = MultivariateNormalFullCovariance(
-            loc=jnp.zeros(2), covariance_matrix=cov
-        )
-        
+        dist = MultivariateNormalFullCovariance(loc=jnp.zeros(2), covariance_matrix=cov)
+
         np.testing.assert_allclose(dist.covariance(), cov)
         np.testing.assert_allclose(dist.variance(), jnp.array([2.0, 3.0]))
 
@@ -85,7 +83,7 @@ class MultivariateNormalFullCovarianceTest(TestCase):
             "covariance_matrix": jnp.array([[2.0, 0.1], [0.1, 2.0]]),
         }
         dist = MultivariateNormalFullCovariance(**dist_params)
-        
+
         y = f(dist)
         self.assertIsInstance(y, jax.Array)
         self.assertEqual(y.shape, (2,))

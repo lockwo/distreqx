@@ -26,24 +26,18 @@ class SplitCouplingTest(TestCase):
     def assertion_fn(self, rtol=1e-5):
         return lambda x, y: np.testing.assert_allclose(x, y, rtol=rtol)
 
-    @parameterized.expand([
-        ("no_swap", False),
-        ("swap", True)
-    ])
+    @parameterized.expand([("no_swap", False), ("swap", True)])
     def test_forward_and_inverse(self, name, swap):
         # Conditioner simply squares the conditioning half
         conditioner = lambda x: x**2
-        
+
         bij = SplitCoupling(
-            split_index=2,
-            conditioner=conditioner,
-            bijector=make_inner_bij,
-            swap=swap
+            split_index=2, conditioner=conditioner, bijector=make_inner_bij, swap=swap
         )
 
         # Let x = [1.0, 2.0, 3.0, 4.0]
         x = jnp.array([1.0, 2.0, 3.0, 4.0])
-        
+
         y, log_det_fwd = bij.forward_and_log_det(x)
         x_rec, log_det_inv = bij.inverse_and_log_det(y)
 
@@ -57,22 +51,28 @@ class SplitCouplingTest(TestCase):
             # params = x1^2 = [1, 4]
             # y2 = x2 * params + 3 = [3*1 + 3, 4*4 + 3] = [6, 19]
             self.assertion_fn()(y, jnp.array([1.0, 2.0, 6.0, 19.0]))
-            
+
             # logdet is 0 for x1, and log(params) for x2
-            self.assertion_fn()(log_det_fwd, jnp.array([0.0, 0.0, jnp.log(1.0), jnp.log(4.0)]))
+            self.assertion_fn()(
+                log_det_fwd, jnp.array([0.0, 0.0, jnp.log(1.0), jnp.log(4.0)])
+            )
         else:
             # x1 = [1, 2], x2 = [3, 4]. Swapped: condition on x2.
             # params = x2^2 = [9, 16]
             # y1 = x1 * params + 3 = [1*9 + 3, 2*16 + 3] = [12, 35]
             self.assertion_fn()(y, jnp.array([12.0, 35.0, 3.0, 4.0]))
-            self.assertion_fn()(log_det_fwd, jnp.array([jnp.log(9.0), jnp.log(16.0), 0.0, 0.0]))
+            self.assertion_fn()(
+                log_det_fwd, jnp.array([jnp.log(9.0), jnp.log(16.0), 0.0, 0.0])
+            )
 
     def test_jittable(self):
         @eqx.filter_jit
         def f(bij, x):
             return bij.forward_and_log_det(x)
 
-        bij = SplitCoupling(split_index=1, conditioner=lambda x: x, bijector=make_inner_bij)
+        bij = SplitCoupling(
+            split_index=1, conditioner=lambda x: x, bijector=make_inner_bij
+        )
         x = jnp.array([1.0, 2.0, 3.0])
         y, logdet = f(bij, x)
         self.assertIsInstance(y, jax.Array)
@@ -87,8 +87,10 @@ class MaskedCouplingTest(TestCase):
         # A checkerboard mask
         mask = jnp.array([True, False, True, False])
         conditioner = lambda x: x + 1.0  # simple shift
-        
-        bij = MaskedCoupling(mask=mask, conditioner=conditioner, bijector=make_inner_bij)
+
+        bij = MaskedCoupling(
+            mask=mask, conditioner=conditioner, bijector=make_inner_bij
+        )
 
         x = jnp.array([1.0, 2.0, 3.0, 4.0])
         y, log_det_fwd = bij.forward_and_log_det(x)
@@ -105,7 +107,7 @@ class MaskedCouplingTest(TestCase):
         # y[1] = x[1] * params[1] + 3.0 = 2.0 * 1.0 + 3.0 = 5.0
         # y[3] = x[3] * params[3] + 3.0 = 4.0 * 1.0 + 3.0 = 7.0
         self.assertion_fn()(y, jnp.array([1.0, 5.0, 3.0, 7.0]))
-        
+
         # LogDet is 0.0 for True mask, log(params) for False mask
         expected_logdet = jnp.array([0.0, jnp.log(1.0), 0.0, jnp.log(1.0)])
         self.assertion_fn()(log_det_fwd, expected_logdet)
@@ -116,9 +118,9 @@ class MaskedCouplingTest(TestCase):
             return bij.forward_and_log_det(x)
 
         bij = MaskedCoupling(
-            mask=jnp.array([True, False]), 
-            conditioner=lambda x: x, 
-            bijector=make_inner_bij
+            mask=jnp.array([True, False]),
+            conditioner=lambda x: x,
+            bijector=make_inner_bij,
         )
         x = jnp.array([1.0, 2.0])
         y, logdet = f(bij, x)

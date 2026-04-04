@@ -1,11 +1,11 @@
-from typing import Optional
 from collections.abc import Callable
+from typing import Optional
 
 import equinox as eqx
 from jaxtyping import PyTree
 
 # Assuming distreqx has ported these utilities from distrax
-from ..utils import transformations 
+from ..utils import transformations
 from ._bijector import (
     AbstractBijector,
     AbstractFowardInverseBijector,
@@ -22,9 +22,9 @@ class Lambda(
 ):
     """Wrapper to automatically turn JAX functions into fully fledged bijectors.
 
-    This class takes in JAX functions that implement bijector methods and 
-    constructs a bijector out of them. Any functions not explicitly specified 
-    by the user will be automatically derived from the existing functions where 
+    This class takes in JAX functions that implement bijector methods and
+    constructs a bijector out of them. Any functions not explicitly specified
+    by the user will be automatically derived from the existing functions where
     possible, by tracing their JAXPR representation during initialization.
     """
 
@@ -51,9 +51,21 @@ class Lambda(
                 "or `inverse` to be specified, but neither is."
             )
 
+        if forward is None and inverse is None:
+            raise ValueError(
+                "The Lambda bijector requires at least one of `forward` "
+                "or `inverse` to be specified, but neither is."
+            )
+
         if forward is None:
+            assert (
+                inverse is not None
+            )  # Tells Pyright `inverse` is definitely a Callable here
             forward = transformations.inv(inverse)
-        if inverse is None:
+        elif inverse is None:
+            assert (
+                forward is not None
+            )  # Tells Pyright `forward` is definitely a Callable here
             inverse = transformations.inv(forward)
 
         jac_functions_specified = (
@@ -79,7 +91,7 @@ class Lambda(
         self._fn_inverse = inverse
         self._fn_forward_log_det = forward_log_det_jacobian
         self._fn_inverse_log_det = inverse_log_det_jacobian
-        
+
         self._is_constant_jacobian = is_constant_jacobian
         self._is_constant_log_det = is_constant_jacobian
 
@@ -92,7 +104,10 @@ class Lambda(
         return self._fn_inverse(y), self._fn_inverse_log_det(y)
 
     def same_as(self, other: AbstractBijector) -> bool:
-        """Returns True if the other is a Lambda bijector with the exact same callables."""
+        """
+        Returns True if the other is a Lambda bijector with the exact
+        same callables.
+        """
         return (
             type(other) is Lambda
             and self._fn_forward is other._fn_forward

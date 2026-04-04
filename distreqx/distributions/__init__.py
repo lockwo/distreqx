@@ -13,7 +13,7 @@ from ._distribution import (
 from ._empirical import (
     AbstractEmpirical as AbstractEmpirical,
     Empirical as Empirical,
-    WeightedEmpirical as WeightedEmpirical
+    WeightedEmpirical as WeightedEmpirical,
 )
 from ._gamma import Gamma as Gamma
 from ._independent import Independent as Independent
@@ -24,7 +24,9 @@ from ._mvn_from_bijector import (
     AbstractMultivariateNormalFromBijector as AbstractMultivariateNormalFromBijector,
     MultivariateNormalFromBijector as MultivariateNormalFromBijector,
 )
-from ._mvn_full_covariance import MultivariateNormalFullCovariance as MultivariateNormalFullCovariance
+from ._mvn_full_covariance import (
+    MultivariateNormalFullCovariance as MultivariateNormalFullCovariance,
+)
 from ._mvn_tri import MultivariateNormalTri as MultivariateNormalTri
 from ._normal import Normal as Normal
 from ._one_hot_categorical import OneHotCategorical as OneHotCategorical

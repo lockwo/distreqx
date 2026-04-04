@@ -15,9 +15,11 @@ from ._lambda import Lambda as Lambda
 from ._linear import AbstractLinearBijector as AbstractLinearBijector
 from ._masked_coupling import MaskedCoupling as MaskedCoupling
 from ._permute import Permute as Permute
-from ._rational_quadratic_spline import RationalQuadraticSpline as RationalQuadraticSpline
-from ._reshape import Reshape as Reshape
 from ._r2_to_complex import R2ToComplex as R2ToComplex
+from ._rational_quadratic_spline import (
+    RationalQuadraticSpline as RationalQuadraticSpline,
+)
+from ._reshape import Reshape as Reshape
 from ._scalar_affine import ScalarAffine as ScalarAffine
 from ._shift import Shift as Shift
 from ._sigmoid import Sigmoid as Sigmoid

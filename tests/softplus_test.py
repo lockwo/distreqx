@@ -1,9 +1,12 @@
 from unittest import TestCase
-import jax
+
 import equinox as eqx
+import jax
 import jax.numpy as jnp
 import numpy as np
+
 from distreqx.bijectors import Softplus
+
 
 class SoftplusTest(TestCase):
     def setUp(self):
@@ -15,7 +18,7 @@ class SoftplusTest(TestCase):
     def test_forward_and_inverse(self):
         x = jnp.array([-5.0, 0.0, 5.0])
         y, log_det_fwd = self.bij.forward_and_log_det(x)
-        
+
         expected_y = jax.nn.softplus(x)
         self.assertion_fn()(y, expected_y)
         self.assertion_fn()(log_det_fwd, -jax.nn.softplus(-x))
@@ -28,6 +31,6 @@ class SoftplusTest(TestCase):
         @eqx.filter_jit
         def f(bij, x):
             return bij.forward_and_log_det(x)
-        
+
         y, log_det = f(self.bij, jnp.array(1.0))
         self.assertIsInstance(y, jax.Array)

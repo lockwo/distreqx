@@ -47,17 +47,17 @@ class DeterministicTest(TestCase):
 
         # Exact match
         self.assertEqual(dist.prob(jnp.array(5.0)), 1.0)
-        
+
         # Within slack
         self.assertEqual(dist.prob(jnp.array(5.05)), 1.0)
         self.assertEqual(dist.prob(jnp.array(4.95)), 1.0)
-        
+
         # Outside slack
         self.assertEqual(dist.prob(jnp.array(5.2)), 0.0)
-        
+
         # Log Prob bounds check
         self.assertEqual(dist.log_prob(jnp.array(5.0)), 0.0)  # log(1)
-        self.assertEqual(dist.log_prob(jnp.array(6.0)), -jnp.inf) # log(0)
+        self.assertEqual(dist.log_prob(jnp.array(6.0)), -jnp.inf)  # log(0)
 
     def test_cdf_and_icdf(self):
         dist = Deterministic(loc=2.0)
@@ -89,6 +89,6 @@ class DeterministicTest(TestCase):
 
         dist = Deterministic(loc=3.14)
         sample, log_prob = f(dist)
-        
+
         self.assertIsInstance(sample, jax.Array)
         self.assertIsInstance(log_prob, jax.Array)

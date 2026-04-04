@@ -35,7 +35,7 @@ class Indexed(
         """
         self.bijector = bijector
         self.indices = jnp.asarray(indices)
-        
+
         self._is_constant_jacobian = self.bijector.is_constant_jacobian
         self._is_constant_log_det = self.bijector.is_constant_log_det
 
@@ -46,15 +46,18 @@ class Indexed(
         return y, log_det
 
     def inverse_and_log_det(self, y: Array) -> tuple[Array, Array]:
-        """Inversely transforms y at the target indices and leaves the rest unchanged."""
+        """
+        Inversely transforms y at the target indices and leaves the rest
+        unchanged.
+        """
         x_subset, log_det = self.bijector.inverse_and_log_det(y[self.indices])
         x = y.at[self.indices].set(x_subset)
         return x, log_det
 
     def same_as(self, other: AbstractBijector) -> bool:
         """Returns True if this bijector is guaranteed to be the same as `other`."""
-        return (
-            type(other) is Indexed 
+        return bool(
+            type(other) is Indexed
             and self.bijector.same_as(other.bijector)
             and jnp.array_equal(self.indices, other.indices)
         )

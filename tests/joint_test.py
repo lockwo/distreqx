@@ -15,14 +15,11 @@ from distreqx.distributions import Deterministic, Joint
 class JointTest(TestCase):
     def setUp(self):
         self.key = jax.random.key(0)
-        
+
         # A heterogeneous tree of distributions
         self.tree_dists = {
             "a": Deterministic(loc=1.0),
-            "b": {
-                "c": Deterministic(loc=2.0),
-                "d": Deterministic(loc=-1.5)
-            }
+            "b": {"c": Deterministic(loc=2.0), "d": Deterministic(loc=-1.5)},
         }
         self.joint_dist = Joint(distributions=self.tree_dists)
 
@@ -38,19 +35,19 @@ class JointTest(TestCase):
         # We cast the inputs to target dtype to test dtype consistency
         tree_dists = {
             "a": Deterministic(loc=jnp.array(1.0, dtype=dtype)),
-            "b": Deterministic(loc=jnp.array(2.0, dtype=dtype))
+            "b": Deterministic(loc=jnp.array(2.0, dtype=dtype)),
         }
         joint_dist = Joint(distributions=tree_dists)
 
         # 1. Sample & Log Prob
         sample, log_prob = joint_dist.sample_and_log_prob(self.key)
-        
+
         # Structure matching
         self.assertEqual(set(sample.keys()), {"a", "b"})
         self.assertion_fn()(sample["a"], 1.0)
         self.assertion_fn()(sample["b"], 2.0)
         self.assertEqual(sample["a"].dtype, dtype)
-        
+
         # Log Prob: log(1) + log(1) = 0.0
         self.assertEqual(log_prob, 0.0)
 
@@ -58,45 +55,50 @@ class JointTest(TestCase):
         mean = joint_dist.mean()
         self.assertion_fn()(mean["a"], 1.0)
         self.assertion_fn()(mean["b"], 2.0)
-        
+
         variance = joint_dist.variance()
         self.assertion_fn()(variance["a"], 0.0)
-        
+
         # Entropy is summed over leaves
         self.assertion_fn()(joint_dist.entropy(), 0.0)
 
     def test_log_prob_and_cdf(self):
         # Valid sample that perfectly matches
-        valid_val = {"a": jnp.array(1.0), "b": {"c": jnp.array(2.0), "d": jnp.array(-1.5)}}
+        valid_val = {
+            "a": jnp.array(1.0),
+            "b": {"c": jnp.array(2.0), "d": jnp.array(-1.5)},
+        }
         self.assertion_fn()(self.joint_dist.log_prob(valid_val), 0.0)
         self.assertion_fn()(self.joint_dist.cdf(valid_val), 1.0)
 
         # Invalid sample for log_prob AND cdf.
-        # By setting "c" to 0.0 (which is less than loc=2.0), the CDF for "c" becomes 0.0.
-        # Thus, the joint CDF (product of marginals) becomes 0.0.
-        invalid_val = {"a": jnp.array(1.0), "b": {"c": jnp.array(0.0), "d": jnp.array(-1.5)}}
+        # By setting "c" to 0.0 (which is less than loc=2.0), the CDF for
+        # "c" becomes 0.0. Thus, the joint CDF (product of marginals)
+        # becomes 0.0.
+        invalid_val = {
+            "a": jnp.array(1.0),
+            "b": {"c": jnp.array(0.0), "d": jnp.array(-1.5)},
+        }
         self.assertEqual(self.joint_dist.log_prob(invalid_val), -jnp.inf)
         self.assertEqual(self.joint_dist.cdf(invalid_val), 0.0)
 
     def test_kl_divergence(self):
         # Identical Joint
-        dist2 = Joint(distributions={
-            "a": Deterministic(loc=1.0),
-            "b": {
-                "c": Deterministic(loc=2.0),
-                "d": Deterministic(loc=-1.5)
+        dist2 = Joint(
+            distributions={
+                "a": Deterministic(loc=1.0),
+                "b": {"c": Deterministic(loc=2.0), "d": Deterministic(loc=-1.5)},
             }
-        })
+        )
         self.assertEqual(self.joint_dist.kl_divergence(dist2), 0.0)
 
         # Shifted Joint (Infinite KL due to disjoint supports in Deterministic)
-        dist3 = Joint(distributions={
-            "a": Deterministic(loc=5.0),
-            "b": {
-                "c": Deterministic(loc=2.0),
-                "d": Deterministic(loc=-1.5)
+        dist3 = Joint(
+            distributions={
+                "a": Deterministic(loc=5.0),
+                "b": {"c": Deterministic(loc=2.0), "d": Deterministic(loc=-1.5)},
             }
-        })
+        )
         self.assertEqual(self.joint_dist.kl_divergence(dist3), jnp.inf)
 
     def test_jittable(self):

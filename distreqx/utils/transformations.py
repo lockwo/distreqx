@@ -11,25 +11,27 @@ A typical bijector will implement the following functionality:
   forward and inverse functions is constant with respect to the function's
   input.
 
-This module provides utilities for deriving these functions automatically from 
+This module provides utilities for deriving these functions automatically from
 JAX code implementing either the `forward` or `inverse` functions.
 """
 
 import functools
 import warnings
-from typing import Any
 from collections.abc import Callable
+from typing import Any
 
 import jax
 import jax.extend as jex
 import jax.numpy as jnp
-from jaxtyping import Array
+from jaxtyping import Array, PyTree
 
 try:
     # jax >= 0.4.16
-    from jax.extend import linear_util as lu
+    from jax.extend import (  # pyright: ignore[reportAttributeAccessIssue]
+        linear_util as lu,
+    )
 except ImportError:
-    from jax import linear_util as lu
+    from jax import linear_util as lu  # pyright: ignore[reportAttributeAccessIssue]
 
 
 _inverse_registry = {
@@ -50,31 +52,38 @@ _inverse_registry = {
     jax.lax.erf_p: jax.lax.erf_inv_p,
     jax.lax.erf_inv_p: jax.lax.erf_p,
     jax.lax.conj_p: jax.lax.conj_p,
-
     # binary ops; tuple values represent the variable-left/variable-right side
     # case for non-commutatively invertible ops like div
     jax.lax.mul_p: (jax.lax.div_p.bind, lambda x, y: jax.lax.div_p.bind(y, x)),
     jax.lax.div_p: (jax.lax.mul_p.bind, jax.lax.div_p.bind),
     jax.lax.add_p: (jax.lax.sub_p.bind, lambda x, y: jax.lax.sub_p.bind(y, x)),
     jax.lax.sub_p: (jax.lax.add_p.bind, jax.lax.sub_p.bind),
-    jax.lax.pow_p: lambda x, y: jax.lax.pow_p.bind(x, 1.0/y),
-    jax.lax.integer_pow_p: lambda x, y: jax.lax.pow_p.bind(x, 1.0/y)
+    jax.lax.pow_p: lambda x, y: jax.lax.pow_p.bind(x, 1.0 / y),
+    jax.lax.integer_pow_p: lambda x, y: jax.lax.pow_p.bind(x, 1.0 / y),
 }
 
 if hasattr(jax.lax, "square_p"):
-    _inverse_registry.update({
-        jax.lax.square_p: jax.lax.sqrt_p,
-        jax.lax.sqrt_p: lambda x, **kwargs: jax.lax.square_p.bind(x),
-        jax.lax.rsqrt_p: lambda x, **kwargs: 1.0 / jax.lax.square_p.bind(x),
-    })
+    _inverse_registry.update(
+        {
+            jax.lax.square_p: jax.lax.sqrt_p,
+            jax.lax.sqrt_p: lambda x, **kwargs: jax.lax.square_p.bind(x),
+            jax.lax.rsqrt_p: lambda x, **kwargs: 1.0 / jax.lax.square_p.bind(x),
+        }
+    )
 
 _potentially_unstable_primitives = {
-    jax.lax.tanh_p: "distreqx.bijectors.Tanh or distreqx.bijectors.Inverse(distreqx.bijectors.Tanh)",
-    jax.lax.atanh_p: "distreqx.bijectors.Tanh or distreqx.bijectors.Inverse(distreqx.bijectors.Tanh)",
+    jax.lax.tanh_p: "distreqx.bijectors.Tanh or "
+    "distreqx.bijectors.Inverse(distreqx.bijectors.Tanh)",
+    jax.lax.atanh_p: "distreqx.bijectors.Tanh or "
+    "distreqx.bijectors.Inverse(distreqx.bijectors.Tanh)",
 }
 
 
-def register_inverse(primitive: Any, inverse_left: Callable, inverse_right: Callable = None):
+def register_inverse(
+    primitive: Any,
+    inverse_left: Callable[[PyTree], PyTree],
+    inverse_right: Callable[[PyTree], PyTree] | None = None,
+):
     """Registers a function that implements the inverse of a JAX primitive.
 
     **Arguments:**
@@ -94,7 +103,7 @@ def register_inverse(primitive: Any, inverse_left: Callable, inverse_right: Call
         _inverse_registry[primitive] = (inverse_left, inverse_right)
 
 
-def inv(fun: Callable) -> Callable:
+def inv(fun: Callable[[PyTree], PyTree]) -> Callable[[PyTree], PyTree]:
     """Returns the inverse of `fun` such that (inv(fun) o fun)(x) = x.
 
     **Arguments:**
@@ -112,10 +121,11 @@ def inv(fun: Callable) -> Callable:
         jaxpr, consts = jaxpr_fn(*args, **kwargs)
         out = _interpret_inverse(jaxpr, consts, *args)
         return out[0]
+
     return wrapped
 
 
-def is_constant_jacobian(fn: Callable, x: float = 0.0) -> bool:
+def is_constant_jacobian(fn: Callable[[PyTree], PyTree], x: float = 0.0) -> bool:
     """Experimental. Attempts to determine whether `fn` has a constant Jacobian.
 
     This function attempts to determine whether the Jacobian of `fn` is constant
@@ -136,14 +146,13 @@ def is_constant_jacobian(fn: Callable, x: float = 0.0) -> bool:
     dependent_vars = _dependent_variables(jac_jaxpr)
 
     jac_is_constant = not any(
-        isinstance(v, jex.core.Var) and v in dependent_vars
-        for v in jac_jaxpr.outvars
+        isinstance(v, jex.core.Var) and v in dependent_vars for v in jac_jaxpr.outvars
     )
 
     return jac_is_constant
 
 
-def log_det_scalar(fn: Callable) -> Callable:
+def log_det_scalar(fn: Callable[[PyTree], PyTree]) -> Callable[[PyTree], PyTree]:
     """Uses JAX autograd to derive the log-det-jacobian of a scalar function.
 
     **Arguments:**
@@ -162,11 +171,11 @@ def log_det_scalar(fn: Callable) -> Callable:
         jac_scalar = jac_fn(x.reshape(-1))
         log_det_ = jnp.log(jnp.absolute(jac_scalar))
         return log_det_.reshape(x.shape)
-    
+
     return log_det_fn
 
 
-def _check_numerical_stability(fn: Callable) -> None:
+def _check_numerical_stability(fn: Callable[[PyTree], PyTree]) -> None:
     """Logs a warning if numerically unstable operations are requested."""
     jaxpr = jax.make_jaxpr(fn)(0.0).jaxpr
     for eqn in jaxpr.eqns:
@@ -203,7 +212,9 @@ def _dependent_variables(jaxpr, dependent=None):
     return dependent
 
 
-def _invertible_jaxpr_and_constants(fun: Callable) -> Callable:
+def _invertible_jaxpr_and_constants(
+    fun: Callable[[PyTree], PyTree],
+) -> Callable[[PyTree], PyTree]:
     """Returns a transformation from function invocation to invertible jaxpr."""
     jaxpr_maker = jax.make_jaxpr(fun)
 
@@ -211,6 +222,7 @@ def _invertible_jaxpr_and_constants(fun: Callable) -> Callable:
     def jaxpr_const_maker(*args, **kwargs):
         typed_jaxpr = jaxpr_maker(*args, **kwargs)
         return typed_jaxpr.jaxpr, typed_jaxpr.literals
+
     return jaxpr_const_maker
 
 
@@ -242,7 +254,8 @@ def _identify_variable_in_eqn(eqn) -> int:
 
         else:
             raise NotImplementedError(
-                "Unsupported binary op combination: " + str(tuple(map(type, eqn.invars)))
+                "Unsupported binary op combination: "
+                + str(tuple(map(type, eqn.invars)))
             )
 
     else:

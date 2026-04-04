@@ -12,7 +12,6 @@ from parameterized import parameterized  # type: ignore
 from distreqx.bijectors import Exp, Indexed
 
 
-
 class IndexedTest(TestCase):
     def setUp(self):
         # We apply an Exponential bijector only to indices 1 and 3
@@ -25,14 +24,15 @@ class IndexedTest(TestCase):
     @parameterized.expand([("float32", jnp.float32), ("float64", jnp.float64)])
     def test_forward_and_inverse(self, name, dtype):
         x = jnp.array([10.0, 0.0, 20.0, 1.0], dtype=dtype)
-        
+
         y, log_det_fwd = self.bij.forward_and_log_det(x)
-        
+
         # Indices 0 and 2 unchanged. Indices 1 and 3 exponentiated.
         expected_y = jnp.array([10.0, jnp.exp(0.0), 20.0, jnp.exp(1.0)], dtype=dtype)
         self.assertion_fn()(y, expected_y)
-        
-        # The total log_det is the sum of the log_dets of the transformed indices (x[1] + x[3])
+
+        # The total log_det is the sum of the log_dets of the
+        # transformed indices (x[1] + x[3])
         expected_logdet = jnp.array([0.0, 1.0], dtype=dtype)
         self.assertion_fn()(log_det_fwd, expected_logdet)
 
@@ -43,10 +43,10 @@ class IndexedTest(TestCase):
     def test_boolean_mask_indexing(self):
         # Indexed can also accept boolean masks instead of integer indices
         bool_bij = Indexed(bijector=Exp(), indices=[False, True, False, True])
-        
+
         x = jnp.array([10.0, 0.0, 20.0, 1.0])
         y, log_det = bool_bij.forward_and_log_det(x)
-        
+
         expected_y = jnp.array([10.0, 1.0, 20.0, jnp.e])
         self.assertion_fn()(y, expected_y)
 

@@ -53,6 +53,6 @@ class ExpTest(TestCase):
     def test_same_as(self):
         same_bij = Exp()
         diff_bij = Identity()
-        
+
         self.assertTrue(self.bij.same_as(same_bij))
         self.assertFalse(self.bij.same_as(diff_bij))
