@@ -156,6 +156,15 @@ class Empirical(AbstractEmpirical, strict=True):
     rtol: Array
 
     def __init__(self, samples: Array, atol: float = 0.0, rtol: float = 0.0):
+        """Initializes an Empirical distribution.
+
+        **Arguments:**
+
+        - `samples`: The array of observed samples.
+        - `atol`: The absolute tolerance for probability calculations.
+        - `rtol`: The relative tolerance for probability calculations.
+        """
+
         self.samples = jnp.asarray(samples)
         self.atol = jnp.asarray(atol)
         self.rtol = jnp.asarray(rtol)
@@ -185,6 +194,15 @@ class WeightedEmpirical(AbstractEmpirical, strict=True):
     def __init__(
         self, samples: Array, weights: Array, atol: float = 0.0, rtol: float = 0.0
     ):
+        """Initializes a WeightedEmpirical distribution.
+
+        **Arguments:**
+
+        - `samples`: The array of observed samples.
+        - `weights`: The weights associated with each sample.
+        - `atol`: The absolute tolerance for probability calculations.
+        - `rtol`: The relative tolerance for probability calculations.
+        """
         self.samples = jnp.asarray(samples)
         self.weights = jnp.asarray(weights)
         self.atol = jnp.asarray(atol)
