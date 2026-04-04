@@ -9,7 +9,12 @@ from ._distribution import AbstractDistribution
 
 
 class AbstractEmpirical(AbstractDistribution, strict=True):
-    """Abstract base class for Empirical and WeightedEmpirical distributions."""
+    """
+    Abstract base class for Empirical and WeightedEmpirical distributions.
+
+    An empirical distribution describes the empirical measure (observations)
+    of a variable.
+    """
 
     samples: eqx.AbstractVar[Array]
     atol: eqx.AbstractVar[Array]
@@ -68,11 +73,11 @@ class AbstractEmpirical(AbstractDistribution, strict=True):
         return jnp.log(self.prob(value))
 
     def mean(self) -> Array:
-        """Calculates the weighted empirical mean."""
+        """Calculates the empirical mean."""
         return jnp.sum(self.samples * self._expand_weights(), axis=0)
 
     def variance(self) -> Array:
-        """Calculates the weighted empirical variance."""
+        """Calculates the empirical variance."""
         mu = self.mean()
         sq_diff = jnp.square(self.samples - mu)
         return jnp.sum(sq_diff * self._expand_weights(), axis=0)
@@ -97,7 +102,7 @@ class AbstractEmpirical(AbstractDistribution, strict=True):
         """Calculates the median (50th percentile)."""
         if self.event_shape != ():
             raise NotImplementedError(
-                "Median is intractable and undefined for multivariate events."
+                "Median is intractable and undefined for multivariate empiricals."
             )
         return self.icdf(jnp.array(0.5, dtype=self.samples.dtype))
 
@@ -124,7 +129,7 @@ class AbstractEmpirical(AbstractDistribution, strict=True):
         """Evaluates the inverse cumulative distribution function (quantile)."""
         if self.event_shape != ():
             raise NotImplementedError(
-                "Inverse CDF is intractable and undefined for multivariate events."
+                "Inverse CDF is intractable and undefined for multivariate empiricals."
             )
 
         sort_idx = jnp.argsort(self.samples)
