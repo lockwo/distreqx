@@ -18,6 +18,9 @@ from ._mvn_from_bijector import (
     AbstractMultivariateNormalFromBijector as AbstractMultivariateNormalFromBijector,
     MultivariateNormalFromBijector as MultivariateNormalFromBijector,
 )
+from ._mvn_full_covariance import (
+    MultivariateNormalFullCovariance as MultivariateNormalFullCovariance,
+)
 from ._mvn_tri import MultivariateNormalTri as MultivariateNormalTri
 from ._normal import Normal as Normal
 from ._one_hot_categorical import OneHotCategorical as OneHotCategorical
