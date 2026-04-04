@@ -129,6 +129,9 @@ class MultivariateNormalTri(AbstractMultivariateNormalFromBijector, strict=True)
         self.scale_tri = scale_tri_val
         self.is_lower = is_lower
 
+    def icdf(self, value: PyTree[Array]) -> PyTree[Array]:
+        raise NotImplementedError
+
     def log_cdf(self, value: PyTree[Array]) -> PyTree[Array]:
         raise NotImplementedError
 

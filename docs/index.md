@@ -28,7 +28,7 @@ cd distreqx
 pip install -e .
 ```
 
-Requires Python 3.9+, JAX 0.4.11+, and [Equinox](https://github.com/patrick-kidger/equinox) 0.11.0+.
+Requires Python 3.10+, JAX 0.4.11+, and [Equinox](https://github.com/patrick-kidger/equinox) 0.11.0+.
 
 
 ## Quick example

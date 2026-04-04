@@ -80,6 +80,10 @@ class Independent(
         """Calculates the mean."""
         return self.distribution.mean()
 
+    def icdf(self, value: Array) -> Array:
+        """See `Distribution.icdf`."""
+        raise NotImplementedError
+
     def median(self) -> Array:
         """Calculates the median."""
         return self.distribution.median()

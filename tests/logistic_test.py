@@ -1,32 +1,33 @@
-"""Tests for `normal.py`."""
+"""Tests for `logistic.py`."""
 
 from unittest import TestCase
 
+import equinox as eqx
 import jax
 import jax.numpy as jnp
 import numpy as np
 from parameterized import parameterized  # type: ignore
 
-from distreqx.distributions import Normal
+from distreqx.distributions import Logistic
 
 
-class NormalTest(TestCase):
+class LogisticTest(TestCase):
     @parameterized.expand(
         [
-            ("1d std normal", (jnp.array(0), jnp.array(1))),
-            ("2d std normal", (jnp.zeros(2), jnp.ones(2))),
-            ("rank 2 std normal", (jnp.zeros((3, 2)), jnp.ones((3, 2)))),
+            ("1d std logistic", (jnp.array(0.0), jnp.array(1.0))),
+            ("2d std logistic", (jnp.zeros(2), jnp.ones(2))),
+            ("rank 2 std logistic", (jnp.zeros((3, 2)), jnp.ones((3, 2)))),
         ]
     )
     def test_event_shape(self, name, distr_params):
         loc, scale = distr_params
-        self.assertEqual(loc.shape, Normal(loc, scale).event_shape)
+        self.assertEqual(loc.shape, Logistic(loc, scale).event_shape)
 
     @parameterized.expand(
         [
-            ("1d std normal", (jnp.array(0), jnp.array(1))),
-            ("2d std normal", (jnp.zeros(2), jnp.ones(2))),
-            ("rank 2 std normal", (jnp.zeros((3, 2)), jnp.ones((3, 2)))),
+            ("1d std logistic", (jnp.array(0.0), jnp.array(1.0))),
+            ("2d std logistic", (jnp.zeros(2), jnp.ones(2))),
+            ("rank 2 std logistic", (jnp.zeros((3, 2)), jnp.ones((3, 2)))),
         ]
     )
     def test_sample_shape(self, name, distr_params):
@@ -37,14 +38,14 @@ class NormalTest(TestCase):
         key = jax.random.key(0)
         self.assertEqual(
             distr_params[0].shape,
-            Normal(distr_params[0], distr_params[1]).sample(key).shape,
+            Logistic(distr_params[0], distr_params[1]).sample(key).shape,
         )
 
     @parameterized.expand(
         [
-            ("1d std normal", (jnp.array(0), jnp.array(1))),
-            ("2d std normal", (jnp.zeros(2), jnp.ones(2))),
-            ("rank 2 std normal", (jnp.zeros((3, 2)), jnp.ones((3, 2)))),
+            ("1d std logistic", (jnp.array(0.0), jnp.array(1.0))),
+            ("2d std logistic", (jnp.zeros(2), jnp.ones(2))),
+            ("rank 2 std logistic", (jnp.zeros((3, 2)), jnp.ones((3, 2)))),
         ]
     )
     @jax.numpy_rank_promotion("raise")
@@ -54,22 +55,18 @@ class NormalTest(TestCase):
             jnp.asarray(distr_params[1], dtype=jnp.float32),
         )
         key = jax.random.key(0)
-        dist = Normal(distr_params[0], distr_params[1])
-        result = dist.sample_and_log_prob(key)
-        self.assertEqual(
-            distr_params[0].shape,
-            result[0].shape,
-        )
-        self.assertEqual(
-            distr_params[0].shape,
-            result[1].shape,
-        )
+        dist = Logistic(distr_params[0], distr_params[1])
+        samples, log_prob = dist.sample_and_log_prob(key)
+        self.assertEqual(distr_params[0].shape, samples.shape)
+        self.assertEqual(distr_params[0].shape, log_prob.shape)
+        expected_log_prob = dist.log_prob(samples)
+        np.testing.assert_allclose(log_prob, expected_log_prob, rtol=1e-5)
 
     @parameterized.expand(
         [
-            ("1d std normal", (jnp.array(0), jnp.array(1))),
-            ("2d std normal", (jnp.zeros(2), jnp.ones(2))),
-            ("rank 2 std normal", (jnp.zeros((3, 2)), jnp.ones((3, 2)))),
+            ("1d std logistic", (jnp.array(0.0), jnp.array(1.0))),
+            ("2d std logistic", (jnp.zeros(2), jnp.ones(2))),
+            ("rank 2 std logistic", (jnp.zeros((3, 2)), jnp.ones((3, 2)))),
         ]
     )
     def test_method_with_input(self, name, distr_params):
@@ -78,7 +75,7 @@ class NormalTest(TestCase):
             jnp.asarray(distr_params[1], dtype=jnp.float32),
         )
         value = jnp.asarray(distr_params[0], dtype=jnp.float32)
-        dist = Normal(distr_params[0], distr_params[1])
+        dist = Logistic(distr_params[0], distr_params[1])
         for method in [
             "log_prob",
             "prob",
@@ -94,13 +91,17 @@ class NormalTest(TestCase):
     @parameterized.expand(
         [
             ("entropy", (0.0, 1.0), "entropy"),
-            ("mean", (0, 1), "mean"),
-            ("mean from 1d params", ([-1, 1], [1, 2]), "mean"),
-            ("variance", (0, 1), "variance"),
+            ("mean", (0.0, 1.0), "mean"),
+            ("mean from 1d params", ([-1.0, 1.0], [1.0, 2.0]), "mean"),
+            ("variance", (0.0, 1.0), "variance"),
             ("variance from np params", (np.ones(2), np.ones(2)), "variance"),
-            ("stddev", (0, 1), "stddev"),
-            ("stddev from rank 2 params", (np.ones((2, 3)), np.ones((2, 3))), "stddev"),
-            ("mode", (0, 1), "mode"),
+            ("stddev", (0.0, 1.0), "stddev"),
+            (
+                "stddev from rank 2 params",
+                (np.ones((2, 3)), np.ones((2, 3))),
+                "stddev",
+            ),
+            ("mode", (0.0, 1.0), "mode"),
         ]
     )
     def test_method(self, name, distr_params, function_string):
@@ -108,7 +109,7 @@ class NormalTest(TestCase):
             jnp.asarray(distr_params[0], dtype=jnp.float32),
             jnp.asarray(distr_params[1], dtype=jnp.float32),
         )
-        dist = Normal(distr_params[0], distr_params[1])
+        dist = Logistic(distr_params[0], distr_params[1])
         result = getattr(dist, function_string)()
         self.assertEqual(distr_params[0].shape, result.shape)
 
@@ -122,41 +123,14 @@ class NormalTest(TestCase):
             jnp.asarray(distr_params[0], dtype=jnp.float32),
             jnp.asarray(distr_params[1], dtype=jnp.float32),
         )
-        dist = Normal(distr_params[0], distr_params[1])
+        dist = Logistic(distr_params[0], distr_params[1])
         np.testing.assert_allclose(dist.median(), dist.mean(), rtol=1e-3)
 
     @parameterized.expand(
         [
-            ("kl", "kl_divergence"),
-            ("cross-ent", "cross_entropy"),
-        ]
-    )
-    def test_with_two_distributions(self, name, function_string):
-        dist1_kwargs = {
-            "loc": jnp.array(np.random.randn(3, 2)),
-            "scale": jnp.asarray([[0.8, 0.2], [0.1, 1.2], [1.4, 3.1]]),
-        }
-        dist2_kwargs = {
-            "loc": jnp.array(np.random.randn(3, 2)),
-            "scale": jnp.array(0.1 + np.random.rand(3, 2)),
-        }
-        dist1 = Normal(**dist1_kwargs)
-        dist2 = Normal(**dist2_kwargs)
-
-        result = getattr(dist1, function_string)(dist2)
-        self.assertEqual(dist1_kwargs["loc"].shape, result.shape)
-        result = getattr(dist1, function_string)(dist1)
-        self.assertEqual(dist1_kwargs["loc"].shape, result.shape)
-        if name == "kl":
-            np.testing.assert_allclose(jnp.zeros_like(dist1_kwargs["loc"]), result)
-        elif name == "cross-ent":
-            np.testing.assert_allclose(dist1.entropy(), result)
-
-    @parameterized.expand(
-        [
-            ("1d std normal", (jnp.array(0.0), jnp.array(1.0))),
-            ("2d std normal", (jnp.zeros(2), jnp.ones(2))),
-            ("rank 2 std normal", (jnp.zeros((3, 2)), jnp.ones((3, 2)))),
+            ("1d std logistic", (jnp.array(0.0), jnp.array(1.0))),
+            ("2d std logistic", (jnp.zeros(2), jnp.ones(2))),
+            ("rank 2 std logistic", (jnp.zeros((3, 2)), jnp.ones((3, 2)))),
         ]
     )
     def test_icdf_shape(self, name, distr_params):
@@ -165,14 +139,14 @@ class NormalTest(TestCase):
             jnp.asarray(distr_params[1], dtype=jnp.float32),
         )
         value = 0.5 * jnp.ones_like(distr_params[0])
-        dist = Normal(distr_params[0], distr_params[1])
+        dist = Logistic(distr_params[0], distr_params[1])
         result = dist.icdf(value)
         self.assertEqual(value.shape, result.shape)
 
     def test_icdf_values(self):
         loc = jnp.array([0.0, 1.0, -2.0])
         scale = jnp.array([1.0, 2.0, 0.5])
-        dist = Normal(loc, scale)
+        dist = Logistic(loc, scale)
 
         # icdf(cdf(x)) should be x
         x = jnp.array([0.5, -1.0, -1.5])
@@ -182,11 +156,30 @@ class NormalTest(TestCase):
         u = jnp.array([0.1, 0.5, 0.9])
         np.testing.assert_allclose(dist.cdf(dist.icdf(u)), u, rtol=1e-5)
 
+    def test_cdf_values(self):
+        dist = Logistic(jnp.array(0.0), jnp.array(1.0))
+        np.testing.assert_allclose(dist.cdf(jnp.array(0.0)), 0.5, rtol=1e-5)
+
+    def test_entropy_values(self):
+        dist = Logistic(jnp.array(0.0), jnp.array(1.0))
+        np.testing.assert_allclose(dist.entropy(), 2.0, rtol=1e-5)
+
+    def test_log_cdf_consistency(self):
+        """log_cdf should be log of cdf."""
+        loc = jnp.array([0.0, 1.0])
+        scale = jnp.array([1.0, 2.0])
+        dist = Logistic(loc, scale)
+        x = jnp.array([0.5, -1.0])
+        np.testing.assert_allclose(dist.log_cdf(x), jnp.log(dist.cdf(x)), rtol=1e-5)
+
     def test_vmap_inputs(self):
         def log_prob_sum(dist, x):
             return dist.log_prob(x).sum()
 
-        dist = Normal(jnp.arange(3 * 4 * 5).reshape((3, 4, 5)), jnp.ones((3, 4, 5)))
+        dist = Logistic(
+            jnp.arange(3 * 4 * 5, dtype=jnp.float32).reshape((3, 4, 5)),
+            jnp.ones((3, 4, 5)),
+        )
         x = jnp.zeros((3, 4, 5))
 
         with self.subTest("no vmap"):
@@ -206,17 +199,24 @@ class NormalTest(TestCase):
 
     def test_vmap_outputs(self):
         def summed_dist(loc, scale):
-            return Normal(loc.sum(keepdims=True), scale.sum(keepdims=True))
+            return Logistic(loc.sum(keepdims=True), scale.sum(keepdims=True))
 
-        loc = jnp.arange((3 * 4 * 5)).reshape((3, 4, 5))
+        loc = jnp.arange(3 * 4 * 5, dtype=jnp.float32).reshape((3, 4, 5))
         scale = jnp.ones((3, 4, 5))
 
         actual = jax.vmap(summed_dist)(loc, scale)
-        expected = Normal(
-            loc.sum(axis=(1, 2), keepdims=True), scale.sum(axis=(1, 2), keepdims=True)
+        expected = Logistic(
+            loc.sum(axis=(1, 2), keepdims=True),
+            scale.sum(axis=(1, 2), keepdims=True),
         )
 
         np.testing.assert_equal(actual.event_shape, expected.event_shape)
 
-        x = jnp.array([[[1]], [[2]], [[3]]])
+        x = jnp.array([[[1.0]], [[2.0]], [[3.0]]])
         np.testing.assert_allclose(actual.log_prob(x), expected.log_prob(x), rtol=1e-6)
+
+    def test_jit(self):
+        dist = Logistic(jnp.array(0.0), jnp.array(1.0))
+        x = jnp.array(0.5)
+        jitted_log_prob = eqx.filter_jit(dist.log_prob)
+        np.testing.assert_allclose(jitted_log_prob(x), dist.log_prob(x), rtol=1e-5)

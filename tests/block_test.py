@@ -9,7 +9,6 @@ from parameterized import parameterized  # type: ignore
 
 from distreqx.bijectors import AbstractBijector, Block, ScalarAffine, Tanh
 
-
 RTOL = 1e-6
 seed = jax.random.key(1234)
 

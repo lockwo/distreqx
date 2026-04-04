@@ -8,7 +8,6 @@ import numpy as np
 
 from distreqx.bijectors import AbstractBijector, Chain, ScalarAffine, Tanh
 
-
 RTOL = 1e-2
 
 

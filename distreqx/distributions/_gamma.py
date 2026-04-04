@@ -71,6 +71,10 @@ class Gamma(
             - jax.lax.lgamma(self.concentration)
         )
 
+    def icdf(self, value: Array) -> Array:
+        """See `Distribution.icdf`."""
+        raise NotImplementedError
+
     def cdf(self, value: Array) -> Array:
         """See `Distribution.cdf`."""
         return jax.lax.igamma(self.concentration, self.rate * value)
