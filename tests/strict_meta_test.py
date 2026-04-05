@@ -21,6 +21,7 @@ class StrictMetaTest(TestCase):
                 return 42
 
         with self.assertRaises(TypeError, msg="Concrete classes must be final"):
+
             class SubFoo(Foo, strict=True):
                 pass
 
