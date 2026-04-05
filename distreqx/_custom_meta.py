@@ -1,19 +1,29 @@
 # type: ignore
-from dataclasses import dataclass
+from abc import abstractmethod
 
 import equinox as eqx
 import ihoop
 
-try:
 
-    class _StrictEqxMeta(ihoop.strict._StrictMeta, eqx._module._module._ModuleMeta):
-        def __new__(mcs, name, bases, namespace, **kwargs):
-            return super().__new__(mcs, name, bases, namespace, **kwargs)
+class _StrictEqxMeta(ihoop.strict._StrictMeta, eqx._module._module._ModuleMeta):
+    def __new__(mcs, name, bases, namespace, **kwargs):
+        if name == "AbstractStrictModule":
 
-    @dataclass(frozen=True)
-    class AbstractStrictModule(eqx.Module, ihoop.Strict, metaclass=_StrictEqxMeta):
-        def __init_subclass__(cls, *, strict: bool = False, **kwargs):
-            super().__init_subclass__(**kwargs)
+            @abstractmethod
+            def _strict_base_(self):
+                raise NotImplementedError
 
-except Exception:
-    AbstractStrictModule = eqx.Module
+            namespace["_strict_base_"] = _strict_base_
+        elif not name.startswith("Abstract") and not name.startswith("_Abstract"):
+            if "_strict_base_" not in namespace:
+
+                def _strict_base_(self):
+                    pass
+
+                namespace["_strict_base_"] = _strict_base_
+        return super().__new__(mcs, name, bases, namespace, **kwargs)
+
+
+class AbstractStrictModule(eqx.Module, ihoop.Strict, metaclass=_StrictEqxMeta):
+    def __init_subclass__(cls, *, strict: bool = False, **kwargs):
+        super().__init_subclass__(**kwargs)
