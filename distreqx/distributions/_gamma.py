@@ -7,7 +7,6 @@ import jax.numpy as jnp
 from jaxtyping import Array, Float, Key
 
 from ._distribution import (
-    AbstractCDFDistribution,
     AbstractProbDistribution,
     AbstractSampleLogProbDistribution,
     AbstractSurvivalDistribution,
@@ -18,7 +17,6 @@ class Gamma(
     AbstractSampleLogProbDistribution,
     AbstractProbDistribution,
     AbstractSurvivalDistribution,
-    AbstractCDFDistribution,
     strict=True,
 ):
     r"""Gamma distribution with parameters `concentration` and `rate`.
