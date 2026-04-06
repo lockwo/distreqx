@@ -26,5 +26,6 @@ from ._sigmoid import Sigmoid as Sigmoid
 from ._softplus import Softplus as Softplus
 from ._split_coupling import SplitCoupling as SplitCoupling
 from ._tanh import Tanh as Tanh
+from ._tranpose import Transpose as Transpose
 from ._triangular_linear import TriangularLinear as TriangularLinear
 from ._unconstrained_affine import UnconstrainedAffine as UnconstrainedAffine
