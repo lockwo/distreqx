@@ -8,7 +8,7 @@ import numpy as np
 from parameterized import parameterized  # type: ignore
 
 from distreqx.bijectors import ScalarAffine, Sigmoid
-from distreqx.distributions import Normal, Transformed
+from distreqx.distributions import MultivariateNormalTri, Normal, Transformed
 
 
 class TransformedTest(TestCase):
@@ -96,3 +96,18 @@ class TransformedTest(TestCase):
         x = jnp.zeros(())
         y = f(x, dist)
         self.assertIsInstance(y, jax.Array)
+
+    def test_covariance_constant_jacobian(self):
+        # Setup a 3D Multivariate Normal with Identity Covariance
+        loc = 1.0 * jnp.zeros(3)
+        scale_tri = 1.0 * jnp.eye(3)
+        base_dist = MultivariateNormalTri(loc, scale_tri)
+
+        # Scale by 2.0. Expected covariance should scale by a factor of 4.0
+        bijector = ScalarAffine(shift=jnp.array(1.0), scale=jnp.array(2.0))
+        dist = Transformed(base_dist, bijector)
+
+        expected_cov = 4.0 * jnp.eye(3)
+        actual_cov = dist.covariance()
+
+        np.testing.assert_allclose(actual_cov, expected_cov, rtol=1e-5)

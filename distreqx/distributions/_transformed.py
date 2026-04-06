@@ -209,6 +209,42 @@ class Transformed(AbstractTransformed, AbstractSTDDistribution, strict=True):
     def variance(self) -> PyTree[Array]:
         raise NotImplementedError
 
+    def covariance(self) -> Array:
+        """Calculates the covariance.
+
+        Only supported if the bijector has a constant Jacobian,
+        and the underlying distribution has a `covariance` method.
+        """
+        if self.bijector.is_constant_jacobian and hasattr(
+            self.distribution, "covariance"
+        ):
+            base_cov = self.distribution.covariance()  # pyright: ignore
+
+            # 1. Setup linearization point
+            dummy_x = jnp.zeros(
+                self.distribution.event_shape, dtype=self.distribution.dtype
+            )
+
+            # 2. Define the Jacobian-Vector Product (push-forward) function
+            # jax.jvp(f, (x,), (v,)) returns (f(x), Jv)
+            def push_fwd(v):
+                return jax.jvp(self.bijector.forward, (dummy_x,), (v,))[1]
+
+            # 3. Apply J to the columns of base_cov: M = J @ Cx
+            # We vmap over the last dimension of Cx
+            j_cx = jax.vmap(push_fwd, in_axes=-1, out_axes=-1)(base_cov)
+
+            # 4. Apply J to the rows of the result: M @ J.T = (J @ M.T).T
+            # Applying J to the rows of M is equivalent to M @ J.T
+            return jax.vmap(push_fwd, in_axes=0, out_axes=0)(j_cx)
+
+        else:
+            raise NotImplementedError(
+                "`covariance` is not implemented for this transformed distribution. "
+                "Ensure the bijector has a constant Jacobian and the base "
+                "distribution supports covariance."
+            )
+
     def cdf(self, value: PyTree[Array]) -> PyTree[Array]:
         raise NotImplementedError
 
