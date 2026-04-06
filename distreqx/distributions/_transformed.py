@@ -206,8 +206,43 @@ class Transformed(AbstractTransformed, AbstractSTDDistribution, strict=True):
     def median(self) -> PyTree[Array]:
         raise NotImplementedError
 
-    def variance(self) -> PyTree[Array]:
-        raise NotImplementedError
+    def variance(self) -> Array:
+        """Calculates the variance."""
+        if self.bijector.is_constant_jacobian:
+            var_x = self.distribution.variance()
+
+            # Evaluate Jacobian at any point (constant)
+            x0 = jnp.zeros(self.event_shape, dtype=self.distribution.dtype)
+            J = jax.jacfwd(self.bijector.forward)(x0)
+            return J**2 * var_x
+        else:
+            raise NotImplementedError(
+                "`variance` is not implemented for this transformed distribution, "
+                "because its bijector's Jacobian determinant is not known to be "
+                "constant."
+            )
+
+    def covariance(self) -> Array:
+        """Calculates the covariance."""
+        if not hasattr(self.distribution, "covariance"):
+            raise NotImplementedError(
+                "`covariance` is not implemented because "
+                "the base distribution does not implement it."
+            )
+
+        if self.bijector.is_constant_jacobian:
+            cov_x = self.distribution.covariance()  # type: ignore
+
+            x0 = jnp.zeros(self.event_shape, dtype=self.distribution.dtype)
+            J = jax.jacfwd(self.bijector.forward)(x0)
+
+            return J @ cov_x @ J.T
+
+        else:
+            raise NotImplementedError(
+                "`covariance` is not implemented because the bijector's Jacobian "
+                "is not known to be constant."
+            )
 
     def cdf(self, value: PyTree[Array]) -> PyTree[Array]:
         raise NotImplementedError
