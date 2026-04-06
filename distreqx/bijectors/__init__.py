@@ -8,6 +8,9 @@ from ._block import Block as Block
 from ._chain import Chain as Chain
 from ._diag_linear import DiagLinear as DiagLinear
 from ._linear import AbstractLinearBijector as AbstractLinearBijector
+from ._rational_quadratic_spline import (
+    RationalQuadraticSpline as RationalQuadraticSpline,
+)
 from ._scalar_affine import ScalarAffine as ScalarAffine
 from ._shift import Shift as Shift
 from ._sigmoid import Sigmoid as Sigmoid
