@@ -123,6 +123,7 @@ nav:
             - 'api/bijectors/shift.md'
             - 'api/bijectors/sigmoid.md'
             - 'api/bijectors/tanh.md'
+            - 'api/bijectors/transpose.md'
             - 'api/bijectors/triangular_linear.md'
             - 'api/bijectors/_bijector.md'
         - Utilities:
