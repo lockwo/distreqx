@@ -9,7 +9,7 @@ import jax.numpy as jnp
 import numpy as np
 from parameterized import parameterized  # type: ignore
 
-from distreqx.distributions import Deterministic, Joint
+from distreqx.distributions import Deterministic, Joint, Normal
 
 
 class JointTest(TestCase):
@@ -100,6 +100,34 @@ class JointTest(TestCase):
             }
         )
         self.assertEqual(self.joint_dist.kl_divergence(dist3), jnp.inf)
+
+    def test_heterogeneous_shapes(self):
+        """Verifies that the Joint distribution gracefully handles mixed shapes."""
+        # Mix a scalar leaf with a vector leaf
+        tree_dists = {
+            "scalar": Deterministic(loc=1.0),
+            "vector": Normal(loc=jnp.zeros(2), scale=jnp.ones(2)),
+        }
+        hetero_joint = Joint(distributions=tree_dists)
+
+        # 1. Event Shape checks
+        event_shape = hetero_joint.event_shape
+        self.assertEqual(event_shape["scalar"], ())
+        self.assertEqual(event_shape["vector"], (2,))
+
+        # 2. Sample checks
+        sample = hetero_joint.sample(self.key)
+        self.assertEqual(sample["scalar"].shape, ())
+        self.assertEqual(sample["vector"].shape, (2,))
+
+        # 3. Math checks (Ensure ragged arrays are safely reduced to scalars)
+        lp = hetero_joint.log_prob(sample)
+        self.assertEqual(lp.shape, ())
+        self.assertFalse(jnp.isnan(lp))
+
+        ent = hetero_joint.entropy()
+        self.assertEqual(ent.shape, ())
+        self.assertFalse(jnp.isnan(ent))
 
     def test_jittable(self):
         @eqx.filter_jit

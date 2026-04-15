@@ -69,14 +69,20 @@ class Joint(AbstractDistribution, strict=True):
             is_leaf=_is_dist,
         )
 
-        # Extract log_probs, flatten them, and sum them
+        # Extract log_probs
         log_probs = jax.tree_util.tree_map(
             lambda _, p: p[1],
             self.distributions,
             samples_and_log_probs,
             is_leaf=_is_dist,
         )
-        total_log_prob = jnp.sum(jnp.asarray(jax.tree_util.tree_leaves(log_probs)))
+
+        # Safely reduce any element-wise/batched arrays into scalars
+        # before summing the tree
+        log_probs_summed = jax.tree_util.tree_map(jnp.sum, log_probs)
+        total_log_prob = jnp.sum(
+            jnp.asarray(jax.tree_util.tree_leaves(log_probs_summed))
+        )
 
         return samples, total_log_prob
 
@@ -107,14 +113,16 @@ class Joint(AbstractDistribution, strict=True):
             value,
             is_leaf=_is_dist,
         )
-        return jnp.sum(jnp.asarray(jax.tree_util.tree_leaves(log_probs)))
+        log_probs_summed = jax.tree_util.tree_map(jnp.sum, log_probs)
+        return jnp.sum(jnp.asarray(jax.tree_util.tree_leaves(log_probs_summed)))
 
     def entropy(self) -> Array:
         """Calculates the sum of Shannon entropies (in nats)."""
         entropies = jax.tree_util.tree_map(
             lambda dist: dist.entropy(), self.distributions, is_leaf=_is_dist
         )
-        return jnp.sum(jnp.asarray(jax.tree_util.tree_leaves(entropies)))
+        entropies_summed = jax.tree_util.tree_map(jnp.sum, entropies)
+        return jnp.sum(jnp.asarray(jax.tree_util.tree_leaves(entropies_summed)))
 
     def cdf(self, value: PyTree[Array]) -> Array:
         """Evaluates the joint cumulative distribution function."""
@@ -128,7 +136,8 @@ class Joint(AbstractDistribution, strict=True):
             value,
             is_leaf=_is_dist,
         )
-        return jnp.sum(jnp.asarray(jax.tree_util.tree_leaves(log_cdfs)))
+        log_cdfs_summed = jax.tree_util.tree_map(jnp.sum, log_cdfs)
+        return jnp.sum(jnp.asarray(jax.tree_util.tree_leaves(log_cdfs_summed)))
 
     def survival_function(self, value: PyTree[Array]) -> Array:
         """Evaluates the joint survival function."""
@@ -142,7 +151,8 @@ class Joint(AbstractDistribution, strict=True):
             value,
             is_leaf=_is_dist,
         )
-        return jnp.sum(jnp.asarray(jax.tree_util.tree_leaves(log_survs)))
+        log_survs_summed = jax.tree_util.tree_map(jnp.sum, log_survs)
+        return jnp.sum(jnp.asarray(jax.tree_util.tree_leaves(log_survs_summed)))
 
     def mean(self) -> PyTree[Array]:
         """Calculates the joint mean."""
@@ -197,4 +207,5 @@ class Joint(AbstractDistribution, strict=True):
             other_dist.distributions,
             is_leaf=_is_dist,
         )
-        return jnp.sum(jnp.asarray(jax.tree_util.tree_leaves(kl_divs)))
+        kl_divs_summed = jax.tree_util.tree_map(jnp.sum, kl_divs)
+        return jnp.sum(jnp.asarray(jax.tree_util.tree_leaves(kl_divs_summed)))
