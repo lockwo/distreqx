@@ -71,7 +71,6 @@ class MultivariateNormalFullCovariance(
         will simply fail if these conditions are not met.
     """
 
-    _covariance_matrix: Array
     loc: Array
     scale: AbstractLinearBijector
     distribution: AbstractDistribution
@@ -125,22 +124,7 @@ class MultivariateNormalFullCovariance(
         self.bijector = bijector
         self.scale = scale
         self.loc = loc
-        self._covariance_matrix = covariance_matrix
 
-    @property
-    def covariance_matrix(self) -> Array:
-        """Covariance matrix `C`."""
-        return self._covariance_matrix
-
-    def covariance(self) -> Array:
-        """Calculates the covariance matrix."""
-        return self.covariance_matrix
-
-    def variance(self) -> Array:
-        """Calculates the variance of all one-dimensional marginals."""
-        return jnp.diag(self.covariance_matrix)
-
-    # Implement missing abstract methods required by the strict parent hierarchy
     def icdf(self, value: PyTree[Array]) -> PyTree[Array]:
         raise NotImplementedError
 
