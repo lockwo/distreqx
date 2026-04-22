@@ -1,9 +1,21 @@
 from typing import Optional
 
+import equinox as eqx
 import jax.numpy as jnp
-from jaxtyping import Array
+from jaxtyping import Array, PyTree
 
-from ._mvn_tri import MultivariateNormalTri
+from ..bijectors import (
+    AbstractBijector,
+    AbstractLinearBijector,
+    Block,
+    Chain,
+    Shift,
+    TriangularLinear,
+)
+from ._distribution import AbstractDistribution
+from ._independent import Independent
+from ._mvn_from_bijector import AbstractMultivariateNormalFromBijector
+from ._normal import Normal
 
 
 def _check_parameters(loc: Optional[Array], covariance_matrix: Optional[Array]) -> None:
@@ -42,12 +54,15 @@ def _check_parameters(loc: Optional[Array], covariance_matrix: Optional[Array]) 
             )
 
 
-class MultivariateNormalFullCovariance(MultivariateNormalTri, strict=True):
-    r"""Multivariate normal distribution on $\mathbb{R}^k$.
+class MultivariateNormalFullCovariance(
+    AbstractMultivariateNormalFromBijector,
+    strict=True,
+):
+    r"""Multivariate normal distribution on \(\mathbb{R}^k\).
 
     The `MultivariateNormalFullCovariance` distribution is parameterized by a
-    $k$-length location (mean) vector $b$ and a covariance matrix $C$ of size
-    $k \times k$ that must be positive definite and symmetric.
+    \(k\)-length location (mean) vector \(b\) and a covariance matrix \(C\) of size
+    \(k \times k\) that must be positive definite and symmetric.
 
     !!! note
 
@@ -57,6 +72,10 @@ class MultivariateNormalFullCovariance(MultivariateNormalTri, strict=True):
     """
 
     _covariance_matrix: Array
+    loc: Array
+    scale: AbstractLinearBijector
+    distribution: AbstractDistribution
+    bijector: AbstractBijector
 
     def __init__(
         self,
@@ -84,15 +103,28 @@ class MultivariateNormalFullCovariance(MultivariateNormalTri, strict=True):
 
         dtype = jnp.result_type(*[x for x in [loc, covariance_matrix] if x is not None])
 
+        if loc is None:
+            loc = jnp.zeros((num_dims,), dtype=dtype)
+
         if covariance_matrix is None:
             covariance_matrix = jnp.eye(num_dims, dtype=dtype)
             scale_tri = jnp.eye(num_dims, dtype=dtype)
         else:
             scale_tri = jnp.linalg.cholesky(covariance_matrix)
 
-        # Let MultivariateNormalTri handle the bijector and std_mvn_dist logic
-        super().__init__(loc=loc, scale_tri=scale_tri, is_lower=True)
+        scale = TriangularLinear(matrix=scale_tri, is_lower=True)
+        std_mvn_dist = Independent(
+            distribution=eqx.filter_vmap(Normal)(
+                jnp.zeros_like(loc), jnp.ones_like(loc)
+            ),
+        )
 
+        bijector = Chain([Block(Shift(loc), ndims=loc.ndim), scale])
+
+        self.distribution = std_mvn_dist
+        self.bijector = bijector
+        self.scale = scale
+        self.loc = loc
         self._covariance_matrix = covariance_matrix
 
     @property
@@ -107,3 +139,13 @@ class MultivariateNormalFullCovariance(MultivariateNormalTri, strict=True):
     def variance(self) -> Array:
         """Calculates the variance of all one-dimensional marginals."""
         return jnp.diag(self.covariance_matrix)
+
+    # Implement missing abstract methods required by the strict parent hierarchy
+    def icdf(self, value: PyTree[Array]) -> PyTree[Array]:
+        raise NotImplementedError
+
+    def log_cdf(self, value: PyTree[Array]) -> PyTree[Array]:
+        raise NotImplementedError
+
+    def cdf(self, value: PyTree[Array]) -> PyTree[Array]:
+        raise NotImplementedError
