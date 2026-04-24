@@ -1,6 +1,6 @@
 from ._bijector import (
     AbstractBijector as AbstractBijector,
-    AbstractFowardInverseBijector as AbstractFowardInverseBijector,
+    AbstractForwardInverseBijector as AbstractForwardInverseBijector,
     AbstractFwdLogDetJacBijector as AbstractFwdLogDetJacBijector,
     AbstractInvLogDetJacBijector as AbstractInvLogDetJacBijector,
 )

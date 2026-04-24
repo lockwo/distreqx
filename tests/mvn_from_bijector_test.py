@@ -9,7 +9,7 @@ import numpy as np
 from parameterized import parameterized  # type: ignore
 
 from distreqx.bijectors import (
-    AbstractFowardInverseBijector,
+    AbstractForwardInverseBijector,
     AbstractFwdLogDetJacBijector,
     AbstractInvLogDetJacBijector,
     AbstractLinearBijector,
@@ -20,7 +20,7 @@ from distreqx.distributions import MultivariateNormalFromBijector
 
 class MockLinear(
     AbstractLinearBijector,
-    AbstractFowardInverseBijector,
+    AbstractForwardInverseBijector,
     AbstractFwdLogDetJacBijector,
     AbstractInvLogDetJacBijector,
     strict=True,

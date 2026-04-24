@@ -5,7 +5,7 @@ from unittest import TestCase
 from parameterized import parameterized  # type: ignore
 
 from distreqx.bijectors import (
-    AbstractFowardInverseBijector,
+    AbstractForwardInverseBijector,
     AbstractFwdLogDetJacBijector,
     AbstractInvLogDetJacBijector,
     AbstractLinearBijector,
@@ -14,7 +14,7 @@ from distreqx.bijectors import (
 
 class MockLinear(
     AbstractLinearBijector,
-    AbstractFowardInverseBijector,
+    AbstractForwardInverseBijector,
     AbstractFwdLogDetJacBijector,
     AbstractInvLogDetJacBijector,
     strict=True,

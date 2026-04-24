@@ -6,12 +6,14 @@ from jaxtyping import Array
 
 from ._bijector import (
     AbstractBijector,
-    AbstractFowardInverseBijector,
+    AbstractForwardInverseBijector,
     AbstractInvLogDetJacBijector,
 )
 
 
-class Sigmoid(AbstractFowardInverseBijector, AbstractInvLogDetJacBijector, strict=True):
+class Sigmoid(
+    AbstractForwardInverseBijector, AbstractInvLogDetJacBijector, strict=True
+):
     """A bijector that computes the logistic sigmoid.
 
     The log-determinant implementation in this bijector is more numerically stable
