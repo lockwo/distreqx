@@ -7,14 +7,14 @@ import jax.numpy as jnp
 import numpy as np
 
 from distreqx.bijectors import (
-    AbstractFowardInverseBijector,
+    AbstractForwardInverseBijector,
     AbstractFwdLogDetJacBijector,
     AbstractInvLogDetJacBijector,
 )
 
 
 class DummyBijector(
-    AbstractFowardInverseBijector,
+    AbstractForwardInverseBijector,
     AbstractFwdLogDetJacBijector,
     AbstractInvLogDetJacBijector,
     strict=True,

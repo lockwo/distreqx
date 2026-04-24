@@ -6,12 +6,12 @@ from jaxtyping import Array
 
 from ._bijector import (
     AbstractBijector,
-    AbstractFowardInverseBijector,
+    AbstractForwardInverseBijector,
     AbstractInvLogDetJacBijector,
 )
 
 
-class Tanh(AbstractFowardInverseBijector, AbstractInvLogDetJacBijector, strict=True):
+class Tanh(AbstractForwardInverseBijector, AbstractInvLogDetJacBijector, strict=True):
     """A bijector that computes the hyperbolic tangent.
 
     The log-determinant implementation in this bijector is more numerically stable

@@ -104,7 +104,7 @@ class AbstractFwdLogDetJacBijector(AbstractBijector, strict=True):
         return logdet
 
 
-class AbstractFowardInverseBijector(AbstractBijector, strict=True):
+class AbstractForwardInverseBijector(AbstractBijector, strict=True):
     """AbstractBijector + concrete `forward` and `reverse`."""
 
     def forward(self, x: PyTree) -> PyTree:

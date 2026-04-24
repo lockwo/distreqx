@@ -22,7 +22,7 @@
         members:
             - forward_log_det_jacobian
 
-::: distreqx.bijectors.AbstractFowardInverseBijector
+::: distreqx.bijectors.AbstractForwardInverseBijector
     options:
         members:
             - forward
