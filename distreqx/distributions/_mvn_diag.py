@@ -97,6 +97,18 @@ class MultivariateNormalDiag(AbstractMultivariateNormalFromBijector, strict=True
     def _standardize(self, value: Array) -> Array:
         return (value - self.loc) / self.scale_diag
 
+    def covariance(self) -> Array:
+        """Calculates the covariance matrix."""
+        return jnp.diag(self.variance())
+
+    def variance(self) -> Array:
+        """Calculates the variance of all one-dimensional marginals."""
+        return jnp.square(self.scale_diag)
+
+    def stddev(self) -> Array:
+        """Calculates the standard deviation (the square root of the variance)."""
+        return jnp.abs(self.scale_diag)
+
     def icdf(self, value: Array) -> Array:
         """See `Distribution.icdf`."""
         raise NotImplementedError

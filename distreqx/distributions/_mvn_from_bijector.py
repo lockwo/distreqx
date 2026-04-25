@@ -51,37 +51,6 @@ class AbstractMultivariateNormalFromBijector(AbstractTransformed, strict=True):
         """Calculates the mode."""
         return self.loc
 
-    def covariance(self) -> Array:
-        """Calculates the covariance matrix.
-
-        **Returns:**
-        - The covariance matrix, of shape `k x k`.
-        """
-        if isinstance(self.scale, DiagLinear):
-            result = jnp.diag(self.variance())
-        else:
-            result = jax.vmap(self.scale.forward, in_axes=-2, out_axes=-2)(
-                self.scale.matrix
-            )
-        return result
-
-    def variance(self) -> Array:
-        """Calculates the variance of all one-dimensional marginals."""
-        if isinstance(self.scale, DiagLinear):
-            result = jnp.square(self.scale.diag)
-        else:
-            scale_matrix = self.scale.matrix
-            result = jnp.sum(scale_matrix * scale_matrix, axis=-1)
-        return result
-
-    def stddev(self) -> Array:
-        """Calculates the standard deviation (the square root of the variance)."""
-        if isinstance(self.scale, DiagLinear):
-            result = jnp.abs(self.scale.diag)
-        else:
-            result = jnp.sqrt(self.variance())
-        return result
-
     def kl_divergence(self, other_dist, **kwargs) -> Array:
         """Calculates the KL divergence to another distribution.
 
@@ -164,6 +133,25 @@ class MultivariateNormalFromBijector(AbstractMultivariateNormalFromBijector):
         self.bijector = bijector
         self.scale = scale
         self.loc = loc
+
+    def covariance(self) -> Array:
+        """Calculates the covariance matrix."""
+        if isinstance(self.scale, DiagLinear):
+            return jnp.diag(self.variance())
+        return jax.vmap(self.scale.forward, in_axes=-2, out_axes=-2)(self.scale.matrix)
+
+    def variance(self) -> Array:
+        """Calculates the variance of all one-dimensional marginals."""
+        if isinstance(self.scale, DiagLinear):
+            return jnp.square(self.scale.diag)
+        scale_matrix = self.scale.matrix
+        return jnp.sum(scale_matrix * scale_matrix, axis=-1)
+
+    def stddev(self) -> Array:
+        """Calculates the standard deviation."""
+        if isinstance(self.scale, DiagLinear):
+            return jnp.abs(self.scale.diag)
+        return jnp.sqrt(self.variance())
 
     def icdf(self, value: PyTree[Array]) -> PyTree[Array]:
         raise NotImplementedError

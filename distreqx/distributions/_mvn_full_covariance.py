@@ -1,3 +1,5 @@
+"""MultivariateNormalFullCovariance distribution."""
+
 from typing import Optional
 
 import equinox as eqx
@@ -58,11 +60,11 @@ class MultivariateNormalFullCovariance(
     AbstractMultivariateNormalFromBijector,
     strict=True,
 ):
-    r"""Multivariate normal distribution on \(\mathbb{R}^k\).
+    r"""Multivariate normal distribution on $\mathbb{R}^k$.
 
     The `MultivariateNormalFullCovariance` distribution is parameterized by a
-    \(k\)-length location (mean) vector \(b\) and a covariance matrix \(C\) of size
-    \(k \times k\) that must be positive definite and symmetric.
+    $k$-length location (mean) vector $b$ and a covariance matrix $C$ of size
+    $k \times k$ that must be positive definite and symmetric.
 
     !!! note
 
@@ -75,6 +77,7 @@ class MultivariateNormalFullCovariance(
     scale: AbstractLinearBijector
     distribution: AbstractDistribution
     bijector: AbstractBijector
+    covariance_matrix: Array
 
     def __init__(
         self,
@@ -124,6 +127,19 @@ class MultivariateNormalFullCovariance(
         self.bijector = bijector
         self.scale = scale
         self.loc = loc
+        self.covariance_matrix = covariance_matrix
+
+    def covariance(self) -> Array:
+        """Calculates the covariance matrix."""
+        return self.covariance_matrix
+
+    def variance(self) -> Array:
+        """Calculates the variance of all one-dimensional marginals."""
+        return jnp.diag(self.covariance_matrix)
+
+    def stddev(self) -> Array:
+        """Calculates the standard deviation (the square root of the variance)."""
+        return jnp.sqrt(self.variance())
 
     def icdf(self, value: PyTree[Array]) -> PyTree[Array]:
         raise NotImplementedError
