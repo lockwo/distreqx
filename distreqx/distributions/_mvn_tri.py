@@ -3,6 +3,7 @@
 from typing import Optional
 
 import equinox as eqx
+import jax
 import jax.numpy as jnp
 from jaxtyping import Array, PyTree
 
@@ -128,6 +129,19 @@ class MultivariateNormalTri(AbstractMultivariateNormalFromBijector, strict=True)
         self.loc = loc
         self.scale_tri = scale_tri_val
         self.is_lower = is_lower
+
+    def covariance(self) -> Array:
+        """Calculates the covariance matrix."""
+        return jax.vmap(self.scale.forward, in_axes=-2, out_axes=-2)(self.scale.matrix)
+
+    def variance(self) -> Array:
+        """Calculates the variance of all one-dimensional marginals."""
+        scale_matrix = self.scale.matrix
+        return jnp.sum(scale_matrix * scale_matrix, axis=-1)
+
+    def stddev(self) -> Array:
+        """Calculates the standard deviation (the square root of the variance)."""
+        return jnp.sqrt(self.variance())
 
     def icdf(self, value: PyTree[Array]) -> PyTree[Array]:
         raise NotImplementedError
