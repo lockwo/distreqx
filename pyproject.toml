@@ -49,7 +49,6 @@ docs = [
   "mkdocs-material==9.6.7",
   "mkdocstrings==0.28.3",
   "mkdocstrings-python==1.16.8",
-  # Pygments 2.20.0 breaks pymdownx.superfences and leaves literal ``` blocks.
   "pygments<2.20",
   "pymdown-extensions==10.14.3"
 ]
