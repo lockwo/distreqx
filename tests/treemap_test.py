@@ -17,10 +17,13 @@ def _is_bijector(node):
 
 class TreeMapTest(TestCase):
     def test_empty_tree_raises(self):
-        msg = "must contain at least one valid bijector"
-        with self.assertRaisesRegex(ValueError, msg):
+        with self.assertRaisesRegex(
+            ValueError, "The pytree of bijectors cannot be empty"
+        ):
             TreeMap({})
-        with self.assertRaisesRegex(ValueError, msg):
+        with self.assertRaisesRegex(
+            ValueError, "The pytree of bijectors cannot be empty"
+        ):
             TreeMap([])
 
     def test_jacobian_is_constant_property(self):
