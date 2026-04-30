@@ -348,7 +348,7 @@ def _interpret_inverse(jaxpr, consts, *args):
 
 
 def _extract_call_jaxpr(primitive, params):
-    if not (primitive.call_primitive or primitive.map_primitive):
+    if not (primitive.call_primitive or getattr(primitive, "map_primitive", False)):
         return None, params
     else:
         params = dict(params)
