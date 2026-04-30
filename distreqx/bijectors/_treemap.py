@@ -23,6 +23,7 @@ class TreeMap(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector, strict
     This behaves analogously to TensorFlow Probability's `JointMap`. It allows
     applying independent bijectors to a structured input (e.g., a tuple or dict
     of arrays) and aggregates the log-determinants across the structure.
+    `None` values in the bijector pytree act as identity transformations.
     """
 
     bijectors: PyTree[AbstractBijector]
@@ -31,9 +32,15 @@ class TreeMap(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector, strict
 
     def __init__(self, bijectors: PyTree[AbstractBijector]):
         """Initializes a TreeMap bijector."""
-        leaves = jax.tree_util.tree_leaves(bijectors, is_leaf=_is_bijector)
+        leaves = [
+            b
+            for b in jax.tree_util.tree_leaves(bijectors, is_leaf=_is_bijector)
+            if b is not None
+        ]
         if not leaves:
-            raise ValueError("The pytree of bijectors cannot be empty.")
+            raise ValueError(
+                "The pytree of bijectors must contain at least one valid bijector."
+            )
 
         self.bijectors = bijectors
 
@@ -53,19 +60,27 @@ class TreeMap(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector, strict
     def forward(self, x: PyTree) -> PyTree:
         """Computes y = f(x)."""
         return jax.tree_util.tree_map(
-            lambda b, v: b.forward(v), self.bijectors, x, is_leaf=_is_bijector
+            lambda b, v: b.forward(v) if b is not None else v,
+            self.bijectors,
+            x,
+            is_leaf=_is_bijector,
         )
 
     def inverse(self, y: PyTree) -> PyTree:
         """Computes x = f^{-1}(y)."""
         return jax.tree_util.tree_map(
-            lambda b, v: b.inverse(v), self.bijectors, y, is_leaf=_is_bijector
+            lambda b, v: b.inverse(v) if b is not None else v,
+            self.bijectors,
+            y,
+            is_leaf=_is_bijector,
         )
 
     def forward_and_log_det(self, x: PyTree) -> tuple[PyTree, PyTree]:
         """Computes y = f(x) and sum of log|det J(f)(x)|."""
         ys_and_log_dets = jax.tree_util.tree_map(
-            lambda b, v: b.forward_and_log_det(v),
+            lambda b, v: (
+                b.forward_and_log_det(v) if b is not None else (v, jnp.array(0.0))
+            ),
             self.bijectors,
             x,
             is_leaf=_is_bijector,
@@ -85,7 +100,9 @@ class TreeMap(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector, strict
     def inverse_and_log_det(self, y: PyTree) -> tuple[PyTree, PyTree]:
         """Computes x = f^{-1}(y) and sum of log|det J(f^{-1})(y)|."""
         xs_and_log_dets = jax.tree_util.tree_map(
-            lambda b, v: b.inverse_and_log_det(v),
+            lambda b, v: (
+                b.inverse_and_log_det(v) if b is not None else (v, jnp.array(0.0))
+            ),
             self.bijectors,
             y,
             is_leaf=_is_bijector,
@@ -110,8 +127,15 @@ class TreeMap(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector, strict
             ) != jax.tree_util.tree_structure(other.bijectors, is_leaf=_is_bijector):
                 return False
 
+            def _check_same(b1, b2):
+                if b1 is None and b2 is None:
+                    return True
+                if b1 is None or b2 is None:
+                    return False
+                return b1.same_as(b2)
+
             match_tree = jax.tree_util.tree_map(
-                lambda b1, b2: b1.same_as(b2),
+                _check_same,
                 self.bijectors,
                 other.bijectors,
                 is_leaf=_is_bijector,
