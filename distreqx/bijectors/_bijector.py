@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 import equinox as eqx
-from jaxtyping import Array, PyTree
+from jaxtyping import PyTree
 
 from .._custom_meta import AbstractStrictModule
 
@@ -59,7 +59,7 @@ class AbstractBijector(AbstractStrictModule, strict=True):
         )
 
     @abstractmethod
-    def inverse_and_log_det(self, y: Array) -> tuple[PyTree, PyTree]:
+    def inverse_and_log_det(self, y: PyTree) -> tuple[PyTree, PyTree]:
         r"""Computes $x = f^{-1}(y)$ and $\log|\det J(f^{-1})(y)|$."""
         raise NotImplementedError(
             f"Bijector {self.name} does not implement `inverse_and_log_det`."
