@@ -29,15 +29,11 @@ class Joint(AbstractDistribution, strict=True):
 
         - `distributions`: A PyTree of `distreqx` distributions.
         """
-        # Ensure there is at least one non-None distribution in the tree
-        leaves = [
-            d
-            for d in jax.tree_util.tree_leaves(distributions, is_leaf=_is_dist)
-            if d is not None
-        ]
+        # Ensure there is at least one distribution in the tree
+        leaves = jax.tree_util.tree_leaves(distributions, is_leaf=_is_dist)
         if not leaves:
             raise ValueError(
-                "The distributions PyTree must contain at least one valid distribution."
+                "The distributions PyTree must contain at least one distribution."
             )
 
         self.distributions = distributions
@@ -46,9 +42,7 @@ class Joint(AbstractDistribution, strict=True):
     def event_shape(self) -> PyTree[tuple]:
         """Shape of the joint event."""
         return jax.tree_util.tree_map(
-            lambda dist: dist.event_shape if dist is not None else None,
-            self.distributions,
-            is_leaf=_is_dist,
+            lambda dist: dist.event_shape, self.distributions, is_leaf=_is_dist
         )
 
     def sample_and_log_prob(self, key: Key[Array, ""]) -> tuple[PyTree[Array], Array]:
@@ -59,13 +53,9 @@ class Joint(AbstractDistribution, strict=True):
         keys = jax.random.split(key, len(leaves))
         keys_tree = jax.tree_util.tree_unflatten(treedef, keys)
 
-        # Call sample_and_log_prob on every non-None distribution in the tree
+        # Call sample_and_log_prob on every distribution in the tree
         samples_and_log_probs = jax.tree_util.tree_map(
-            lambda d, k: (
-                d.sample_and_log_prob(key=k)
-                if d is not None
-                else (None, jnp.array(0.0))
-            ),
+            lambda d, k: d.sample_and_log_prob(key=k),
             self.distributions,
             keys_tree,
             is_leaf=_is_dist,
@@ -87,7 +77,8 @@ class Joint(AbstractDistribution, strict=True):
             is_leaf=_is_dist,
         )
 
-        # Safely reduce any element-wise/batched arrays into scalars before summing
+        # Safely reduce any element-wise/batched arrays into scalars
+        # before summing the tree
         log_probs_summed = jax.tree_util.tree_map(jnp.sum, log_probs)
         total_log_prob = jnp.sum(
             jnp.asarray(jax.tree_util.tree_leaves(log_probs_summed))
@@ -104,7 +95,7 @@ class Joint(AbstractDistribution, strict=True):
         keys_tree = jax.tree_util.tree_unflatten(treedef, keys)
 
         return jax.tree_util.tree_map(
-            lambda d, k: d.sample(key=k) if d is not None else None,
+            lambda d, k: d.sample(key=k),
             self.distributions,
             keys_tree,
             is_leaf=_is_dist,
@@ -117,9 +108,7 @@ class Joint(AbstractDistribution, strict=True):
     def log_prob(self, value: PyTree[Array]) -> Array:
         """Compute the total log probability of the distributions in the tree."""
         log_probs = jax.tree_util.tree_map(
-            lambda dist, val: (
-                dist.log_prob(val) if dist is not None else jnp.array(0.0)
-            ),
+            lambda dist, val: dist.log_prob(val),
             self.distributions,
             value,
             is_leaf=_is_dist,
@@ -130,9 +119,7 @@ class Joint(AbstractDistribution, strict=True):
     def entropy(self) -> Array:
         """Calculates the sum of Shannon entropies (in nats)."""
         entropies = jax.tree_util.tree_map(
-            lambda dist: dist.entropy() if dist is not None else jnp.array(0.0),
-            self.distributions,
-            is_leaf=_is_dist,
+            lambda dist: dist.entropy(), self.distributions, is_leaf=_is_dist
         )
         entropies_summed = jax.tree_util.tree_map(jnp.sum, entropies)
         return jnp.sum(jnp.asarray(jax.tree_util.tree_leaves(entropies_summed)))
@@ -144,7 +131,7 @@ class Joint(AbstractDistribution, strict=True):
     def log_cdf(self, value: PyTree[Array]) -> Array:
         """Evaluates the log of the joint CDF."""
         log_cdfs = jax.tree_util.tree_map(
-            lambda dist, val: dist.log_cdf(val) if dist is not None else jnp.array(0.0),
+            lambda dist, val: dist.log_cdf(val),
             self.distributions,
             value,
             is_leaf=_is_dist,
@@ -159,9 +146,7 @@ class Joint(AbstractDistribution, strict=True):
     def log_survival_function(self, value: PyTree[Array]) -> Array:
         """Evaluates the log of the joint survival function."""
         log_survs = jax.tree_util.tree_map(
-            lambda dist, val: (
-                dist.log_survival_function(val) if dist is not None else jnp.array(0.0)
-            ),
+            lambda dist, val: dist.log_survival_function(val),
             self.distributions,
             value,
             is_leaf=_is_dist,
@@ -172,47 +157,37 @@ class Joint(AbstractDistribution, strict=True):
     def mean(self) -> PyTree[Array]:
         """Calculates the joint mean."""
         return jax.tree_util.tree_map(
-            lambda dist: dist.mean() if dist is not None else None,
-            self.distributions,
-            is_leaf=_is_dist,
+            lambda dist: dist.mean(), self.distributions, is_leaf=_is_dist
         )
 
     def median(self) -> PyTree[Array]:
         """Calculates the joint median."""
         return jax.tree_util.tree_map(
-            lambda dist: dist.median() if dist is not None else None,
-            self.distributions,
-            is_leaf=_is_dist,
+            lambda dist: dist.median(), self.distributions, is_leaf=_is_dist
         )
 
     def mode(self) -> PyTree[Array]:
         """Calculates the joint mode."""
         return jax.tree_util.tree_map(
-            lambda dist: dist.mode() if dist is not None else None,
-            self.distributions,
-            is_leaf=_is_dist,
+            lambda dist: dist.mode(), self.distributions, is_leaf=_is_dist
         )
 
     def variance(self) -> PyTree[Array]:
         """Calculates the joint variance."""
         return jax.tree_util.tree_map(
-            lambda dist: dist.variance() if dist is not None else None,
-            self.distributions,
-            is_leaf=_is_dist,
+            lambda dist: dist.variance(), self.distributions, is_leaf=_is_dist
         )
 
     def stddev(self) -> PyTree[Array]:
         """Calculates the joint standard deviation."""
         return jax.tree_util.tree_map(
-            lambda dist: dist.stddev() if dist is not None else None,
-            self.distributions,
-            is_leaf=_is_dist,
+            lambda dist: dist.stddev(), self.distributions, is_leaf=_is_dist
         )
 
     def icdf(self, value: PyTree[Array]) -> PyTree[Array]:
         """Evaluates the joint inverse cumulative distribution function."""
         return jax.tree_util.tree_map(
-            lambda dist, val: dist.icdf(val) if dist is not None else None,
+            lambda dist, val: dist.icdf(val),
             self.distributions,
             value,
             is_leaf=_is_dist,
@@ -225,18 +200,9 @@ class Joint(AbstractDistribution, strict=True):
                 "KL divergence is only supported between two Joint distributions."
             )
 
-        def _compute_kl(d1, d2):
-            if d1 is None and d2 is None:
-                return jnp.array(0.0)
-            if d1 is None or d2 is None:
-                raise ValueError(
-                    "PyTree structure mismatch: None vs Distribution in KL divergence."
-                )
-            return d1.kl_divergence(d2)
-
         # The trees must match structurally to zip over them
         kl_divs = jax.tree_util.tree_map(
-            _compute_kl,
+            lambda d1, d2: d1.kl_divergence(d2),
             self.distributions,
             other_dist.distributions,
             is_leaf=_is_dist,

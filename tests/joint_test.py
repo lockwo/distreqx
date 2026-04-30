@@ -27,8 +27,7 @@ class JointTest(TestCase):
         return lambda x, y: np.testing.assert_allclose(x, y, rtol=rtol)
 
     def test_invalid_parameters(self):
-        msg = "contain at least one valid distribution"
-        with self.assertRaisesRegex(ValueError, msg):
+        with self.assertRaisesRegex(ValueError, "contain at least one distribution"):
             Joint(distributions={})
 
     @parameterized.expand([("float32", jnp.float32), ("float64", jnp.float64)])
