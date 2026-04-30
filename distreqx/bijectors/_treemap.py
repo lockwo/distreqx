@@ -25,11 +25,11 @@ class TreeMap(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector, strict
     of arrays) and aggregates the log-determinants across the structure.
     """
 
-    bijectors: PyTree
+    bijectors: PyTree[AbstractBijector]
     _is_constant_jacobian: bool
     _is_constant_log_det: bool
 
-    def __init__(self, bijectors: PyTree):
+    def __init__(self, bijectors: PyTree[AbstractBijector]):
         """Initializes a TreeMap bijector."""
         leaves = jax.tree_util.tree_leaves(bijectors, is_leaf=_is_bijector)
         if not leaves:
