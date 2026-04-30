@@ -120,6 +120,7 @@ nav:
             - 'api/bijectors/block.md'
             - 'api/bijectors/chain.md'
             - 'api/bijectors/diag_linear.md'
+            - 'api/bijectors/restructure.md'
             - 'api/bijectors/scalar_affine.md'
             - 'api/bijectors/shift.md'
             - 'api/bijectors/sigmoid.md'
