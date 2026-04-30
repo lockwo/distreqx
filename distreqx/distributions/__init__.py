@@ -1,6 +1,7 @@
 from ._bernoulli import Bernoulli as Bernoulli
 from ._beta import Beta as Beta
 from ._categorical import Categorical as Categorical
+from ._deterministic import Deterministic as Deterministic
 from ._distribution import (
     AbstractCDFDistribution as AbstractCDFDistribution,
     AbstractDistribution as AbstractDistribution,
@@ -11,6 +12,7 @@ from ._distribution import (
 )
 from ._gamma import Gamma as Gamma
 from ._independent import Independent as Independent
+from ._joint import Joint as Joint
 from ._logistic import Logistic as Logistic
 from ._mixture_same_family import MixtureSameFamily as MixtureSameFamily
 from ._mvn_diag import MultivariateNormalDiag as MultivariateNormalDiag
