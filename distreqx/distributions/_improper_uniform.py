@@ -80,8 +80,3 @@ class ImproperUniform(
         raise NotImplementedError(
             "KL divergence is undefined for an improper distribution."
         )
-
-    def cross_entropy(self, other_dist, **kwargs) -> Array:
-        raise NotImplementedError(
-            "Cross entropy is undefined for an improper distribution."
-        )
