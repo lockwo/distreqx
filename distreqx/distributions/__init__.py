@@ -9,6 +9,11 @@ from ._distribution import (
     AbstractSTDDistribution as AbstractSTDDistribution,
     AbstractSurvivalDistribution as AbstractSurvivalDistribution,
 )
+from ._empirical import (
+    AbstractEmpirical as AbstractEmpirical,
+    Empirical as Empirical,
+    WeightedEmpirical as WeightedEmpirical,
+)
 from ._gamma import Gamma as Gamma
 from ._independent import Independent as Independent
 from ._logistic import Logistic as Logistic
