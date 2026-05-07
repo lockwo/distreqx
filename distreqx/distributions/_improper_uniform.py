@@ -12,7 +12,7 @@ class ImproperUniform(
 
     This distribution has an unnormalized probability density of 1 everywhere,
     meaning its `log_prob` evaluates to 0. As an improper distribution, it
-    does not integrate to 1 and cannot be sampled from.
+    does not integrate to 1 and cannot be sampled.
     """
 
     shape: tuple[int, ...] = ()
