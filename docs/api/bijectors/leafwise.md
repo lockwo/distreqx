@@ -1,6 +1,6 @@
-# Tree Map Bijector
+# Leafwise Bijector
 
-::: distreqx.bijectors.TreeMap
+::: distreqx.bijectors.Leafwise
     options:
         members:
             - __init__

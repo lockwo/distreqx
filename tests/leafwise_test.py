@@ -1,4 +1,4 @@
-"""Tests for `tree_map.py`."""
+"""Tests for `leafwise.py`."""
 
 from unittest import TestCase
 
@@ -7,7 +7,7 @@ import jax.numpy as jnp
 import numpy as np
 from parameterized import parameterized  # type: ignore
 
-from distreqx.bijectors import Shift, Tanh, TreeMap
+from distreqx.bijectors import Leafwise, Shift, Tanh
 from distreqx.bijectors._bijector import AbstractBijector
 
 
@@ -15,25 +15,25 @@ def _is_bijector(node):
     return isinstance(node, AbstractBijector)
 
 
-class TreeMapTest(TestCase):
+class LeafwiseTest(TestCase):
     def test_empty_tree_raises(self):
         with self.assertRaisesRegex(
             ValueError, "The pytree of bijectors cannot be empty"
         ):
-            TreeMap({})
+            Leafwise({})
         with self.assertRaisesRegex(
             ValueError, "The pytree of bijectors cannot be empty"
         ):
-            TreeMap([])
+            Leafwise([])
 
     def test_jacobian_is_constant_property(self):
         # All bijectors have constant jacobians
-        const_bij = TreeMap({"a": Shift(jnp.ones((4,))), "b": Shift(jnp.ones((2,)))})
+        const_bij = Leafwise({"a": Shift(jnp.ones((4,))), "b": Shift(jnp.ones((2,)))})
         self.assertTrue(const_bij.is_constant_jacobian)
         self.assertTrue(const_bij.is_constant_log_det)
 
         # Mixed bijectors (Tanh does not have a constant jacobian)
-        mixed_bij = TreeMap({"a": Shift(jnp.ones((4,))), "b": Tanh()})
+        mixed_bij = Leafwise({"a": Shift(jnp.ones((4,))), "b": Tanh()})
         self.assertFalse(mixed_bij.is_constant_jacobian)
         self.assertFalse(mixed_bij.is_constant_log_det)
 
@@ -57,7 +57,7 @@ class TreeMapTest(TestCase):
         ]
     )
     def test_forward_methods(self, name, bijectors, x):
-        tree_bij = TreeMap(bijectors)
+        tree_bij = Leafwise(bijectors)
 
         y1 = tree_bij.forward(x)
         logdet1 = tree_bij.forward_log_det_jacobian(x)
@@ -71,12 +71,11 @@ class TreeMapTest(TestCase):
             jax.tree_util.tree_structure(y2), jax.tree_util.tree_structure(x)
         )
 
-        # Manually compute expected values via tree_map
-        # using is_leaf to stop at bijectors
-        expected_y = jax.tree_util.tree_map(
+        # Manually compute expected values via tree.map
+        expected_y = jax.tree.map(
             lambda b, v: b.forward(v), bijectors, x, is_leaf=_is_bijector
         )
-        expected_logdets_tree = jax.tree_util.tree_map(
+        expected_logdets_tree = jax.tree.map(
             lambda b, v: b.forward_log_det_jacobian(v),
             bijectors,
             x,
@@ -85,13 +84,13 @@ class TreeMapTest(TestCase):
         expected_logdet = sum(jax.tree_util.tree_leaves(expected_logdets_tree))
 
         # Assert shapes and values
-        jax.tree_util.tree_map(
+        jax.tree.map(
             lambda res, exp: self.assertEqual(res.shape, exp.shape), y1, expected_y
         )
-        jax.tree_util.tree_map(
+        jax.tree.map(
             lambda res, exp: np.testing.assert_allclose(res, exp, 1e-6), y1, expected_y
         )
-        jax.tree_util.tree_map(
+        jax.tree.map(
             lambda res, exp: np.testing.assert_allclose(res, exp, 1e-6), y2, expected_y
         )
 
@@ -118,7 +117,7 @@ class TreeMapTest(TestCase):
         ]
     )
     def test_inverse_methods(self, name, bijectors, y):
-        tree_bij = TreeMap(bijectors)
+        tree_bij = Leafwise(bijectors)
 
         x1 = tree_bij.inverse(y)
         logdet1 = tree_bij.inverse_log_det_jacobian(y)
@@ -133,11 +132,10 @@ class TreeMapTest(TestCase):
         )
 
         # Manually compute expected values via tree_map
-        # using is_leaf to stop at bijectors
-        expected_x = jax.tree_util.tree_map(
+        expected_x = jax.tree.map(
             lambda b, v: b.inverse(v), bijectors, y, is_leaf=_is_bijector
         )
-        expected_logdets_tree = jax.tree_util.tree_map(
+        expected_logdets_tree = jax.tree.map(
             lambda b, v: b.inverse_log_det_jacobian(v),
             bijectors,
             y,
@@ -146,13 +144,13 @@ class TreeMapTest(TestCase):
         expected_logdet = sum(jax.tree_util.tree_leaves(expected_logdets_tree))
 
         # Assert shapes and values
-        jax.tree_util.tree_map(
+        jax.tree.map(
             lambda res, exp: self.assertEqual(res.shape, exp.shape), x1, expected_x
         )
-        jax.tree_util.tree_map(
+        jax.tree.map(
             lambda res, exp: np.testing.assert_allclose(res, exp, 1e-6), x1, expected_x
         )
-        jax.tree_util.tree_map(
+        jax.tree.map(
             lambda res, exp: np.testing.assert_allclose(res, exp, 1e-6), x2, expected_x
         )
 
@@ -164,7 +162,7 @@ class TreeMapTest(TestCase):
         def f(x, b):
             return b.forward(x)
 
-        bij = TreeMap({"a": Shift(jnp.ones((4,))), "b": Tanh()})
+        bij = Leafwise({"a": Shift(jnp.ones((4,))), "b": Tanh()})
         x = {"a": np.zeros((4,)), "b": np.zeros((4,))}
 
         z = f(x, bij)
@@ -174,22 +172,20 @@ class TreeMapTest(TestCase):
         self.assertIsInstance(z["b"], jnp.ndarray)
 
     def test_same_as_itself(self):
-        bij = TreeMap({"a": Shift(jnp.ones((4,))), "b": Tanh()})
-        # Distreqx bijectors often evaluate False for different object
-        # instances, so checking the exact same instance is the correct test.
+        bij = Leafwise({"a": Shift(jnp.ones((4,))), "b": Tanh()})
         self.assertTrue(bij.same_as(bij))
 
     def test_not_same_as_others(self):
-        bij = TreeMap({"a": Shift(jnp.ones((4,))), "b": Tanh()})
+        bij = Leafwise({"a": Shift(jnp.ones((4,))), "b": Tanh()})
 
         # Completely different bijector
         other_type = Shift(jnp.zeros((4,)))
         self.assertFalse(bij.same_as(other_type))
 
         # Same structure, different bijector parameters
-        different_params = TreeMap({"a": Shift(jnp.zeros((4,))), "b": Tanh()})
+        different_params = Leafwise({"a": Shift(jnp.zeros((4,))), "b": Tanh()})
         self.assertFalse(bij.same_as(different_params))
 
         # Different structure
-        different_structure = TreeMap({"a": Shift(jnp.ones((4,)))})
+        different_structure = Leafwise({"a": Shift(jnp.ones((4,)))})
         self.assertFalse(bij.same_as(different_structure))

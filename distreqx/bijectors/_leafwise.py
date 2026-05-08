@@ -17,7 +17,7 @@ def _is_bijector(node: PyTree) -> bool:
     return isinstance(node, AbstractBijector)
 
 
-class TreeMap(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector, strict=True):
+class Leafwise(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector, strict=True):
     """Applies a pytree of bijectors to a pytree of inputs.
 
     This behaves analogously to TensorFlow Probability's `JointMap`. It allows
@@ -104,7 +104,7 @@ class TreeMap(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector, strict
 
     def same_as(self, other: AbstractBijector) -> bool:
         """Returns True if this bijector is guaranteed to be the same as `other`."""
-        if type(other) is TreeMap:
+        if type(other) is Leafwise:
             if jax.tree_util.tree_structure(
                 self.bijectors, is_leaf=_is_bijector
             ) != jax.tree_util.tree_structure(other.bijectors, is_leaf=_is_bijector):
