@@ -13,7 +13,7 @@ def _triangular_logdet(matrix: Array) -> Array:
     return jnp.sum(jnp.log(jnp.abs(jnp.diag(matrix))))
 
 
-class TriangularLinear(AbstractLinearBijector, strict=True):
+class TriangularLinear(AbstractLinearBijector):
     r"""A linear bijector whose weight matrix is triangular.
 
     The bijector is defined as $f(x) = Ax$ where $A$ is a $D \times D$ triangular

@@ -9,7 +9,7 @@ from ._linear import AbstractLinearBijector
 from ._scalar_affine import ScalarAffine
 
 
-class DiagLinear(AbstractLinearBijector, strict=True):
+class DiagLinear(AbstractLinearBijector):
     r"""Linear bijector with a diagonal weight matrix.
 
     The bijector is defined as $f(x) = Ax$ where $A$ is a $D \times D$ diagonal matrix.

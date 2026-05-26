@@ -19,7 +19,6 @@ from ._distribution import (
 class AbstractTransformed(
     AbstractSurvivalDistribution,
     AbstractProbDistribution,
-    strict=True,
 ):
     """Abstract base class for transformed distributions.
 
@@ -115,7 +114,7 @@ class AbstractTransformed(
             )
 
 
-class Transformed(AbstractTransformed, AbstractSTDDistribution, strict=True):
+class Transformed(AbstractTransformed, AbstractSTDDistribution):
     r"""Distribution of a random variable transformed by a bijective function.
 
     Let $X$ be a continuous random variable and $Y = f(X)$ be a random variable

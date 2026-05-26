@@ -6,7 +6,7 @@ from jaxtyping import Array
 from ._bijector import AbstractBijector
 
 
-class AbstractLinearBijector(AbstractBijector, strict=True):
+class AbstractLinearBijector(AbstractBijector):
     """Base class for linear bijectors.
 
     This class provides a base class for bijectors defined as `f(x) = Ax`,

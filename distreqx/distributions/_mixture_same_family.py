@@ -22,7 +22,6 @@ class MixtureSameFamily(
     AbstractSurvivalDistribution,
     AbstractProbDistribution,
     AbstractCDFDistribution,
-    strict=True,
 ):
     """Mixture with components provided from a single vmapped distribution."""
 

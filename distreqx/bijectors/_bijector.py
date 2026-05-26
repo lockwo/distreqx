@@ -1,12 +1,11 @@
 from abc import abstractmethod
 
 import equinox as eqx
+from ihoop.eqx import AbstractStrictModule
 from jaxtyping import Array, PyTree
 
-from .._custom_meta import AbstractStrictModule
 
-
-class AbstractBijector(AbstractStrictModule, strict=True):
+class AbstractBijector(AbstractStrictModule):
     """Differentiable bijection that knows to compute its Jacobian determinant.
 
     A bijector implements a differentiable and bijective transformation `f`, whose
@@ -86,7 +85,7 @@ class AbstractBijector(AbstractStrictModule, strict=True):
         raise NotImplementedError
 
 
-class AbstractInvLogDetJacBijector(AbstractBijector, strict=True):
+class AbstractInvLogDetJacBijector(AbstractBijector):
     """AbstractBijector + concrete `inverse_log_det_jacobian`."""
 
     def inverse_log_det_jacobian(self, y: PyTree) -> PyTree:
@@ -95,7 +94,7 @@ class AbstractInvLogDetJacBijector(AbstractBijector, strict=True):
         return logdet
 
 
-class AbstractFwdLogDetJacBijector(AbstractBijector, strict=True):
+class AbstractFwdLogDetJacBijector(AbstractBijector):
     """AbstractBijector + concrete `forward_log_det_jacobian`."""
 
     def forward_log_det_jacobian(self, x: PyTree) -> PyTree:
@@ -104,7 +103,7 @@ class AbstractFwdLogDetJacBijector(AbstractBijector, strict=True):
         return logdet
 
 
-class AbstractForwardInverseBijector(AbstractBijector, strict=True):
+class AbstractForwardInverseBijector(AbstractBijector):
     """AbstractBijector + concrete `forward` and `reverse`."""
 
     def forward(self, x: PyTree) -> PyTree:

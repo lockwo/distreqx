@@ -18,7 +18,6 @@ class Bernoulli(
     AbstractSampleLogProbDistribution,
     AbstractSTDDistribution,
     AbstractSurvivalDistribution,
-    strict=True,
 ):
     """Bernoulli distribution of shape dims.
 

@@ -6,7 +6,7 @@ from ..utils import sum_last
 from ._bijector import AbstractBijector
 
 
-class Block(AbstractBijector, strict=True):
+class Block(AbstractBijector):
     """A wrapper that promotes a bijector to a block bijector.
 
     A block bijector applies a bijector to a k-dimensional array of events, but

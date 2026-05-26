@@ -18,7 +18,6 @@ class Categorical(
     AbstractSTDDistribution,
     AbstractSampleLogProbDistribution,
     AbstractSurvivalDistribution,
-    strict=True,
 ):
     """Categorical distribution over integers.
 

@@ -18,7 +18,6 @@ class OneHotCategorical(
     AbstractSTDDistribution,
     AbstractSampleLogProbDistribution,
     AbstractSurvivalDistribution,
-    strict=True,
 ):
     """OneHotCategorical distribution."""
 

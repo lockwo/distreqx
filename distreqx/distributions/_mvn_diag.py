@@ -44,7 +44,7 @@ def _check_parameters(loc: Optional[Array], scale_diag: Optional[Array]) -> None
         )
 
 
-class MultivariateNormalDiag(AbstractMultivariateNormalFromBijector, strict=True):
+class MultivariateNormalDiag(AbstractMultivariateNormalFromBijector):
     """Multivariate normal distribution on `R^k` with diagonal covariance."""
 
     loc: Array

@@ -14,7 +14,6 @@ class AbstractAll(
     _distribution.AbstractSampleLogProbDistribution,
     _distribution.AbstractCDFDistribution,
     _distribution.AbstractProbDistribution,
-    strict=True,
 ):
     pass
 

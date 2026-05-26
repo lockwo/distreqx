@@ -11,7 +11,7 @@ from ._distribution import AbstractProbDistribution
 _half_log2pi = 0.5 * math.log(2 * math.pi)
 
 
-class Normal(AbstractProbDistribution, strict=True):
+class Normal(AbstractProbDistribution):
     """Normal distribution with location `loc` and `scale` parameters."""
 
     loc: Array
