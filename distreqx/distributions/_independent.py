@@ -23,7 +23,6 @@ class Independent(
     AbstractProbDistribution,
     AbstractCDFDistribution,
     AbstractSurvivalDistribution,
-    strict=True,
 ):
     """Independent distribution obtained from child distributions.
 

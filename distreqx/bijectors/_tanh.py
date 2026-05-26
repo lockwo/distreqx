@@ -11,7 +11,7 @@ from ._bijector import (
 )
 
 
-class Tanh(AbstractForwardInverseBijector, AbstractInvLogDetJacBijector, strict=True):
+class Tanh(AbstractForwardInverseBijector, AbstractInvLogDetJacBijector):
     """A bijector that computes the hyperbolic tangent.
 
     The log-determinant implementation in this bijector is more numerically stable

@@ -20,7 +20,6 @@ class Beta(
     AbstractSTDDistribution,
     AbstractProbDistribution,
     AbstractSurvivalDistribution,
-    strict=True,
 ):
     """
     Beta distribution with parameters `alpha` and `beta`.

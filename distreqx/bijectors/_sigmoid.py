@@ -11,9 +11,7 @@ from ._bijector import (
 )
 
 
-class Sigmoid(
-    AbstractForwardInverseBijector, AbstractInvLogDetJacBijector, strict=True
-):
+class Sigmoid(AbstractForwardInverseBijector, AbstractInvLogDetJacBijector):
     """A bijector that computes the logistic sigmoid.
 
     The log-determinant implementation in this bijector is more numerically stable

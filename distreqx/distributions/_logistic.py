@@ -9,7 +9,7 @@ from jaxtyping import Array, Float, Key
 from ._distribution import AbstractProbDistribution
 
 
-class Logistic(AbstractProbDistribution, strict=True):
+class Logistic(AbstractProbDistribution):
     """Logistic distribution with location `loc` and `scale` parameters."""
 
     loc: Float[Array, "..."]

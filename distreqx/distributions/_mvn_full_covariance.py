@@ -58,7 +58,6 @@ def _check_parameters(loc: Optional[Array], covariance_matrix: Optional[Array]) 
 
 class MultivariateNormalFullCovariance(
     AbstractMultivariateNormalFromBijector,
-    strict=True,
 ):
     r"""Multivariate normal distribution on $\mathbb{R}^k$.
 

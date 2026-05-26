@@ -10,7 +10,6 @@ from ._distribution import AbstractSTDDistribution, AbstractSurvivalDistribution
 class Uniform(
     AbstractSTDDistribution,
     AbstractSurvivalDistribution,
-    strict=True,
 ):
     """Uniform distribution with `low` and `high` parameters."""
 

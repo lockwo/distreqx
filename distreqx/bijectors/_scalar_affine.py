@@ -9,7 +9,7 @@ from jaxtyping import Array
 from ._bijector import AbstractBijector
 
 
-class AbstractScalarAffine(AbstractBijector, strict=True):
+class AbstractScalarAffine(AbstractBijector):
     r"""An affine bijector that acts elementwise.
 
     The bijector is defined as follows:
@@ -52,7 +52,7 @@ class AbstractScalarAffine(AbstractBijector, strict=True):
         return self.inverse(y), self.inverse_log_det_jacobian(y)
 
 
-class ScalarAffine(AbstractScalarAffine, strict=True):
+class ScalarAffine(AbstractScalarAffine):
     r"""An affine bijector that acts elementwise.
 
     The bijector is defined as follows:

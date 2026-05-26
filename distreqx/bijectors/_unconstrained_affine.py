@@ -6,7 +6,7 @@ from jaxtyping import Array
 from ._bijector import AbstractBijector
 
 
-class UnconstrainedAffine(AbstractBijector, strict=True):
+class UnconstrainedAffine(AbstractBijector):
     r"""An unconstrained affine bijection.
 
     This bijector is a linear-plus-bias transformation $f(x) = Ax + b$, where $A$

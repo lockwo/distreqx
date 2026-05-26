@@ -11,7 +11,7 @@ from ._bijector import (
 )
 
 
-class Chain(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector, strict=True):
+class Chain(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector):
     """Composition of a sequence of bijectors into a single bijector.
 
     Bijectors are composable: if `f` and `g` are bijectors, then `g o f` is also

@@ -35,7 +35,7 @@ def _check_input_parameters_are_valid(
         )
 
 
-class AbstractMultivariateNormalFromBijector(AbstractTransformed, strict=True):
+class AbstractMultivariateNormalFromBijector(AbstractTransformed):
     loc: eqx.AbstractVar[Array]
     scale: eqx.AbstractVar[AbstractLinearBijector]
 

@@ -51,7 +51,7 @@ def _check_parameters(loc: Optional[Array], scale_tri: Optional[Array]) -> None:
             )
 
 
-class MultivariateNormalTri(AbstractMultivariateNormalFromBijector, strict=True):
+class MultivariateNormalTri(AbstractMultivariateNormalFromBijector):
     r"""Multivariate normal distribution on $\mathbb{R}^k$.
 
     The `MultivariateNormalTri` distribution is parameterized by a $k$-length

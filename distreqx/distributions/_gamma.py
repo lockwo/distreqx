@@ -17,7 +17,6 @@ class Gamma(
     AbstractSampleLogProbDistribution,
     AbstractProbDistribution,
     AbstractSurvivalDistribution,
-    strict=True,
 ):
     r"""Gamma distribution with parameters `concentration` and `rate`.
 

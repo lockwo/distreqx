@@ -17,7 +17,6 @@ class DummyBijector(
     AbstractForwardInverseBijector,
     AbstractFwdLogDetJacBijector,
     AbstractInvLogDetJacBijector,
-    strict=True,
 ):
     _is_constant_jacobian: bool
     _is_constant_log_det: bool
