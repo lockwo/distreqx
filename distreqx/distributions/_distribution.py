@@ -6,7 +6,7 @@ import jax
 from jax import numpy as jnp
 from jaxtyping import Array, Key, PyTree
 
-from .._custom_meta import AbstractStrictModule
+from ihoop.eqx import AbstractStrictModule
 from .._custom_types import EventT
 
 

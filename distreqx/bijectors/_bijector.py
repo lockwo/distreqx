@@ -3,7 +3,7 @@ from abc import abstractmethod
 import equinox as eqx
 from jaxtyping import Array, PyTree
 
-from .._custom_meta import AbstractStrictModule
+from ihoop.eqx import AbstractStrictModule
 
 
 class AbstractBijector(AbstractStrictModule, strict=True):

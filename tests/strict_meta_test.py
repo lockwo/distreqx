@@ -3,7 +3,7 @@
 from abc import abstractmethod
 from unittest import TestCase
 
-from distreqx._custom_meta import AbstractStrictModule
+from ihoop.eqx import AbstractStrictModule
 
 
 class StrictMetaTest(TestCase):
