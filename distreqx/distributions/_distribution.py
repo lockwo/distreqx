@@ -3,10 +3,10 @@
 from abc import abstractmethod
 
 import jax
+from ihoop.eqx import AbstractStrictModule
 from jax import numpy as jnp
 from jaxtyping import Array, Key, PyTree
 
-from ihoop.eqx import AbstractStrictModule
 from .._custom_types import EventT
 
 

@@ -1,9 +1,8 @@
 from abc import abstractmethod
 
 import equinox as eqx
-from jaxtyping import Array, PyTree
-
 from ihoop.eqx import AbstractStrictModule
+from jaxtyping import Array, PyTree
 
 
 class AbstractBijector(AbstractStrictModule, strict=True):
