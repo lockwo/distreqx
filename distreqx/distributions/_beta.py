@@ -61,6 +61,12 @@ class Beta(
     def event_shape(self) -> tuple:
         return ()
 
+    @property
+    def support(self) -> tuple[Array, Array]:
+        """See `Distribution.support`."""
+        dtype = jnp.result_type(self.alpha, self.beta)
+        return (jnp.array(0.0, dtype=dtype), jnp.array(1.0, dtype=dtype))
+
     def sample(self, key: Key[Array, ""]) -> Array:
         """See `Distribution.sample`."""
         dtype = jnp.result_type(self.alpha, self.beta)

@@ -31,6 +31,10 @@ class DummyUnivariateDist(AbstractAll):
     def event_shape(self):
         return (1,)
 
+    @property
+    def support(self):
+        raise NotImplementedError
+
     def entropy(self):
         raise NotImplementedError
 
@@ -70,6 +74,10 @@ class DummyMultivariateDist(AbstractAll):
     @property
     def event_shape(self):
         return self._dimension
+
+    @property
+    def support(self):
+        raise NotImplementedError
 
     def entropy(self):
         raise NotImplementedError

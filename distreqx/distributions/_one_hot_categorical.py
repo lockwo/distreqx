@@ -51,6 +51,12 @@ class OneHotCategorical(
         return (self.num_categories,)
 
     @property
+    def support(self) -> tuple[Array, Array]:
+        """See `Distribution.support`."""
+        dtype = self.probs.dtype
+        return (jnp.array(0.0, dtype=dtype), jnp.array(1.0, dtype=dtype))
+
+    @property
     def logits(self) -> Array:
         """The logits for each event."""
         if self._logits is not None:

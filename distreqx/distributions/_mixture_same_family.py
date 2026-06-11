@@ -48,6 +48,19 @@ class MixtureSameFamily(
         """Shape of event of distribution samples."""
         return self.components_distribution.event_shape
 
+    @property
+    def support(self) -> tuple[Array, Array]:
+        """See `Distribution.support`.
+
+        The mixture's support is the union of its components' supports.
+        """
+        lower, upper = self.components_distribution.support
+        if jnp.ndim(lower):
+            lower = jnp.min(lower, axis=0)
+        if jnp.ndim(upper):
+            upper = jnp.max(upper, axis=0)
+        return lower, upper
+
     def sample(self, key) -> Array:
         """See `AbstractDistribution._sample`."""
         key_mix, key_components = jax.random.split(key)

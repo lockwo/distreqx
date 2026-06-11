@@ -24,6 +24,15 @@ class Uniform(
     def event_shape(self) -> tuple[int, ...]:
         return self.low.shape
 
+    @property
+    def support(self) -> tuple[Array, Array]:
+        """See `Distribution.support`.
+
+        Unlike most distributions, the bounds vary per element and are
+        returned as arrays of shape `event_shape`.
+        """
+        return (self.low, self.high)
+
     def sample(self, key: Key[Array, ""]) -> Array:
         """See `Distribution.sample`."""
         uniform = jax.random.uniform(

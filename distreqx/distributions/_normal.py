@@ -33,6 +33,12 @@ class Normal(AbstractProbDistribution):
         """Shape of event of distribution samples."""
         return self.loc.shape
 
+    @property
+    def support(self) -> tuple[Array, Array]:
+        """See `Distribution.support`."""
+        dtype = jnp.result_type(self.loc, self.scale)
+        return (jnp.array(-jnp.inf, dtype=dtype), jnp.array(jnp.inf, dtype=dtype))
+
     def _sample_from_std_normal(self, key: Key[Array, ""]) -> Array:
         dtype = jnp.result_type(self.loc, self.scale)
         return jax.random.normal(key, shape=self.event_shape, dtype=dtype)
