@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = {file = "LICENSE"}
 authors = [
-  {name = "Owen Lockwood"},
+  {name = "lockwo"},
 ]
 keywords = ["jax", "probability", "distributions", "equinox", "machine-learning"]
 classifiers = [

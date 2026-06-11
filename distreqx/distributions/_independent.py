@@ -53,6 +53,11 @@ class Independent(
         """Shape of event of distribution samples."""
         return self.distribution.event_shape
 
+    @property
+    def support(self) -> tuple[Array, Array]:
+        """See `Distribution.support`."""
+        return self.distribution.support
+
     def sample(self, key: Key[Array, ""]) -> Array:
         """See `Distribution.sample`."""
         return self.distribution.sample(key)

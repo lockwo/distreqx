@@ -57,6 +57,12 @@ class AbstractDistribution(AbstractStrictModule):
         raise NotImplementedError
 
     @property
+    @abstractmethod
+    def support(self) -> tuple[Array, Array]:
+        """Range `(lower, upper)` spanning the distribution's support."""
+        raise NotImplementedError
+
+    @property
     def dtype(self) -> jnp.dtype:
         """Data type of a sample"""
         sample_spec = jax.eval_shape(self.sample, jax.random.key(0))

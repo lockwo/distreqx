@@ -31,6 +31,12 @@ class Logistic(AbstractProbDistribution):
         """Shape of event of distribution samples."""
         return self.loc.shape
 
+    @property
+    def support(self) -> tuple[Array, Array]:
+        """See `Distribution.support`."""
+        dtype = jnp.result_type(self.loc, self.scale)
+        return (jnp.array(-jnp.inf, dtype=dtype), jnp.array(jnp.inf, dtype=dtype))
+
     def _standardize(self, value: Array) -> Array:
         return (value - self.loc) / self.scale
 

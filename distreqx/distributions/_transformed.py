@@ -199,6 +199,10 @@ class Transformed(AbstractTransformed, AbstractSTDDistribution):
     def icdf(self, value: PyTree[Array]) -> PyTree[Array]:
         raise NotImplementedError
 
+    @property
+    def support(self) -> tuple[Array, Array]:
+        raise NotImplementedError
+
     def log_cdf(self, value: PyTree[Array]) -> PyTree[Array]:
         raise NotImplementedError
 
