@@ -58,7 +58,7 @@ class AbstractDistribution(AbstractStrictModule):
 
     @property
     @abstractmethod
-    def support(self) -> tuple[Array, Array]:
+    def support(self) -> tuple[PyTree[Array], PyTree[Array]]:
         """Range `(lower, upper)` spanning the distribution's support."""
         raise NotImplementedError
 
