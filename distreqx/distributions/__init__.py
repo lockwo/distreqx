@@ -28,4 +28,5 @@ from ._transformed import (
     AbstractTransformed as AbstractTransformed,
     Transformed as Transformed,
 )
+from ._truncated_normal import TruncatedNormal as TruncatedNormal
 from ._uniform import Uniform as Uniform
