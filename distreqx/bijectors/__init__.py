@@ -11,6 +11,7 @@ from ._linear import AbstractLinearBijector as AbstractLinearBijector
 from ._scalar_affine import ScalarAffine as ScalarAffine
 from ._shift import Shift as Shift
 from ._sigmoid import Sigmoid as Sigmoid
+from ._split import Split as Split
 from ._tanh import Tanh as Tanh
 from ._triangular_linear import TriangularLinear as TriangularLinear
 from ._unconstrained_affine import UnconstrainedAffine as UnconstrainedAffine
