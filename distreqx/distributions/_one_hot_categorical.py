@@ -39,8 +39,6 @@ class OneHotCategorical(
                 f"One and exactly one of `logits` and `probs` should be `None`, "
                 f"but `logits` is {logits} and `probs` is {probs}."
             )
-        if (not isinstance(logits, jax.Array)) and (not isinstance(probs, jax.Array)):
-            raise ValueError("`logits` and `probs` are not jax arrays.")
 
         self._probs = None if probs is None else normalize(probs=probs)
         self._logits = None if logits is None else normalize(logits=logits)

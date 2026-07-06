@@ -1,6 +1,6 @@
 """MultivariateNormalDiag distribution."""
 
-from typing import Optional
+from typing import Optional, Union
 
 import equinox as eqx
 import jax
@@ -53,7 +53,11 @@ class MultivariateNormalDiag(AbstractMultivariateNormalFromBijector):
     bijector: AbstractBijector
     scale_diag: Array
 
-    def __init__(self, loc: Optional[Array] = None, scale_diag: Optional[Array] = None):
+    def __init__(
+        self,
+        loc: Optional[Union[float, Array]] = None,
+        scale_diag: Optional[Union[float, Array]] = None,
+    ):
         """Initializes a MultivariateNormalDiag distribution.
 
         **Arguments:**
@@ -63,6 +67,8 @@ class MultivariateNormalDiag(AbstractMultivariateNormalFromBijector):
         - `scale_diag`: Vector of standard deviations.  If not specified, it
             defaults to ones. At least one of `loc` and`scale_diag` must be specified.
         """
+        loc = None if loc is None else jnp.asarray(loc)
+        scale_diag = None if scale_diag is None else jnp.asarray(scale_diag)
         _check_parameters(loc, scale_diag)
 
         if scale_diag is None and loc is not None:

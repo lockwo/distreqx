@@ -1,6 +1,7 @@
 """MultivariateNormalFromBijector distribution."""
 
 from collections.abc import Callable
+from typing import Union
 
 import equinox as eqx
 import jax
@@ -116,7 +117,7 @@ class MultivariateNormalFromBijector(AbstractMultivariateNormalFromBijector):
     distribution: AbstractDistribution
     bijector: AbstractBijector
 
-    def __init__(self, loc: Array, scale: AbstractLinearBijector):
+    def __init__(self, loc: Union[float, Array], scale: AbstractLinearBijector):
         """Initializes the distribution.
 
         **Arguments:**
@@ -125,6 +126,7 @@ class MultivariateNormalFromBijector(AbstractMultivariateNormalFromBijector):
         - `scale`: The bijector specifying the linear transformation `A @ z`, as
             described in the class docstring.
         """
+        loc = jnp.asarray(loc)
         _check_input_parameters_are_valid(scale, loc)
 
         # Build a standard multivariate Gaussian.

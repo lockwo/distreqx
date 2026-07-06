@@ -1,5 +1,7 @@
 """Uniform distribution."""
 
+from typing import Union
+
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Float, Key
@@ -15,6 +17,21 @@ class Uniform(
 
     low: Float[Array, "..."]
     high: Float[Array, "..."]
+
+    def __init__(
+        self,
+        low: Union[float, Float[Array, "..."]],
+        high: Union[float, Float[Array, "..."]],
+    ):
+        """Initializes a Uniform distribution.
+
+        **Arguments:**
+
+        - `low`: Lower bound of the distribution.
+        - `high`: Upper bound of the distribution.
+        """
+        self.low = jnp.asarray(low)
+        self.high = jnp.asarray(high)
 
     @property
     def range(self) -> Array:
