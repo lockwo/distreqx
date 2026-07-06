@@ -29,36 +29,38 @@ class AbstractTransformed(
     bijector: eqx.AbstractVar[AbstractBijector]
 
     def _infer_shapes_and_dtype(self):
-        """Infer the event shape by tracing `forward`."""
+        """Infer the event shape and dtype by tracing `forward`."""
         dummy_shape = self.distribution.event_shape
         dummy = jnp.zeros(dummy_shape, dtype=self.distribution.dtype)
         shape_dtype = jax.eval_shape(self.bijector.forward, dummy)
-        return shape_dtype.shape, shape_dtype.dtype
+        shapes = jax.tree_util.tree_map(lambda x: x.shape, shape_dtype)
+        dtypes = jax.tree_util.tree_map(lambda x: x.dtype, shape_dtype)
+        return shapes, dtypes
 
     @property
-    def dtype(self) -> jnp.dtype:
+    def dtype(self) -> PyTree:
         """See `Distribution.dtype`."""
         return self._infer_shapes_and_dtype()[1]
 
     @property
-    def event_shape(self) -> tuple[int, ...]:
+    def event_shape(self) -> PyTree:
         """See `Distribution.event_shape`."""
         return self._infer_shapes_and_dtype()[0]
 
-    def log_prob(self, value: Array) -> Array:
+    def log_prob(self, value: PyTree) -> Array:
         """See `Distribution.log_prob`."""
         x, ildj_y = self.bijector.inverse_and_log_det(value)
         lp_x = self.distribution.log_prob(x)
         lp_y = lp_x + ildj_y
         return lp_y
 
-    def sample(self, key: Key[Array, ""]) -> Array:
+    def sample(self, key: Key[Array, ""]) -> PyTree:
         """Return a sample."""
         x = self.distribution.sample(key)
         y = self.bijector.forward(x)
         return y
 
-    def sample_and_log_prob(self, key: Key[Array, ""]) -> tuple[Array, Array]:
+    def sample_and_log_prob(self, key: Key[Array, ""]) -> tuple[PyTree, Array]:
         """Return a sample and log prob.
 
         This function is more efficient than calling `sample` and `log_prob`
@@ -78,7 +80,7 @@ class AbstractTransformed(
         lp_y = jnp.subtract(lp_x, fldj)
         return y, lp_y
 
-    def entropy(self, input_hint: Optional[Array] = None) -> Array:
+    def entropy(self, input_hint: Optional[PyTree] = None) -> Array:
         """Calculates the Shannon entropy (in Nats).
 
         Only works for bijectors with constant Jacobian determinant.
@@ -175,7 +177,7 @@ class Transformed(AbstractTransformed, AbstractSTDDistribution):
         self.distribution = distribution
         self.bijector = bijector
 
-    def mean(self) -> Array:
+    def mean(self) -> PyTree:
         """Calculates the mean."""
         if self.bijector.is_constant_jacobian:
             return self.bijector.forward(self.distribution.mean())
@@ -185,7 +187,7 @@ class Transformed(AbstractTransformed, AbstractSTDDistribution):
                 "because its bijector's Jacobian is not known to be constant."
             )
 
-    def mode(self) -> Array:
+    def mode(self) -> PyTree:
         """Calculates the mode."""
         if self.bijector.is_constant_log_det:
             return self.bijector.forward(self.distribution.mode())
