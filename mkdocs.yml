@@ -112,6 +112,7 @@ nav:
             - 'api/distributions/gamma.md'
             - 'api/distributions/logistic.md'
             - 'api/distributions/independent.md'
+            - 'api/distributions/empirical.md'
             - 'api/distributions/improper_uniform.md'
             - 'api/distributions/mixture_same_family.md'
             - 'api/distributions/uniform.md'
