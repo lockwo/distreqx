@@ -33,8 +33,8 @@ class AbstractTransformed(
         dummy_shape = self.distribution.event_shape
         dummy = jnp.zeros(dummy_shape, dtype=self.distribution.dtype)
         shape_dtype = jax.eval_shape(self.bijector.forward, dummy)
-        shapes = jax.tree_util.tree_map(lambda x: x.shape, shape_dtype)
-        dtypes = jax.tree_util.tree_map(lambda x: x.dtype, shape_dtype)
+        shapes = jax.tree.map(lambda x: x.shape, shape_dtype)
+        dtypes = jax.tree.map(lambda x: x.dtype, shape_dtype)
         return shapes, dtypes
 
     @property
