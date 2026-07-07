@@ -5,6 +5,7 @@ from typing import Union
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Float, Key
+import equinox as eqx
 
 from ._distribution import AbstractSTDDistribution, AbstractSurvivalDistribution
 
@@ -15,23 +16,8 @@ class Uniform(
 ):
     """Uniform distribution with `low` and `high` parameters."""
 
-    low: Float[Array, "..."]
-    high: Float[Array, "..."]
-
-    def __init__(
-        self,
-        low: Union[float, Float[Array, "..."]],
-        high: Union[float, Float[Array, "..."]],
-    ):
-        """Initializes a Uniform distribution.
-
-        **Arguments:**
-
-        - `low`: Lower bound of the distribution.
-        - `high`: Upper bound of the distribution.
-        """
-        self.low = jnp.asarray(low)
-        self.high = jnp.asarray(high)
+    low: Float[Array, "..."] = eqx.field(converter=jnp.asarray)
+    high: Float[Array, "..."] = eqx.field(converter=jnp.asarray)
 
     @property
     def range(self) -> Array:

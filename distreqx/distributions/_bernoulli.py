@@ -1,6 +1,6 @@
 """Bernoulli distribution."""
 
-from typing import Optional, Union
+from typing import Optional
 
 import jax
 import jax.numpy as jnp
@@ -24,13 +24,13 @@ class Bernoulli(
     Bernoulli distribution with parameter `probs`, the probability of outcome `1`.
     """
 
-    _logits: Union[Array, None]
-    _probs: Union[Array, None]
+    _logits: Array | None
+    _probs: Array | None
 
     def __init__(
         self,
-        logits: Optional[Union[float, Array]] = None,
-        probs: Optional[Union[float, Array]] = None,
+        logits: Optional[float | Array] = None,
+        probs: Optional[float | Array] = None,
     ):
         """Initializes a Bernoulli distribution.
 
