@@ -1,9 +1,9 @@
 """Uniform distribution."""
 
+import equinox as eqx
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Float, Key
-import equinox as eqx
 
 from ._distribution import AbstractSTDDistribution, AbstractSurvivalDistribution
 
