@@ -112,6 +112,8 @@ nav:
             - 'api/distributions/gamma.md'
             - 'api/distributions/logistic.md'
             - 'api/distributions/independent.md'
+            - 'api/distributions/empirical.md'
+            - 'api/distributions/improper_uniform.md'
             - 'api/distributions/mixture_same_family.md'
             - 'api/distributions/uniform.md'
             - 'api/distributions/transformed.md'
@@ -125,6 +127,8 @@ nav:
             - 'api/bijectors/sigmoid.md'
             - 'api/bijectors/tanh.md'
             - 'api/bijectors/leafwise.md'
+            - 'api/bijectors/identity.md'
+            - 'api/bijectors/inverse.md'
             - 'api/bijectors/triangular_linear.md'
             - 'api/bijectors/_bijector.md'
         - Utilities:
