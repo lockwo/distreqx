@@ -15,6 +15,7 @@ from ._empirical import (
     WeightedEmpirical as WeightedEmpirical,
 )
 from ._gamma import Gamma as Gamma
+from ._improper_uniform import ImproperUniform as ImproperUniform
 from ._independent import Independent as Independent
 from ._logistic import Logistic as Logistic
 from ._mixture_same_family import MixtureSameFamily as MixtureSameFamily
