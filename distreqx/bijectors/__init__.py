@@ -7,6 +7,8 @@ from ._bijector import (
 from ._block import Block as Block
 from ._chain import Chain as Chain
 from ._diag_linear import DiagLinear as DiagLinear
+from ._identity import Identity as Identity
+from ._inverse import Inverse as Inverse
 from ._linear import AbstractLinearBijector as AbstractLinearBijector
 from ._scalar_affine import ScalarAffine as ScalarAffine
 from ._shift import Shift as Shift

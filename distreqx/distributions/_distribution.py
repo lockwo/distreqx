@@ -66,7 +66,7 @@ class AbstractDistribution(AbstractStrictModule):
     def dtype(self) -> jnp.dtype:
         """Data type of a sample"""
         sample_spec = jax.eval_shape(self.sample, jax.random.key(0))
-        return jax.tree_util.tree_map(lambda x: x.dtype, sample_spec)
+        return jax.tree.map(lambda x: x.dtype, sample_spec)
 
     @property
     def name(self) -> str:
