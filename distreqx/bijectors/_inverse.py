@@ -1,4 +1,3 @@
-import equinox as eqx
 from jaxtyping import PyTree
 
 from ._bijector import (
@@ -13,12 +12,12 @@ class Inverse(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector):
 
     bijector: AbstractBijector
 
-    _is_constant_jacobian: bool = eqx.field(init=False)
-    _is_constant_log_det: bool = eqx.field(init=False)
+    _is_constant_jacobian: bool
+    _is_constant_log_det: bool
 
-    def __post_init__(self):
-        is_constant_jacobian = self.bijector.is_constant_jacobian
-        is_constant_log_det = self.bijector.is_constant_log_det
+    def __init__(self, bijector: AbstractBijector):
+        is_constant_jacobian = bijector.is_constant_jacobian
+        is_constant_log_det = bijector.is_constant_log_det
 
         if is_constant_jacobian and not is_constant_log_det:
             raise ValueError(
@@ -26,8 +25,9 @@ class Inverse(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector):
                 "determinant is said not to be, which is impossible."
             )
 
-        object.__setattr__(self, "_is_constant_jacobian", is_constant_jacobian)
-        object.__setattr__(self, "_is_constant_log_det", is_constant_log_det)
+        self.bijector = bijector
+        self._is_constant_jacobian = is_constant_jacobian
+        self._is_constant_log_det = is_constant_log_det
 
     def forward(self, x: PyTree) -> PyTree:
         """Computes y = f(x)."""
