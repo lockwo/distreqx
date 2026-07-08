@@ -63,7 +63,13 @@ class Sigmoid(AbstractForwardInverseBijector, AbstractInvLogDetJacBijector):
 
 def _more_stable_sigmoid(x: Array) -> Array:
     """Where extremely negatively saturated, approximate sigmoid with exp(x)."""
-    ret = jnp.where(x < -9, jnp.exp(x), jax.nn.sigmoid(x))
+    # `jnp.where` evaluates both branches, so the unselected `jnp.exp(x)` branch
+    # would overflow to +inf for large positive `x`, and the resulting `0 * inf`
+    # in the backward pass poisons the gradient with NaN (the classic JAX
+    # "double where" trap). Feeding the unselected branch a safe input keeps the
+    # forward value identical while making its gradient finite.
+    safe_x = jnp.where(x < -9, x, 0.0)
+    ret = jnp.where(x < -9, jnp.exp(safe_x), jax.nn.sigmoid(x))
     if not isinstance(ret, Array):
         raise TypeError("ret is not an Array")
     return ret
@@ -71,7 +77,10 @@ def _more_stable_sigmoid(x: Array) -> Array:
 
 def _more_stable_softplus(x: Array) -> Array:
     """Where extremely saturated, approximate softplus with log1p(exp(x))."""
-    ret = jnp.where(x < -9, jnp.log1p(jnp.exp(x)), jax.nn.softplus(x))
+    # See `_more_stable_sigmoid`: guard the unselected `log1p(exp(x))` branch
+    # against a +inf-poisoned NaN gradient for large positive `x`.
+    safe_x = jnp.where(x < -9, x, 0.0)
+    ret = jnp.where(x < -9, jnp.log1p(jnp.exp(safe_x)), jax.nn.softplus(x))
     if not isinstance(ret, Array):
         raise TypeError("ret is not an Array")
     return ret
