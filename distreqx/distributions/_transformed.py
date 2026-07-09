@@ -1,7 +1,5 @@
 """Distribution representing a Bijector applied to a Distribution."""
 
-from typing import Optional
-
 import equinox as eqx
 import jax
 import jax.numpy as jnp
@@ -78,7 +76,7 @@ class AbstractTransformed(
         lp_y = jnp.subtract(lp_x, fldj)
         return y, lp_y
 
-    def entropy(self, input_hint: Optional[Array] = None) -> Array:
+    def entropy(self, input_hint: Array | None = None) -> Array:
         """Calculates the Shannon entropy (in Nats).
 
         Only works for bijectors with constant Jacobian determinant.

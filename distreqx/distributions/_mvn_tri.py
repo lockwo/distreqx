@@ -1,7 +1,5 @@
 """MultivariateNormalTri distribution."""
 
-from typing import Optional, Union
-
 import equinox as eqx
 import jax
 import jax.numpy as jnp
@@ -22,7 +20,7 @@ from ._mvn_from_bijector import AbstractMultivariateNormalFromBijector
 from ._normal import Normal
 
 
-def _check_parameters(loc: Optional[Array], scale_tri: Optional[Array]) -> None:
+def _check_parameters(loc: Array | None, scale_tri: Array | None) -> None:
     """Checks that the inputs are correct."""
     if loc is None and scale_tri is None:
         raise ValueError("At least one of `loc` and `scale_tri` must be specified.")
@@ -73,8 +71,8 @@ class MultivariateNormalTri(AbstractMultivariateNormalFromBijector):
 
     def __init__(
         self,
-        loc: Optional[Union[float, Array]] = None,
-        scale_tri: Optional[Union[float, Array]] = None,
+        loc: float | Array | None = None,
+        scale_tri: float | Array | None = None,
         is_lower: bool = True,
     ):
         """Initializes a MultivariateNormalTri distribution.

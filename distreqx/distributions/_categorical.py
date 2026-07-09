@@ -1,7 +1,5 @@
 """Categorical distribution."""
 
-from typing import Optional, Union
-
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Key
@@ -26,10 +24,10 @@ class Categorical(
     It is defined over the integers `{0, 1, ..., K-1}`.
     """
 
-    _logits: Union[Array, None]
-    _probs: Union[Array, None]
+    _logits: Array | None
+    _probs: Array | None
 
-    def __init__(self, logits: Optional[Array] = None, probs: Optional[Array] = None):
+    def __init__(self, logits: Array | None = None, probs: Array | None = None):
         """Initializes a Categorical distribution.
 
         **Arguments:**
