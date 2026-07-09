@@ -1,7 +1,5 @@
 """Gamma distribution."""
 
-from typing import Union
-
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Float, Key
@@ -35,8 +33,8 @@ class Gamma(
 
     def __init__(
         self,
-        concentration: Union[float, Float[Array, "..."]],
-        rate: Union[float, Float[Array, "..."]],
+        concentration: float | Float[Array, "..."],
+        rate: float | Float[Array, "..."],
     ):
         """Initializes a Gamma distribution.
 

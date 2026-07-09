@@ -1,7 +1,5 @@
 """One hot categorical distribution."""
 
-from typing import Optional, Union
-
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Key
@@ -21,10 +19,10 @@ class OneHotCategorical(
 ):
     """OneHotCategorical distribution."""
 
-    _logits: Union[Array, None]
-    _probs: Union[Array, None]
+    _logits: Array | None
+    _probs: Array | None
 
-    def __init__(self, logits: Optional[Array] = None, probs: Optional[Array] = None):
+    def __init__(self, logits: Array | None = None, probs: Array | None = None):
         """Initializes a OneHotCategorical distribution.
 
         **Arguments:**

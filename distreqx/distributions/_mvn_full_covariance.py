@@ -1,7 +1,5 @@
 """MultivariateNormalFullCovariance distribution."""
 
-from typing import Optional, Union
-
 import equinox as eqx
 import jax.numpy as jnp
 from jaxtyping import Array, PyTree
@@ -20,7 +18,7 @@ from ._mvn_from_bijector import AbstractMultivariateNormalFromBijector
 from ._normal import Normal
 
 
-def _check_parameters(loc: Optional[Array], covariance_matrix: Optional[Array]) -> None:
+def _check_parameters(loc: Array | None, covariance_matrix: Array | None) -> None:
     """Checks that the inputs are correct for a single event."""
     if loc is None and covariance_matrix is None:
         raise ValueError(
@@ -80,8 +78,8 @@ class MultivariateNormalFullCovariance(
 
     def __init__(
         self,
-        loc: Optional[Union[float, Array]] = None,
-        covariance_matrix: Optional[Union[float, Array]] = None,
+        loc: float | Array | None = None,
+        covariance_matrix: float | Array | None = None,
     ):
         """Initializes a MultivariateNormalFullCovariance distribution.
 

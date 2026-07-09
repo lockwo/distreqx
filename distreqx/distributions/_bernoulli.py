@@ -1,7 +1,5 @@
 """Bernoulli distribution."""
 
-from typing import Optional
-
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Key
@@ -29,8 +27,8 @@ class Bernoulli(
 
     def __init__(
         self,
-        logits: Optional[float | Array] = None,
-        probs: Optional[float | Array] = None,
+        logits: float | Array | None = None,
+        probs: float | Array | None = None,
     ):
         """Initializes a Bernoulli distribution.
 

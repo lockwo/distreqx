@@ -1,7 +1,5 @@
 """Scalar affine bijector."""
 
-from typing import Optional
-
 import equinox as eqx
 import jax.numpy as jnp
 from jaxtyping import Array
@@ -75,8 +73,8 @@ class ScalarAffine(AbstractScalarAffine):
     def __init__(
         self,
         shift: Array,
-        scale: Optional[Array] = None,
-        log_scale: Optional[Array] = None,
+        scale: Array | None = None,
+        log_scale: Array | None = None,
     ):
         """Initializes a ScalarAffine bijector.
 

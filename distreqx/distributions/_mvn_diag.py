@@ -1,7 +1,5 @@
 """MultivariateNormalDiag distribution."""
 
-from typing import Optional, Union
-
 import equinox as eqx
 import jax
 import jax.numpy as jnp
@@ -24,7 +22,7 @@ from ._mvn_from_bijector import (
 from ._normal import Normal
 
 
-def _check_parameters(loc: Optional[Array], scale_diag: Optional[Array]) -> None:
+def _check_parameters(loc: Array | None, scale_diag: Array | None) -> None:
     """Checks that the `loc` and `scale_diag` parameters are correct."""
     if scale_diag is not None and not scale_diag.shape:
         raise ValueError(
@@ -55,8 +53,8 @@ class MultivariateNormalDiag(AbstractMultivariateNormalFromBijector):
 
     def __init__(
         self,
-        loc: Optional[Union[float, Array]] = None,
-        scale_diag: Optional[Union[float, Array]] = None,
+        loc: float | Array | None = None,
+        scale_diag: float | Array | None = None,
     ):
         """Initializes a MultivariateNormalDiag distribution.
 

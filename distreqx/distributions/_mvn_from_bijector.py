@@ -1,7 +1,6 @@
 """MultivariateNormalFromBijector distribution."""
 
 from collections.abc import Callable
-from typing import Union
 
 import equinox as eqx
 import jax
@@ -117,7 +116,7 @@ class MultivariateNormalFromBijector(AbstractMultivariateNormalFromBijector):
     distribution: AbstractDistribution
     bijector: AbstractBijector
 
-    def __init__(self, loc: Union[float, Array], scale: AbstractLinearBijector):
+    def __init__(self, loc: float | Array, scale: AbstractLinearBijector):
         """Initializes the distribution.
 
         **Arguments:**
