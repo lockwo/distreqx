@@ -1,6 +1,6 @@
 """MultivariateNormalFullCovariance distribution."""
 
-from typing import Optional
+from typing import Optional, Union
 
 import equinox as eqx
 import jax.numpy as jnp
@@ -80,8 +80,8 @@ class MultivariateNormalFullCovariance(
 
     def __init__(
         self,
-        loc: Optional[Array] = None,
-        covariance_matrix: Optional[Array] = None,
+        loc: Optional[Union[float, Array]] = None,
+        covariance_matrix: Optional[Union[float, Array]] = None,
     ):
         """Initializes a MultivariateNormalFullCovariance distribution.
 
@@ -93,6 +93,10 @@ class MultivariateNormalFullCovariance(
             symmetric positive definite matrix. If not specified, it defaults
             to the identity matrix.
         """
+        loc = None if loc is None else jnp.asarray(loc)
+        covariance_matrix = (
+            None if covariance_matrix is None else jnp.asarray(covariance_matrix)
+        )
         _check_parameters(loc, covariance_matrix)
 
         if loc is not None:

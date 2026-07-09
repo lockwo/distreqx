@@ -50,6 +50,13 @@ class BernoulliTest(TestCase):
         with self.assertRaises(ValueError):
             self.dist(**dist_params)
 
+    def test_accepts_raw_python_floats(self):
+        """Bernoulli should cast plain Python floats to arrays, like `Normal` does."""
+        dist = self.dist(probs=0.3)
+        self.assertIsInstance(dist.probs, jax.Array)
+        dist = self.dist(logits=0.5)
+        self.assertIsInstance(dist.logits, jax.Array)
+
     @parameterized.expand(
         [
             ("1d probs, 1-tuple shape", {"probs": [0.1, 0.5, 0.3]}, (3,)),

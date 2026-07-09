@@ -1,6 +1,6 @@
 """MultivariateNormalTri distribution."""
 
-from typing import Optional
+from typing import Optional, Union
 
 import equinox as eqx
 import jax
@@ -73,8 +73,8 @@ class MultivariateNormalTri(AbstractMultivariateNormalFromBijector):
 
     def __init__(
         self,
-        loc: Optional[Array] = None,
-        scale_tri: Optional[Array] = None,
+        loc: Optional[Union[float, Array]] = None,
+        scale_tri: Optional[Union[float, Array]] = None,
         is_lower: bool = True,
     ):
         """Initializes a MultivariateNormalTri distribution.
@@ -93,6 +93,8 @@ class MultivariateNormalTri(AbstractMultivariateNormalFromBijector):
         - `is_lower`: Indicates if `scale_tri` is lower (if True) or upper (if False)
             triangular.
         """
+        loc = None if loc is None else jnp.asarray(loc)
+        scale_tri = None if scale_tri is None else jnp.asarray(scale_tri)
         _check_parameters(loc, scale_tri)
 
         if loc is not None:
