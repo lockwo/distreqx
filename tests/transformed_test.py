@@ -7,8 +7,32 @@ import jax.numpy as jnp
 import numpy as np
 from parameterized import parameterized  # type: ignore
 
-from distreqx.bijectors import ScalarAffine, Sigmoid
+from distreqx.bijectors import (
+    AbstractForwardInverseBijector,
+    AbstractFwdLogDetJacBijector,
+    AbstractInvLogDetJacBijector,
+    ScalarAffine,
+    Sigmoid,
+)
 from distreqx.distributions import Normal, Transformed
+
+
+class DummyPytreeBijector(
+    AbstractForwardInverseBijector,
+    AbstractFwdLogDetJacBijector,
+    AbstractInvLogDetJacBijector,
+):
+    _is_constant_jacobian: bool = True
+    _is_constant_log_det: bool = True
+
+    def forward_and_log_det(self, x):
+        return {"a": x[:1], "b": x[1:]}, jnp.zeros(())
+
+    def inverse_and_log_det(self, y):
+        return jnp.concatenate([y["a"], y["b"]]), jnp.zeros(())
+
+    def same_as(self, other):
+        return type(other) is DummyPytreeBijector
 
 
 class TransformedTest(TestCase):
@@ -84,6 +108,18 @@ class TransformedTest(TestCase):
         result_inv = distreqx_dist2.kl_divergence(distreqx_dist1)
         np.testing.assert_allclose(result_fwd, expected_result_fwd, rtol=1e-2)
         np.testing.assert_allclose(result_inv, expected_result_inv, rtol=1e-2)
+
+    def test_event_shape_and_dtype_for_pytree_valued_bijector(self):
+        base = Normal(jnp.zeros(2), jnp.ones(2))
+        dist = Transformed(base, DummyPytreeBijector())
+
+        self.assertEqual(dist.event_shape, {"a": (1,), "b": (1,)})
+        self.assertEqual(dist.dtype, {"a": jnp.zeros(1).dtype, "b": jnp.zeros(1).dtype})
+
+        sample = dist.sample(jax.random.key(0))
+        self.assertEqual(set(sample.keys()), {"a", "b"})
+        concatenated = jnp.concatenate([sample["a"], sample["b"]])
+        np.testing.assert_allclose(dist.log_prob(sample), base.log_prob(concatenated))
 
     def test_jittable(self):
         @jax.jit
