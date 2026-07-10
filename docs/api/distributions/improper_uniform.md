@@ -1,6 +1,6 @@
-# Uniform
+# Improper Uniform
 
-::: distreqx.distributions.Uniform
+::: distreqx.distributions.ImproperUniform
     options:
         inherited_members: false
         members:

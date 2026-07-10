@@ -6,12 +6,12 @@ from jaxtyping import Array, PyTree
 
 
 class AbstractBijector(AbstractStrictModule):
-    """Differentiable bijection that knows to compute its Jacobian determinant.
+    r"""Differentiable bijection that knows to compute its Jacobian determinant.
 
-    A bijector implements a differentiable and bijective transformation `f`, whose
-    inverse is also differentiable (`f` is called a "diffeomorphism"). A bijector
-    can be used to transform a continuous random variable `X` to a continuous
-    random variable `Y = f(X)` in the context of `TransformedDistribution`.
+    A bijector implements a differentiable and bijective transformation $f$, whose
+    inverse is also differentiable ($f$ is called a "diffeomorphism"). A bijector
+    can be used to transform a continuous random variable $X$ to a continuous
+    random variable $Y = f(X)$ in the context of `TransformedDistribution`.
 
     Typically, a bijector subclass will implement the following methods:
 
@@ -22,8 +22,8 @@ class AbstractBijector(AbstractStrictModule):
 
     Subclass requirements:
 
-    - Subclasses must ensure that `f` is differentiable and bijective, and that
-      their methods correctly implement `f^{-1}`, `J(f)` and `J(f^{-1})`. Distreqx
+    - Subclasses must ensure that $f$ is differentiable and bijective, and that
+      their methods correctly implement $f^{-1}$, $J(f)$ and $J(f^{-1})$. Distreqx
       will assume these properties hold, and will make no attempt to verify them.
     """
 
@@ -32,7 +32,7 @@ class AbstractBijector(AbstractStrictModule):
 
     @abstractmethod
     def forward(self, x: PyTree) -> PyTree:
-        R"""Computes $y = f(x)$."""
+        r"""Computes $y = f(x)$."""
         raise NotImplementedError
 
     @abstractmethod
@@ -107,7 +107,7 @@ class AbstractForwardInverseBijector(AbstractBijector):
     """AbstractBijector + concrete `forward` and `reverse`."""
 
     def forward(self, x: PyTree) -> PyTree:
-        R"""Computes $y = f(x)$."""
+        r"""Computes $y = f(x)$."""
         y, _ = self.forward_and_log_det(x)
         return y
 

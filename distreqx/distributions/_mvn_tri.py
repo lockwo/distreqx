@@ -1,7 +1,5 @@
 """MultivariateNormalTri distribution."""
 
-from typing import Optional
-
 import equinox as eqx
 import jax
 import jax.numpy as jnp
@@ -22,7 +20,7 @@ from ._mvn_from_bijector import AbstractMultivariateNormalFromBijector
 from ._normal import Normal
 
 
-def _check_parameters(loc: Optional[Array], scale_tri: Optional[Array]) -> None:
+def _check_parameters(loc: Array | None, scale_tri: Array | None) -> None:
     """Checks that the inputs are correct."""
     if loc is None and scale_tri is None:
         raise ValueError("At least one of `loc` and `scale_tri` must be specified.")
@@ -73,8 +71,8 @@ class MultivariateNormalTri(AbstractMultivariateNormalFromBijector):
 
     def __init__(
         self,
-        loc: Optional[Array] = None,
-        scale_tri: Optional[Array] = None,
+        loc: float | Array | None = None,
+        scale_tri: float | Array | None = None,
         is_lower: bool = True,
     ):
         """Initializes a MultivariateNormalTri distribution.
@@ -83,7 +81,7 @@ class MultivariateNormalTri(AbstractMultivariateNormalFromBijector):
 
         - `loc`: Mean vector of the distribution of shape `k`.
             If not specified, it defaults to zeros.
-        - `scale_tri`: The scale matrix `S`. It must be a `k x k` triangular matrix.
+        - `scale_tri`: The scale matrix $S$. It must be a `k x k` triangular matrix.
             If `scale_tri` is not triangular, the entries above or below the main
             diagonal will be ignored. The parameter `is_lower` specifies if `scale_tri`
             is lower or upper triangular. It is the responsibility of the user to make
@@ -93,6 +91,8 @@ class MultivariateNormalTri(AbstractMultivariateNormalFromBijector):
         - `is_lower`: Indicates if `scale_tri` is lower (if True) or upper (if False)
             triangular.
         """
+        loc = None if loc is None else jnp.asarray(loc)
+        scale_tri = None if scale_tri is None else jnp.asarray(scale_tri)
         _check_parameters(loc, scale_tri)
 
         if loc is not None:

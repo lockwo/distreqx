@@ -1,6 +1,6 @@
-# TanH Bijector
+# Inverse Bijector
 
-::: distreqx.bijectors.Tanh
+::: distreqx.bijectors.Inverse
     options:
         inherited_members: false
         members: false

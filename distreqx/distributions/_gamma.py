@@ -1,7 +1,5 @@
 """Gamma distribution."""
 
-from typing import Union
-
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Float, Key
@@ -35,8 +33,8 @@ class Gamma(
 
     def __init__(
         self,
-        concentration: Union[float, Float[Array, "..."]],
-        rate: Union[float, Float[Array, "..."]],
+        concentration: float | Float[Array, "..."],
+        rate: float | Float[Array, "..."],
     ):
         """Initializes a Gamma distribution.
 
@@ -121,7 +119,9 @@ class Gamma(
         *unused_args,
         **unused_kwargs,
     ) -> Array:
-        """KL divergence KL(self || other_dist) between two Gamma distributions.
+        r"""KL divergence between two Gamma distributions.
+
+        Computes $D_{\mathrm{KL}}(P \parallel Q)$.
 
         **Arguments:**
 
@@ -129,7 +129,7 @@ class Gamma(
 
         **Returns:**
 
-        - `KL(self || other_dist)`.
+        - $D_{\mathrm{KL}}(P \parallel Q)$.
         """
         t1 = other_dist.concentration * (jnp.log(self.rate) - jnp.log(other_dist.rate))
         t2 = jax.lax.lgamma(other_dist.concentration) - jax.lax.lgamma(
