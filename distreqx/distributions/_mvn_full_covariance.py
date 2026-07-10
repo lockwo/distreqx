@@ -87,7 +87,7 @@ class MultivariateNormalFullCovariance(
 
         - `loc`: Mean vector of the distribution of shape `k`.
             If not specified, it defaults to zeros.
-        - `covariance_matrix`: The covariance matrix `C`. It must be a `k x k`
+        - `covariance_matrix`: The covariance matrix $C$. It must be a `k x k`
             symmetric positive definite matrix. If not specified, it defaults
             to the identity matrix.
         """

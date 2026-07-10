@@ -216,7 +216,7 @@ class Transformed(AbstractTransformed, AbstractSTDDistribution):
         raise NotImplementedError
 
     def kl_divergence(self, other_dist, **kwargs) -> Array:
-        """Obtains the KL divergence between two Transformed distributions.
+        r"""Obtains the KL divergence between two Transformed distributions.
 
         This computes the KL divergence between two Transformed distributions with the
         same bijector. If the two Transformed distributions do not have the same
@@ -246,7 +246,7 @@ class Transformed(AbstractTransformed, AbstractSTDDistribution):
 
         **Returns:**
 
-        - `KL(dist1 || dist2)`.
+        - $D_{\mathrm{KL}}(P \parallel Q)$.
 
         **Raises:**
 

@@ -43,7 +43,7 @@ def _check_parameters(loc: Array | None, scale_diag: Array | None) -> None:
 
 
 class MultivariateNormalDiag(AbstractMultivariateNormalFromBijector):
-    """Multivariate normal distribution on `R^k` with diagonal covariance."""
+    r"""Multivariate normal distribution on $\mathbb{R}^k$ with diagonal covariance."""
 
     loc: Array
     scale: AbstractLinearBijector

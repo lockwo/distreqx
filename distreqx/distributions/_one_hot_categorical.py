@@ -146,10 +146,10 @@ class OneHotCategorical(
         raise NotImplementedError
 
     def kl_divergence(self, other_dist, **kwargs) -> Array:
-        """Obtains the KL divergence `KL(dist1 || dist2)` between two Categoricals.
+        r"""Obtains $D_{\mathrm{KL}}(P \parallel Q)$ between two Categoricals.
 
-        The KL computation takes into account that `0 * log(0) = 0`; therefore,
-        `dist1` may have zeros in its probability vector.
+        The KL computation takes into account that $0 \log 0 = 0$; therefore,
+        $P$ may have zeros in its probability vector.
 
         **Arguments:**
 
@@ -157,7 +157,7 @@ class OneHotCategorical(
 
         **Returns:**
 
-        `KL(dist1 || dist2)`.
+        $D_{\mathrm{KL}}(P \parallel Q)$.
 
         **Raises:**
 

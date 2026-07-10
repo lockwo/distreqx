@@ -118,7 +118,7 @@ class Logistic(AbstractProbDistribution):
         return self.loc
 
     def kl_divergence(self, other_dist, **kwargs) -> Array:
-        """Calculates the KL divergence to another distribution.
+        r"""Calculates the KL divergence to another distribution.
 
         **Arguments:**
 
@@ -127,7 +127,8 @@ class Logistic(AbstractProbDistribution):
 
         **Returns:**
 
-        The KL divergence `KL(self || other_dist)`.
+        The divergence $D_{\mathrm{KL}}(P \parallel Q)$, where $P$ is this
+        distribution and $Q$ is `other_dist`.
         """
         raise NotImplementedError(
             "Logistic distribution does not have a closed-form KL divergence."

@@ -15,18 +15,18 @@ class Identity(
     AbstractInvLogDetJacBijector,
     AbstractFwdLogDetJacBijector,
 ):
-    """Identity bijector: y = x."""
+    """Identity bijector: $y = x$."""
 
     _is_constant_jacobian: bool = True
     _is_constant_log_det: bool = True
 
     def forward_and_log_det(self, x: PyTree) -> tuple[PyTree, PyTree]:
-        """Computes y = x and log|det J(f)(x)| = 0."""
+        r"""Computes $y = x$ and $\log|\det J(f)(x)| = 0$."""
         log_det = jax.tree.map(jnp.zeros_like, x)
         return x, log_det
 
     def inverse_and_log_det(self, y: PyTree) -> tuple[PyTree, PyTree]:
-        """Computes x = y and log|det J(f^{-1})(y)| = 0."""
+        r"""Computes $x = y$ and $\log|\det J(f^{-1})(y)| = 0$."""
         log_det = jax.tree.map(jnp.zeros_like, y)
         return y, log_det
 
