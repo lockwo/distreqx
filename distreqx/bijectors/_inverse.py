@@ -30,19 +30,19 @@ class Inverse(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector):
         self._is_constant_log_det = is_constant_log_det
 
     def forward(self, x: PyTree) -> PyTree:
-        """Computes y = f(x)."""
+        r"""Computes $y = f(x)$."""
         return self.bijector.inverse(x)
 
     def inverse(self, y: PyTree) -> PyTree:
-        """Computes x = f^{-1}(y)."""
+        r"""Computes $x = f^{-1}(y)$."""
         return self.bijector.forward(y)
 
     def forward_and_log_det(self, x: PyTree) -> tuple[PyTree, PyTree]:
-        """Computes y = f(x) and log|det J(f)(x)|."""
+        r"""Computes $y = f(x)$ and $\log|\det J(f)(x)|$."""
         return self.bijector.inverse_and_log_det(x)
 
     def inverse_and_log_det(self, y: PyTree) -> tuple[PyTree, PyTree]:
-        """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
+        r"""Computes $x = f^{-1}(y)$ and $\log|\det J(f^{-1})(y)|$."""
         return self.bijector.forward_and_log_det(y)
 
     def same_as(self, other: AbstractBijector) -> bool:

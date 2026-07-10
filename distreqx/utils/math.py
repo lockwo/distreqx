@@ -51,8 +51,8 @@ def multiply_no_nan_jvp(
 
 @jax.custom_jvp
 def power_no_nan(x: Array, y: Array) -> Array:
-    """Computes `x ** y`, ensuring the result is 1.0 when `y` is zero,
-    following the convention `0 ** 0 = 1`.
+    """Computes $x^y$, ensuring the result is $1$ when $y = 0$,
+    following the convention $0^0 = 1$.
 
     **Arguments:**
 
@@ -61,7 +61,7 @@ def power_no_nan(x: Array, y: Array) -> Array:
 
     **Returns:**
 
-    - The power `x ** y`.
+    - The power $x^y$.
     """
     dtype = jnp.result_type(x, y)
     return jnp.where(y == 0, jnp.ones((), dtype=dtype), jnp.power(x, y))
@@ -90,16 +90,16 @@ def power_no_nan_jvp(
 
 
 def mul_exp(x: Array, logp: Array) -> Array:
-    """Returns `x * exp(logp)` with zero output if `exp(logp) == 0`.
+    r"""Returns $x\exp(\ell)$ with zero output if $\exp(\ell) = 0$.
 
     **Arguments:**
 
     - `x`: An array.
-    - `logp`: An array representing logarithms.
+    - `logp`: An array representing logarithms, denoted $\ell$.
 
     **Returns:**
 
-    - The result of `x * exp(logp)`.
+    - The result $x\exp(\ell)$.
     """
     p = jnp.exp(logp)
     x = jnp.where(p == 0, 0.0, x)
@@ -147,22 +147,22 @@ def sum_last(x: Array, ndims: int) -> Array:
 
 
 def log_expbig_minus_expsmall(big: Array, small: Array) -> Array:
-    """Stable implementation of `log(exp(big) - exp(small))`.
+    r"""Stable implementation of $\log(e^b - e^s)$.
 
     **Arguments:**
 
-    - `big`: First input.
-    - `small`: Second input. It must be `small <= big`.
+    - `big`: First input, denoted $b$.
+    - `small`: Second input, denoted $s$. It must satisfy $s \le b$.
 
     **Returns:**
 
-    - The resulting `log(exp(big) - exp(small))`.
+    - The resulting $\log(e^b - e^s)$.
     """
     return big + jnp.log1p(-jnp.exp(small - big))
 
 
 def log_beta(a: Array, b: Array) -> Array:
-    """Obtains the log of the beta function `log B(a, b)`.
+    r"""Obtains the log of the beta function $\log B(a, b)$.
 
     **Arguments:**
 
@@ -171,25 +171,35 @@ def log_beta(a: Array, b: Array) -> Array:
 
     **Returns:**
 
-    - The value `log B(a, b) = log Gamma(a) + log Gamma(b) - log Gamma(a + b)`,
-      where `Gamma` is the Gamma function, obtained through stable
-      computation of `log Gamma`.
+    - The value
+
+      $$
+      \log B(a, b) = \log\Gamma(a) + \log\Gamma(b) - \log\Gamma(a + b)
+      $$
+
+      where $\Gamma$ is the Gamma function, obtained through stable computation of
+      $\log\Gamma$.
     """
     return jax.lax.lgamma(a) + jax.lax.lgamma(b) - jax.lax.lgamma(a + b)
 
 
 def log_beta_multivariate(a: Array) -> Array:
-    """Obtains the log of the multivariate beta function `log B(a)`.
+    r"""Obtains the log of the multivariate beta function $\log B(a)$.
 
     **Arguments:**
 
-    - `a`: An array of length `K` containing positive values.
+    - `a`: An array of length $K$ containing positive values.
 
     **Returns:**
 
     - The value
-      `log B(a) = sum_{k=1}^{K} log Gamma(a_k) - log Gamma(sum_{k=1}^{K} a_k)`,
-      where `Gamma` is the Gamma function, obtained through stable
-      computation of `log Gamma`.
+
+      $$
+      \log B(a) = \sum_{k=1}^{K} \log\Gamma(a_k)
+        - \log\Gamma\left(\sum_{k=1}^{K} a_k\right)
+      $$
+
+      where $\Gamma$ is the Gamma function, obtained through stable computation of
+      $\log\Gamma$.
     """
     return jnp.sum(jax.lax.lgamma(a), axis=-1) - jax.lax.lgamma(jnp.sum(a, axis=-1))

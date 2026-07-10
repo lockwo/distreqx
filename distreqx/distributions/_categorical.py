@@ -17,11 +17,11 @@ class Categorical(
     AbstractSampleLogProbDistribution,
     AbstractSurvivalDistribution,
 ):
-    """Categorical distribution over integers.
+    r"""Categorical distribution over integers.
 
     The Categorical distribution is parameterized by either probabilities (`probs`) or
-    unormalized log-probabilities (`logits`) of a set of `K` classes.
-    It is defined over the integers `{0, 1, ..., K-1}`.
+    unormalized log-probabilities (`logits`) of a set of $K$ classes.
+    It is defined over the integers $\{0, 1, \ldots, K - 1\}$.
     """
 
     _logits: Array | None
@@ -53,9 +53,9 @@ class Categorical(
 
     @property
     def support(self) -> tuple[Array, Array]:
-        """See `Distribution.support`.
+        r"""See `Distribution.support`.
 
-        The Categorical is discrete on `{0, ..., K-1}`.
+        The Categorical is discrete on $\{0, \ldots, K - 1\}$.
         """
         dtype = self.probs.dtype
         return (
@@ -186,10 +186,10 @@ class Categorical(
         raise NotImplementedError
 
     def kl_divergence(self, other_dist, **kwargs) -> Array:
-        """Obtains the KL divergence `KL(dist1 || dist2)` between two Categoricals.
+        r"""Obtains $D_{\mathrm{KL}}(P \parallel Q)$ between two Categoricals.
 
-        The KL computation takes into account that `0 * log(0) = 0`; therefore,
-        `dist1` may have zeros in its probability vector.
+        The KL computation takes into account that $0 \log 0 = 0$; therefore,
+        $P$ may have zeros in its probability vector.
 
         **Arguments:**
 
@@ -197,7 +197,7 @@ class Categorical(
 
         **Returns:**
 
-        `KL(dist1 || dist2)`.
+        $D_{\mathrm{KL}}(P \parallel Q)$.
 
         **Raises:**
 

@@ -129,18 +129,18 @@ def _rational_quadratic_spline_fwd(
 
 
 def _safe_quadratic_root(a: Array, b: Array, c: Array) -> Array:
-    """Implements a numerically stable version of the quadratic formula.
+    r"""Implements a numerically stable version of the quadratic formula.
 
     This is not a general solution to the quadratic equation, as it assumes
-    `b ** 2 - 4 * a * c` is known a priori to be positive (and which of the two
+    $b^2 - 4ac$ is known a priori to be positive (and which of the two
     roots is to be used, see https://arxiv.org/abs/1906.04032). There are two
     sources of instability:
 
-    (a) When `b ** 2 - 4 * a * c -> 0`, sqrt gives NaNs in gradient. We clip
+    (a) When $b^2 - 4ac \to 0$, sqrt gives NaNs in gradient. We clip
         `sqrt_diff` to have the smallest float number, and if `sqrt_diff` is
         non-positive we set the sqrt to 0 (as it should be positive).
-    (b) When `4 * a * c -> 0`. We use the more numerically stable solution
-        depending on the sign of `b`; see
+    (b) When $4ac \to 0$. We use the more numerically stable solution
+        depending on the sign of $b$; see
         https://people.csail.mit.edu/bkph/articles/Quadratics.pdf (eq 7 & 8).
     """
     sqrt_diff = b**2 - 4.0 * a * c
@@ -247,13 +247,13 @@ class RationalQuadraticSpline(
     AbstractInvLogDetJacBijector,
     AbstractFwdLogDetJacBijector,
 ):
-    """A rational-quadratic spline bijector.
+    r"""A rational-quadratic spline bijector.
 
     This bijector is a monotonically increasing spline operating on an interval
-    `[a, b]`, such that `f(a) = a` and `f(b) = b`. Outside the interval `[a, b]`,
+    $[a, b]$, such that $f(a) = a$ and $f(b) = b$. Outside the interval $[a, b]$,
     the bijector defaults to a linear transformation whose slope matches that of
-    the spline at the nearest boundary (either `a` or `b`). The range boundaries
-    `a` and `b` are hyperparameters passed to the constructor.
+    the spline at the nearest boundary (either $a$ or $b$). The range boundaries
+    $a$ and $b$ are hyperparameters passed to the constructor.
 
     ??? cite "References"
 

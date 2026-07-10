@@ -81,7 +81,7 @@ class MultivariateNormalTri(AbstractMultivariateNormalFromBijector):
 
         - `loc`: Mean vector of the distribution of shape `k`.
             If not specified, it defaults to zeros.
-        - `scale_tri`: The scale matrix `S`. It must be a `k x k` triangular matrix.
+        - `scale_tri`: The scale matrix $S$. It must be a `k x k` triangular matrix.
             If `scale_tri` is not triangular, the entries above or below the main
             diagonal will be ignored. The parameter `is_lower` specifies if `scale_tri`
             is lower or upper triangular. It is the responsibility of the user to make

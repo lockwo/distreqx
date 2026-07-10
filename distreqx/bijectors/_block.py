@@ -9,24 +9,24 @@ from ._bijector import AbstractBijector
 class Block(AbstractBijector):
     """A wrapper that promotes a bijector to a block bijector.
 
-    A block bijector applies a bijector to a k-dimensional array of events, but
+    A block bijector applies a bijector to a $k$-dimensional array of events, but
     considers that array of events to be a single event. In practical terms, this
-    means that the log det Jacobian will be summed over its last k dimensions.
+    means that the log det Jacobian will be summed over its last $k$ dimensions.
 
     For example, consider a scalar bijector (such as `Tanh`) that operates on
     scalar events. We may want to apply this bijector identically to a 4D array of
-    shape [N, H, W, C] representing a sequence of N images. Doing so naively with
-    a `vmap` will produce a log det Jacobian of shape [N, H, W, C], because the
+    shape `[N, H, W, C]` representing a sequence of $N$ images. Doing so naively with
+    a `vmap` will produce a log det Jacobian of shape `[N, H, W, C]`, because the
     scalar bijector will assume scalar events and so all 4 dimensions will be
     considered as batch. To promote the scalar bijector to a "block scalar" that
     operates on the 3D arrays can be done by `Block(bijector, ndims=3)`. Then,
-    applying the block bijector will produce a log det Jacobian of shape [N]
+    applying the block bijector will produce a log det Jacobian of shape `[N]`
     as desired.
 
-    In general, suppose `bijector` operates on n-dimensional events. Then,
+    In general, suppose `bijector` operates on $n$-dimensional events. Then,
     `Block(bijector, k)` will promote `bijector` to a block bijector that
-    operates on (k + n)-dimensional events, summing the log det Jacobian over its
-    last k dimensions.
+    operates on $(k + n)$-dimensional events, summing the log det Jacobian over its
+    last $k$ dimensions.
     """
 
     ndims: int
@@ -51,30 +51,30 @@ class Block(AbstractBijector):
         self._is_constant_log_det = self.bijector.is_constant_log_det
 
     def forward(self, x: Array) -> Array:
-        """Computes y = f(x)."""
+        r"""Computes $y = f(x)$."""
         return self.bijector.forward(x)
 
     def inverse(self, y: Array) -> Array:
-        """Computes x = f^{-1}(y)."""
+        r"""Computes $x = f^{-1}(y)$."""
         return self.bijector.inverse(y)
 
     def forward_log_det_jacobian(self, x: Array) -> Array:
-        """Computes log|det J(f)(x)|."""
+        r"""Computes $\log|\det J(f)(x)|$."""
         log_det = self.bijector.forward_log_det_jacobian(x)
         return sum_last(log_det, self.ndims)
 
     def inverse_log_det_jacobian(self, y: Array) -> Array:
-        """Computes log|det J(f^{-1})(y)|."""
+        r"""Computes $\log|\det J(f^{-1})(y)|$."""
         log_det = self.bijector.inverse_log_det_jacobian(y)
         return sum_last(log_det, self.ndims)
 
     def forward_and_log_det(self, x: Array) -> tuple[Array, Array]:
-        """Computes y = f(x) and log|det J(f)(x)|."""
+        r"""Computes $y = f(x)$ and $\log|\det J(f)(x)|$."""
         y, log_det = self.bijector.forward_and_log_det(x)
         return y, sum_last(log_det, self.ndims)
 
     def inverse_and_log_det(self, y: Array) -> tuple[Array, Array]:
-        """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
+        r"""Computes $x = f^{-1}(y)$ and $\log|\det J(f^{-1})(y)|$."""
         x, log_det = self.bijector.inverse_and_log_det(y)
         return x, sum_last(log_det, self.ndims)
 

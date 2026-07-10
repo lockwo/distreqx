@@ -102,7 +102,7 @@ class Uniform(
         raise NotImplementedError
 
     def kl_divergence(self, other_dist, **kwargs) -> Array:
-        """Calculates the KL divergence to another distribution.
+        r"""Calculates the KL divergence to another distribution.
 
         **Arguments:**
 
@@ -111,7 +111,8 @@ class Uniform(
 
         **Returns:**
 
-        The KL divergence `KL(self || other_dist)`.
+        The divergence $D_{\mathrm{KL}}(P \parallel Q)$, where $P$ is this
+        distribution and $Q$ is `other_dist`.
         """
         return jnp.where(
             jnp.logical_and(other_dist.low <= self.low, self.high <= other_dist.high),

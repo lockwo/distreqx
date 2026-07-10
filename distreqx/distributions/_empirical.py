@@ -172,7 +172,7 @@ class Empirical(AbstractEmpirical):
 
     @property
     def normalized_weights(self) -> Array:
-        """Uniform weights: 1/N for each sample."""
+        """Uniform weights: $1/N$ for each sample."""
         n = self.samples.shape[0]
         return jnp.ones(n, dtype=self.samples.dtype) / n
 
