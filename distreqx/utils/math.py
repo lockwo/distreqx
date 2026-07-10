@@ -1,7 +1,5 @@
 """Utility math functions."""
 
-from typing import Optional
-
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array
@@ -108,9 +106,7 @@ def mul_exp(x: Array, logp: Array) -> Array:
     return x * p
 
 
-def normalize(
-    *, probs: Optional[Array] = None, logits: Optional[Array] = None
-) -> Array:
+def normalize(*, probs: Array | None = None, logits: Array | None = None) -> Array:
     """Normalizes logits via log_softmax or probabilities to ensure they sum to one.
 
     **Arguments:**

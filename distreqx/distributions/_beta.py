@@ -1,7 +1,5 @@
 """Beta distribution."""
 
-from typing import Union
-
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Float, Key
@@ -42,8 +40,8 @@ class Beta(
 
     def __init__(
         self,
-        alpha: Union[float, Float[Array, "..."]],
-        beta: Union[float, Float[Array, "..."]],
+        alpha: float | Float[Array, "..."],
+        beta: float | Float[Array, "..."],
     ):
         """Initializes a Beta distribution.
 

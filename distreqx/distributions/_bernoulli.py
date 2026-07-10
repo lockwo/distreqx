@@ -1,7 +1,5 @@
 """Bernoulli distribution."""
 
-from typing import Optional, Union
-
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Key
@@ -24,13 +22,13 @@ class Bernoulli(
     Bernoulli distribution with parameter `probs`, the probability of outcome `1`.
     """
 
-    _logits: Union[Array, None]
-    _probs: Union[Array, None]
+    _logits: Array | None
+    _probs: Array | None
 
     def __init__(
         self,
-        logits: Optional[Array] = None,
-        probs: Optional[Array] = None,
+        logits: float | Array | None = None,
+        probs: float | Array | None = None,
     ):
         """Initializes a Bernoulli distribution.
 
@@ -48,11 +46,9 @@ class Bernoulli(
                 f"One and exactly one of `logits` and `probs` should be `None`, "
                 f"but `logits` is {logits} and `probs` is {probs}."
             )
-        if (not isinstance(logits, jax.Array)) and (not isinstance(probs, jax.Array)):
-            raise ValueError("`logits` and `probs` are not jax arrays.")
         # Parameters of the distribution.
-        self._probs = None if probs is None else probs
-        self._logits = None if logits is None else logits
+        self._probs = None if probs is None else jnp.asarray(probs)
+        self._logits = None if logits is None else jnp.asarray(logits)
 
     @property
     def logits(self) -> Array:

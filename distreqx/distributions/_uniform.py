@@ -1,5 +1,6 @@
 """Uniform distribution."""
 
+import equinox as eqx
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Float, Key
@@ -13,8 +14,8 @@ class Uniform(
 ):
     """Uniform distribution with `low` and `high` parameters."""
 
-    low: Float[Array, "..."]
-    high: Float[Array, "..."]
+    low: Float[Array, "..."] = eqx.field(converter=jnp.asarray)
+    high: Float[Array, "..."] = eqx.field(converter=jnp.asarray)
 
     @property
     def range(self) -> Array:

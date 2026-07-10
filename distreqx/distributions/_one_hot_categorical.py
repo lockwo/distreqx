@@ -1,7 +1,5 @@
 """One hot categorical distribution."""
 
-from typing import Optional, Union
-
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Key
@@ -21,10 +19,10 @@ class OneHotCategorical(
 ):
     """OneHotCategorical distribution."""
 
-    _logits: Union[Array, None]
-    _probs: Union[Array, None]
+    _logits: Array | None
+    _probs: Array | None
 
-    def __init__(self, logits: Optional[Array] = None, probs: Optional[Array] = None):
+    def __init__(self, logits: Array | None = None, probs: Array | None = None):
         """Initializes a OneHotCategorical distribution.
 
         **Arguments:**
@@ -39,8 +37,6 @@ class OneHotCategorical(
                 f"One and exactly one of `logits` and `probs` should be `None`, "
                 f"but `logits` is {logits} and `probs` is {probs}."
             )
-        if (not isinstance(logits, jax.Array)) and (not isinstance(probs, jax.Array)):
-            raise ValueError("`logits` and `probs` are not jax arrays.")
 
         self._probs = None if probs is None else normalize(probs=probs)
         self._logits = None if logits is None else normalize(logits=logits)

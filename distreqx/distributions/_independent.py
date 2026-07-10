@@ -2,8 +2,8 @@
 
 import operator
 
+import jax
 import jax.numpy as jnp
-import jax.tree_util as jtu
 from jaxtyping import Array, Key, PyTree
 
 from ._distribution import (
@@ -15,8 +15,8 @@ from ._distribution import (
 
 
 def _reduce_helper(pytree: PyTree) -> Array:
-    sum_over_leaves = jtu.tree_map(jnp.sum, pytree)
-    return jtu.tree_reduce(operator.add, sum_over_leaves)
+    sum_over_leaves = jax.tree.map(jnp.sum, pytree)
+    return jax.tree.reduce(operator.add, sum_over_leaves)
 
 
 class Independent(
