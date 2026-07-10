@@ -332,16 +332,22 @@ class RationalQuadraticSpline(
                 f"`range_min` must be less than `range_max`. Got "
                 f"`range_min={range_min}` and `range_max={range_max}`."
             )
+        if min_bin_size <= 0.0:
+            raise ValueError(
+                f"The minimum bin size must be positive; got {min_bin_size}."
+            )
+        if min_knot_slope <= 0.0:
+            raise ValueError(
+                f"The minimum knot slope must be positive; got {min_knot_slope}."
+            )
 
         self.num_bins = (params.shape[-1] - 1) // 3
         dtype = params.dtype
 
         # Extract unnormalized parameters.
         unnormalized_bin_widths = params[..., : self.num_bins]
-        unnormalized_bin_heights = params[
-            ..., self.num_bins : 2 * self.num_bins  # noqa: E203
-        ]
-        unnormalized_knot_slopes = params[..., 2 * self.num_bins :]  # noqa: E203
+        unnormalized_bin_heights = params[..., self.num_bins : 2 * self.num_bins]
+        unnormalized_knot_slopes = params[..., 2 * self.num_bins :]
 
         # Normalize bin sizes and compute bin positions on the x and y axis.
         range_size = range_max - range_min
