@@ -90,3 +90,11 @@ class ImproperUniform(
         raise NotImplementedError(
             "KL divergence is undefined for an improper distribution."
         )
+
+
+ImproperUniform.__init__.__doc__ = """Initializes an ImproperUniform distribution.
+
+**Arguments:**
+
+- `shape`: Event shape of the improper uniform distribution.
+"""

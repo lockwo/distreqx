@@ -1,4 +1,4 @@
-# Empirical Distribution
+# Empirical
 
 ::: distreqx.distributions.Empirical
     options:

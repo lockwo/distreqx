@@ -17,9 +17,13 @@ class Bernoulli(
     AbstractSTDDistribution,
     AbstractSurvivalDistribution,
 ):
-    """Bernoulli distribution of shape dims.
+    r"""Bernoulli distribution over $\{0, 1\}$.
 
-    Bernoulli distribution with parameter `probs`, the probability of outcome $1$.
+    For success probability $p = P(X = 1)$, the probability mass function is
+
+    $$
+    P(X = x) = p^x (1 - p)^{1 - x}, \quad x \in \{0, 1\}.
+    $$
     """
 
     _logits: Array | None
@@ -34,11 +38,10 @@ class Bernoulli(
 
         **Arguments:**
 
-        - `logits`: Logit transform of the probability $p$ of a $1$ event ($0$
-            otherwise), i.e. $p = \operatorname{sigmoid}(\ell)$, where $\ell$ denotes
-            `logits`. Only one of `logits` or `probs` can be specified.
-        - `probs`: Probability of a $1$ event ($0$ otherwise). Only one of `logits` or
-            `probs` can be specified.
+        - `logits`: Log-odds $\ell = \log(p / (1 - p))$ for the event $X = 1$.
+            Only one of `logits` or `probs` can be specified.
+        - `probs`: Probability $p = P(X = 1)$. Only one of `logits` or `probs` can
+            be specified.
         """
         # Validate arguments.
         if (logits is None) == (probs is None):

@@ -152,13 +152,32 @@ class AbstractEmpirical(AbstractSampleLogProbDistribution):
 
 
 class Empirical(AbstractEmpirical):
-    """Scalar or Multivariate Empirical distribution."""
+    r"""Empirical distribution over observed samples.
+
+    For samples $x_1, \ldots, x_N$, this represents the discrete measure
+
+    $$
+    P(X = x_i) = \frac{1}{N}.
+    $$
+
+    The leading axis of `samples` indexes observations, the remaining axes are the
+    event shape. `atol` and `rtol` define the tolerance used when matching a value
+    to observed samples.
+    """
 
     samples: Array
     atol: Array
     rtol: Array
 
     def __init__(self, samples: Array, atol: float = 0.0, rtol: float = 0.0):
+        """Initializes an empirical distribution.
+
+        **Arguments:**
+
+        - `samples`: Observed values. The first dimension indexes samples.
+        - `atol`: Absolute tolerance for matching values to samples.
+        - `rtol`: Relative tolerance for matching values to samples.
+        """
         self.samples = jnp.asarray(samples)
         self.atol = jnp.asarray(atol)
         self.rtol = jnp.asarray(rtol)
@@ -178,7 +197,19 @@ class Empirical(AbstractEmpirical):
 
 
 class WeightedEmpirical(AbstractEmpirical):
-    """Scalar or Multivariate Weighted Empirical distribution."""
+    r"""Weighted empirical distribution over observed samples.
+
+    For samples $x_1, \ldots, x_N$ with non-negative weights $w_1, \ldots, w_N$,
+    this represents the discrete measure
+
+    $$
+    P(X = x_i) = \frac{w_i}{\sum_{j=1}^{N} w_j}.
+    $$
+
+    The leading axis of `samples` indexes observations; the remaining axes are the
+    event shape. `atol` and `rtol` define the tolerance used when matching a value
+    to observed samples.
+    """
 
     samples: Array
     weights: Array
@@ -188,6 +219,15 @@ class WeightedEmpirical(AbstractEmpirical):
     def __init__(
         self, samples: Array, weights: Array, atol: float = 0.0, rtol: float = 0.0
     ):
+        """Initializes a weighted empirical distribution.
+
+        **Arguments:**
+
+        - `samples`: Observed values. The first dimension indexes samples.
+        - `weights`: Non-negative sample weights with shape `(N,)`.
+        - `atol`: Absolute tolerance for matching values to samples.
+        - `rtol`: Relative tolerance for matching values to samples.
+        """
         self.samples = jnp.asarray(samples)
         self.weights = jnp.asarray(weights)
         self.atol = jnp.asarray(atol)

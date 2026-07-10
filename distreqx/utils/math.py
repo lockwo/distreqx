@@ -171,14 +171,14 @@ def log_beta(a: Array, b: Array) -> Array:
 
     **Returns:**
 
-    - The value
+    The value
 
-      $$
-      \log B(a, b) = \log\Gamma(a) + \log\Gamma(b) - \log\Gamma(a + b)
-      $$
+    $$
+    \log B(a, b) = \log\Gamma(a) + \log\Gamma(b) - \log\Gamma(a + b)
+    $$
 
-      where $\Gamma$ is the Gamma function, obtained through stable computation of
-      $\log\Gamma$.
+    where $\Gamma$ is the Gamma function, obtained through stable computation of
+    $\log\Gamma$.
     """
     return jax.lax.lgamma(a) + jax.lax.lgamma(b) - jax.lax.lgamma(a + b)
 
@@ -192,14 +192,14 @@ def log_beta_multivariate(a: Array) -> Array:
 
     **Returns:**
 
-    - The value
+    The value
 
-      $$
-      \log B(a) = \sum_{k=1}^{K} \log\Gamma(a_k)
-        - \log\Gamma\left(\sum_{k=1}^{K} a_k\right)
-      $$
+    $$
+    \log B(a) = \sum_{k=1}^{K} \log\Gamma(a_k)
+      - \log\Gamma\left(\sum_{k=1}^{K} a_k\right)
+    $$
 
-      where $\Gamma$ is the Gamma function, obtained through stable computation of
-      $\log\Gamma$.
+    where $\Gamma$ is the Gamma function, obtained through stable computation of
+    $\log\Gamma$.
     """
     return jnp.sum(jax.lax.lgamma(a), axis=-1) - jax.lax.lgamma(jnp.sum(a, axis=-1))
