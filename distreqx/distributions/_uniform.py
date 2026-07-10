@@ -12,7 +12,14 @@ class Uniform(
     AbstractSTDDistribution,
     AbstractSurvivalDistribution,
 ):
-    """Uniform distribution with `low` and `high` parameters."""
+    r"""Uniform distribution on the interval $[a, b]$.
+
+    The probability density function is
+
+    $$
+    p(x) = \frac{1}{b - a}, \quad a \le x \le b.
+    $$
+    """
 
     low: Float[Array, "..."] = eqx.field(converter=jnp.asarray)
     high: Float[Array, "..."] = eqx.field(converter=jnp.asarray)
@@ -119,3 +126,12 @@ class Uniform(
             jnp.log(other_dist.high - other_dist.low) - jnp.log(self.high - self.low),
             jnp.inf,
         )
+
+
+Uniform.__init__.__doc__ = r"""Initializes a Uniform distribution.
+
+**Arguments:**
+
+- `low`: Lower bound $a$ of the support.
+- `high`: Upper bound $b$ of the support.
+"""
