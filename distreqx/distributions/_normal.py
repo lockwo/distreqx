@@ -4,7 +4,7 @@ import math
 
 import jax
 import jax.numpy as jnp
-from jaxtyping import Array, Key
+from jaxtyping import Array, Float, Key
 
 from ._distribution import AbstractProbDistribution
 
@@ -14,10 +14,10 @@ _half_log2pi = 0.5 * math.log(2 * math.pi)
 class Normal(AbstractProbDistribution):
     """Normal distribution with location `loc` and `scale` parameters."""
 
-    loc: Array
-    scale: Array
+    loc: Float[Array, " *shape"]
+    scale: Float[Array, " *shape"]
 
-    def __init__(self, loc: Array, scale: Array):
+    def __init__(self, loc: Float[Array, " *shape"], scale: Float[Array, " *shape"]):
         """Initializes a Normal distribution.
 
         **Arguments:**
@@ -34,87 +34,93 @@ class Normal(AbstractProbDistribution):
         return self.loc.shape
 
     @property
-    def support(self) -> tuple[Array, Array]:
+    def support(self) -> tuple[Float[Array, ""], Float[Array, ""]]:
         """See `Distribution.support`."""
         dtype = jnp.result_type(self.loc, self.scale)
         return (jnp.array(-jnp.inf, dtype=dtype), jnp.array(jnp.inf, dtype=dtype))
 
-    def _sample_from_std_normal(self, key: Key[Array, ""]) -> Array:
+    def _sample_from_std_normal(self, key: Key[Array, ""]) -> Float[Array, " *shape"]:
         dtype = jnp.result_type(self.loc, self.scale)
         return jax.random.normal(key, shape=self.event_shape, dtype=dtype)
 
-    def sample(self, key: Key[Array, ""]) -> Array:
+    def sample(self, key: Key[Array, ""]) -> Float[Array, " *shape"]:
         """See `Distribution.sample`."""
         rnd = self._sample_from_std_normal(key)
         return self.scale * rnd + self.loc
 
-    def sample_and_log_prob(self, key: Key[Array, ""]) -> tuple[Array, Array]:
+    def sample_and_log_prob(
+        self, key: Key[Array, ""]
+    ) -> tuple[Float[Array, " *shape"], Float[Array, " *shape"]]:
         """See `Distribution.sample_and_log_prob`."""
         rnd = self._sample_from_std_normal(key)
         samples = self.scale * rnd + self.loc
         log_prob = -0.5 * jnp.square(rnd) - _half_log2pi - jnp.log(self.scale)
         return samples, log_prob
 
-    def log_prob(self, value: Array) -> Array:
+    def log_prob(self, value: Float[Array, " *shape"]) -> Float[Array, " *shape"]:
         """See `Distribution.log_prob`."""
         log_unnormalized = -0.5 * jnp.square(self._standardize(value))
         log_normalization = _half_log2pi + jnp.log(self.scale)
         return log_unnormalized - log_normalization
 
-    def icdf(self, value: Array) -> Array:
+    def icdf(self, value: Float[Array, " *shape"]) -> Float[Array, " *shape"]:
         """See `Distribution.icdf`."""
         return jax.scipy.special.ndtri(value) * self.scale + self.loc
 
-    def cdf(self, value: Array) -> Array:
+    def cdf(self, value: Float[Array, " *shape"]) -> Float[Array, " *shape"]:
         """See `Distribution.cdf`."""
         return jax.scipy.special.ndtr(self._standardize(value))
 
-    def log_cdf(self, value: Array) -> Array:
+    def log_cdf(self, value: Float[Array, " *shape"]) -> Float[Array, " *shape"]:
         """See `Distribution.log_cdf`."""
         return jax.scipy.special.log_ndtr(
             self._standardize(value)
         )  # pyright: ignore[reportGeneralTypeIssues]
 
-    def survival_function(self, value: Array) -> Array:
+    def survival_function(
+        self, value: Float[Array, " *shape"]
+    ) -> Float[Array, " *shape"]:
         """See `Distribution.survival_function`."""
         return jax.scipy.special.ndtr(-self._standardize(value))
 
-    def log_survival_function(self, value: Array) -> Array:
+    def log_survival_function(
+        self, value: Float[Array, " *shape"]
+    ) -> Float[Array, " *shape"]:
         """See `Distribution.log_survival_function`."""
         return jax.scipy.special.log_ndtr(
             -self._standardize(value)
         )  # pyright: ignore[reportGeneralTypeIssues]
 
-    def _standardize(self, value: Array) -> Array:
+    def _standardize(self, value: Float[Array, " *shape"]) -> Float[Array, " *shape"]:
         return (value - self.loc) / self.scale
 
-    def entropy(self) -> Array:
+    def entropy(self) -> Float[Array, " *shape"]:
         """Calculates the Shannon entropy (in nats)."""
         log_normalization = _half_log2pi + jnp.log(self.scale)
         entropy = 0.5 + log_normalization
         return entropy
 
-    def mean(self) -> Array:
+    def mean(self) -> Float[Array, " *shape"]:
         """Calculates the mean."""
         return self.loc
 
-    def variance(self) -> Array:
+    def variance(self) -> Float[Array, " *shape"]:
         """Calculates the variance."""
         return jnp.square(self.scale)
 
-    def stddev(self) -> Array:
+    def stddev(self) -> Float[Array, " *shape"]:
         """Calculates the standard deviation."""
         return self.scale
 
-    def mode(self) -> Array:
+    def mode(self) -> Float[Array, " *shape"]:
         """Calculates the mode."""
         return self.mean()
 
-    def median(self) -> Array:
+    def median(self) -> Float[Array, " *shape"]:
         """Calculates the median."""
         return self.mean()
 
-    def kl_divergence(self, other_dist, **kwargs) -> Array:
+    def kl_divergence(self, other_dist, **kwargs) -> Float[Array, " *shape"]:
         r"""Calculates the KL divergence to another distribution.
 
         **Arguments:**
