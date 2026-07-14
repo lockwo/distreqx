@@ -127,6 +127,7 @@ nav:
             - 'api/bijectors/shift.md'
             - 'api/bijectors/sigmoid.md'
             - 'api/bijectors/tanh.md'
+            - 'api/bijectors/leafwise.md'
             - 'api/bijectors/rational_quadratic_spline.md'
             - 'api/bijectors/identity.md'
             - 'api/bijectors/inverse.md'
