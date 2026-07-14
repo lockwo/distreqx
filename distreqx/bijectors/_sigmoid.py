@@ -44,15 +44,15 @@ class Sigmoid(AbstractForwardInverseBijector, AbstractInvLogDetJacBijector):
         self._is_constant_log_det = False
 
     def forward_log_det_jacobian(self, x: Array) -> Array:
-        """Computes log|det J(f)(x)|."""
+        r"""Computes $\log|\det J(f)(x)|$."""
         return -_more_stable_softplus(-x) - _more_stable_softplus(x)
 
     def forward_and_log_det(self, x: Array) -> tuple[Array, Array]:
-        """Computes y = f(x) and log|det J(f)(x)|."""
+        r"""Computes $y = f(x)$ and $\log|\det J(f)(x)|$."""
         return _more_stable_sigmoid(x), self.forward_log_det_jacobian(x)
 
     def inverse_and_log_det(self, y: Array) -> tuple[Array, Array]:
-        """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
+        r"""Computes $x = f^{-1}(y)$ and $\log|\det J(f^{-1})(y)|$."""
         x = jnp.log(y) - jnp.log1p(-y)
         return x, -self.forward_log_det_jacobian(x)
 

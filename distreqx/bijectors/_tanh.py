@@ -39,15 +39,15 @@ class Tanh(AbstractForwardInverseBijector, AbstractInvLogDetJacBijector):
         self._is_constant_log_det = False
 
     def forward_log_det_jacobian(self, x: Array) -> Array:
-        """Computes log|det J(f)(x)|."""
+        r"""Computes $\log|\det J(f)(x)|$."""
         return 2 * (jnp.log(2) - x - jax.nn.softplus(-2 * x))
 
     def forward_and_log_det(self, x: Array) -> tuple[Array, Array]:
-        """Computes y = f(x) and log|det J(f)(x)|."""
+        r"""Computes $y = f(x)$ and $\log|\det J(f)(x)|$."""
         return jnp.tanh(x), self.forward_log_det_jacobian(x)
 
     def inverse_and_log_det(self, y: Array) -> tuple[Array, Array]:
-        """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
+        r"""Computes $x = f^{-1}(y)$ and $\log|\det J(f^{-1})(y)|$."""
         x = jnp.arctanh(y)
         return x, -self.forward_log_det_jacobian(x)
 

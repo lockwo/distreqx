@@ -1,7 +1,5 @@
 """Scalar affine bijector."""
 
-from typing import Optional
-
 import equinox as eqx
 import jax.numpy as jnp
 from jaxtyping import Array
@@ -28,27 +26,27 @@ class AbstractScalarAffine(AbstractBijector):
     log_scale: eqx.AbstractVar[Array]
 
     def forward(self, x: Array) -> Array:
-        """Computes y = f(x)."""
+        r"""Computes $y = f(x)$."""
         return self.scale * x + self.shift
 
     def forward_log_det_jacobian(self, x: Array) -> Array:
-        """Computes log|det J(f)(x)|."""
+        r"""Computes $\log|\det J(f)(x)|$."""
         return self.log_scale
 
     def forward_and_log_det(self, x: Array) -> tuple[Array, Array]:
-        """Computes y = f(x) and log|det J(f)(x)|."""
+        r"""Computes $y = f(x)$ and $\log|\det J(f)(x)|$."""
         return self.forward(x), self.forward_log_det_jacobian(x)
 
     def inverse(self, y: Array) -> Array:
-        """Computes x = f^{-1}(y)."""
+        r"""Computes $x = f^{-1}(y)$."""
         return self.inv_scale * (y - self.shift)
 
     def inverse_log_det_jacobian(self, y: Array) -> Array:
-        """Computes log|det J(f^{-1})(y)|."""
+        r"""Computes $\log|\det J(f^{-1})(y)|$."""
         return jnp.negative(self.log_scale)
 
     def inverse_and_log_det(self, y: Array) -> tuple[Array, Array]:
-        """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
+        r"""Computes $x = f^{-1}(y)$ and $\log|\det J(f^{-1})(y)|$."""
         return self.inverse(y), self.inverse_log_det_jacobian(y)
 
 
@@ -75,8 +73,8 @@ class ScalarAffine(AbstractScalarAffine):
     def __init__(
         self,
         shift: Array,
-        scale: Optional[Array] = None,
-        log_scale: Optional[Array] = None,
+        scale: Array | None = None,
+        log_scale: Array | None = None,
     ):
         """Initializes a ScalarAffine bijector.
 
@@ -88,7 +86,7 @@ class ScalarAffine(AbstractScalarAffine):
             responsibility to make sure `scale` is non-zero; the class will
             make no attempt to verify this.
         - `log_scale`: the log of the scale parameter. If specified, the
-            bijector's scale is set equal to `exp(log_scale)`. Unlike
+            bijector's scale is set to $e^s$, where $s$ is `log_scale`. Unlike
             `scale`, `log_scale` is an unconstrained parameter. NOTE: either `scale`
             or `log_scale` can be specified, but not both. If neither is specified,
             the bijector's scale will default to 1.

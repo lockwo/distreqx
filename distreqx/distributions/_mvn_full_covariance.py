@@ -1,7 +1,5 @@
 """MultivariateNormalFullCovariance distribution."""
 
-from typing import Optional
-
 import equinox as eqx
 import jax.numpy as jnp
 from jaxtyping import Array, PyTree
@@ -20,7 +18,7 @@ from ._mvn_from_bijector import AbstractMultivariateNormalFromBijector
 from ._normal import Normal
 
 
-def _check_parameters(loc: Optional[Array], covariance_matrix: Optional[Array]) -> None:
+def _check_parameters(loc: Array | None, covariance_matrix: Array | None) -> None:
     """Checks that the inputs are correct for a single event."""
     if loc is None and covariance_matrix is None:
         raise ValueError(
@@ -80,8 +78,8 @@ class MultivariateNormalFullCovariance(
 
     def __init__(
         self,
-        loc: Optional[Array] = None,
-        covariance_matrix: Optional[Array] = None,
+        loc: float | Array | None = None,
+        covariance_matrix: float | Array | None = None,
     ):
         """Initializes a MultivariateNormalFullCovariance distribution.
 
@@ -89,10 +87,14 @@ class MultivariateNormalFullCovariance(
 
         - `loc`: Mean vector of the distribution of shape `k`.
             If not specified, it defaults to zeros.
-        - `covariance_matrix`: The covariance matrix `C`. It must be a `k x k`
+        - `covariance_matrix`: The covariance matrix $C$. It must be a `k x k`
             symmetric positive definite matrix. If not specified, it defaults
             to the identity matrix.
         """
+        loc = None if loc is None else jnp.asarray(loc)
+        covariance_matrix = (
+            None if covariance_matrix is None else jnp.asarray(covariance_matrix)
+        )
         _check_parameters(loc, covariance_matrix)
 
         if loc is not None:

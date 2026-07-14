@@ -38,8 +38,8 @@ class UnconstrainedAffine(AbstractBijector):
 
         **Arguments:**
 
-        - `matrix`: the matrix `A` in `Ax + b`. Must be square and invertible.
-        - `bias`: the vector `b` in `Ax + b`.
+        - `matrix`: the matrix $A$ in $Ax + b$. Must be square and invertible.
+        - `bias`: the vector $b$ in $Ax + b$.
         """
         if matrix.ndim != 2:
             raise ValueError(
@@ -63,27 +63,27 @@ class UnconstrainedAffine(AbstractBijector):
         self._is_constant_log_det = True
 
     def forward(self, x: Array) -> Array:
-        """Computes y = f(x)."""
+        r"""Computes $y = f(x)$."""
         return self.matrix @ x + self.bias
 
     def forward_log_det_jacobian(self, x: Array) -> Array:
-        """Computes log|det J(f)(x)|."""
+        r"""Computes $\log|\det J(f)(x)|$."""
         return self.logdet
 
     def forward_and_log_det(self, x: Array) -> tuple[Array, Array]:
-        """Computes y = f(x) and log|det J(f)(x)|."""
+        r"""Computes $y = f(x)$ and $\log|\det J(f)(x)|$."""
         return self.forward(x), self.forward_log_det_jacobian(x)
 
     def inverse(self, y: Array) -> Array:
-        """Computes x = f^{-1}(y)."""
+        r"""Computes $x = f^{-1}(y)$."""
         return jnp.linalg.solve(self.matrix, y - self.bias)
 
     def inverse_log_det_jacobian(self, y: Array) -> Array:
-        """Computes log|det J(f^{-1})(y)|."""
+        r"""Computes $\log|\det J(f^{-1})(y)|$."""
         return -self.logdet
 
     def inverse_and_log_det(self, y: Array) -> tuple[Array, Array]:
-        """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
+        r"""Computes $x = f^{-1}(y)$ and $\log|\det J(f^{-1})(y)|$."""
         return self.inverse(y), self.inverse_log_det_jacobian(y)
 
     def same_as(self, other: AbstractBijector) -> bool:
