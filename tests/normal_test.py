@@ -369,12 +369,16 @@ class NormalTest(TestCase):
 
     def test_float64_dtype(self):
         """Distribution works with float64 inputs."""
-        with jax.experimental.enable_x64():
+        prev = jax.config.jax_enable_x64
+        jax.config.update("jax_enable_x64", True)
+        try:
             loc = jnp.array(0.0, dtype=jnp.float64)
             scale = jnp.array(1.0, dtype=jnp.float64)
             dist = Normal(loc, scale)
             sample = dist.sample(jax.random.key(0))
             self.assertEqual(sample.dtype, jnp.float64)
+        finally:
+            jax.config.update("jax_enable_x64", prev)
 
     def test_negative_values_in_sample(self):
         """Samples can be negative (support is all reals)."""
