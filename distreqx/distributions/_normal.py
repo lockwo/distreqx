@@ -91,9 +91,7 @@ class Normal(AbstractProbDistribution):
             -self._standardize(value)
         )  # pyright: ignore[reportGeneralTypeIssues]
 
-    def _standardize(
-        self, value: Float[Array, " *shape"]
-    ) -> Float[Array, " *shape"]:
+    def _standardize(self, value: Float[Array, " *shape"]) -> Float[Array, " *shape"]:
         return (value - self.loc) / self.scale
 
     def entropy(self) -> Float[Array, " *shape"]:
