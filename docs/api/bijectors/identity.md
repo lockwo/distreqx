@@ -1,6 +1,6 @@
-# TanH Bijector
+# Identity Bijector
 
-::: distreqx.bijectors.Tanh
+::: distreqx.bijectors.Identity
     options:
         inherited_members: false
         members: false

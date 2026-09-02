@@ -44,11 +44,11 @@ class TriangularLinear(AbstractLinearBijector):
 
         **Arguments:**
 
-        - `matrix`: a square matrix whose triangular part defines `A`. Can also be a
-            batch of matrices. Whether `A` is the lower or upper triangular part of
+        - `matrix`: a square matrix whose triangular part defines $A$. Can also be a
+            batch of matrices. Whether $A$ is the lower or upper triangular part of
             `matrix` is determined by `is_lower`.
-        - `is_lower`: if True, `A` is set to the lower triangular part of `matrix`. If
-            False, `A` is set to the upper triangular part of `matrix`.
+        - `is_lower`: if True, $A$ is set to the lower triangular part of `matrix`. If
+            False, $A$ is set to the upper triangular part of `matrix`.
         """
         self._is_constant_jacobian = True
         self._is_constant_log_det = True
@@ -66,31 +66,31 @@ class TriangularLinear(AbstractLinearBijector):
 
     @property
     def matrix(self) -> Array:
-        """The triangular matrix `A` of the transformation."""
+        """The triangular matrix $A$ of the transformation."""
         return self._matrix
 
     def forward(self, x: Array) -> Array:
-        """Computes y = f(x)."""
+        r"""Computes $y = f(x)$."""
         return self._matrix @ x
 
     def forward_log_det_jacobian(self, x: Array) -> Array:
-        """Computes log|det J(f)(x)|."""
+        r"""Computes $\log|\det J(f)(x)|$."""
         return _triangular_logdet(self._matrix)
 
     def forward_and_log_det(self, x: Array) -> tuple[Array, Array]:
-        """Computes y = f(x) and log|det J(f)(x)|."""
+        r"""Computes $y = f(x)$ and $\log|\det J(f)(x)|$."""
         return self.forward(x), self.forward_log_det_jacobian(x)
 
     def inverse(self, y: Array) -> Array:
-        """Computes x = f^{-1}(y)."""
+        r"""Computes $x = f^{-1}(y)$."""
         return jax.scipy.linalg.solve_triangular(self.matrix, y, lower=self.is_lower)
 
     def inverse_log_det_jacobian(self, y: Array) -> Array:
-        """Computes log|det J(f^{-1})(y)|."""
+        r"""Computes $\log|\det J(f^{-1})(y)|$."""
         return -self.forward_log_det_jacobian(y)
 
     def inverse_and_log_det(self, y: Array) -> tuple[Array, Array]:
-        """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
+        r"""Computes $x = f^{-1}(y)$ and $\log|\det J(f^{-1})(y)|$."""
         return self.inverse(y), self.inverse_log_det_jacobian(y)
 
     def same_as(self, other: AbstractBijector) -> bool:

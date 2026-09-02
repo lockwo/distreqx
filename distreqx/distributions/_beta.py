@@ -1,7 +1,5 @@
 """Beta distribution."""
 
-from typing import Union
-
 import jax
 import jax.numpy as jnp
 from jaxtyping import Array, Float, Key
@@ -21,19 +19,22 @@ class Beta(
     AbstractProbDistribution,
     AbstractSurvivalDistribution,
 ):
-    """
+    r"""
     Beta distribution with parameters `alpha` and `beta`.
 
-    The PDF of a Beta distributed random variable `X` is defined on the interval
-    `0 <= X <= 1` and has the form:
-    ```
-    p(x; alpha, beta) = x ** {alpha - 1} * (1 - x) ** (beta - 1) / B(alpha, beta)
-    ```
-    where `B(alpha, beta)` is the beta function, and the `alpha, beta > 0` are the
+    The PDF of a Beta-distributed random variable $X$ is defined on the interval
+    $0 \le X \le 1$ and has the form:
+
+    $$
+    p(x; \alpha, \beta)
+      = \frac{x^{\alpha - 1}(1 - x)^{\beta - 1}}{B(\alpha, \beta)}
+    $$
+
+    where $B(\alpha, \beta)$ is the beta function, and $\alpha, \beta > 0$ are the
     shape parameters.
 
-    Note that the support of the distribution does not include `x = 0` or `x = 1`
-    if `alpha < 1` or `beta < 1`, respectively.
+    Note that the support of the distribution does not include $x = 0$ or $x = 1$
+    if $\alpha < 1$ or $\beta < 1$, respectively.
     """
 
     alpha: Float[Array, "..."]
@@ -42,8 +43,8 @@ class Beta(
 
     def __init__(
         self,
-        alpha: Union[float, Float[Array, "..."]],
-        beta: Union[float, Float[Array, "..."]],
+        alpha: float | Float[Array, "..."],
+        beta: float | Float[Array, "..."],
     ):
         """Initializes a Beta distribution.
 
@@ -143,14 +144,16 @@ class Beta(
         *unused_args,
         **unused_kwargs,
     ) -> Array:
-        """KL divergence KL(dist1 || dist2) between two Beta distributions.
+        r"""KL divergence between two Beta distributions.
+
+        Computes $D_{\mathrm{KL}}(P \parallel Q)$.
 
         Args:
             dist1: A Beta distribution.
             dist2: A Beta distribution.
 
         Returns:
-            `KL(dist1 || dist2)`.
+            $D_{\mathrm{KL}}(P \parallel Q)$.
         """
         alpha1, beta1 = self.alpha, self.beta
         alpha2, beta2 = other_dist.alpha, other_dist.beta

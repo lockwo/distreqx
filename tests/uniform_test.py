@@ -150,6 +150,14 @@ class UniformTest(TestCase):
         )
         self.assertEqual(result.shape, expected_shape)
 
+    def test_accepts_raw_python_floats(self):
+        """Uniform should cast plain Python floats to arrays, like `Normal` does."""
+        dist = Uniform(0.0, 1.0)
+        self.assertIsInstance(dist.low, jax.Array)
+        self.assertIsInstance(dist.high, jax.Array)
+        sample = dist.sample(self.key)
+        self.assertEqual(sample.shape, ())
+
     def test_jittable(self):
         @jax.jit
         def create_and_sample(key):

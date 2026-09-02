@@ -10,18 +10,28 @@ from ._distribution import AbstractProbDistribution
 
 
 class Logistic(AbstractProbDistribution):
-    """Logistic distribution with location `loc` and `scale` parameters."""
+    r"""Logistic distribution with location $\mu$ and scale $s$.
+
+    The probability density function is
+
+    $$
+    p(x) = \frac{\exp(-(x - \mu) / s)}
+      {s \left(1 + \exp(-(x - \mu) / s)\right)^2},
+    $$
+
+    where $s > 0$.
+    """
 
     loc: Float[Array, "..."]
     scale: Float[Array, "..."]
 
     def __init__(self, loc: Array, scale: Array):
-        """Initializes a Logistic distribution.
+        r"""Initializes a Logistic distribution.
 
         **Arguments:**
 
-        - `loc`: Mean of the distribution.
-        - `scale`: Spread of the distribution. Must be positive.
+        - `loc`: Location parameter $\mu$, equal to the mean, median, and mode.
+        - `scale`: Positive scale parameter $s$.
         """
         self.loc = jnp.array(loc)
         self.scale = jnp.array(scale)
@@ -118,7 +128,7 @@ class Logistic(AbstractProbDistribution):
         return self.loc
 
     def kl_divergence(self, other_dist, **kwargs) -> Array:
-        """Calculates the KL divergence to another distribution.
+        r"""Calculates the KL divergence to another distribution.
 
         **Arguments:**
 
@@ -127,7 +137,8 @@ class Logistic(AbstractProbDistribution):
 
         **Returns:**
 
-        The KL divergence `KL(self || other_dist)`.
+        The divergence $D_{\mathrm{KL}}(P \parallel Q)$, where $P$ is this
+        distribution and $Q$ is `other_dist`.
         """
         raise NotImplementedError(
             "Logistic distribution does not have a closed-form KL divergence."

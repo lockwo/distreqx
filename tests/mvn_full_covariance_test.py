@@ -55,6 +55,14 @@ class MultivariateNormalFullCovarianceTest(TestCase):
             dist_kwargs={"loc": jnp.zeros((5,)), "covariance_matrix": jnp.eye(4)}
         )
 
+    def test_raw_python_float_raises_value_error_not_attribute_error(self):
+        """A raw (uncast) `loc`/`covariance_matrix` should fail shape validation
+        cleanly, instead of crashing on a missing `.shape`/`.ndim` attribute."""
+        with self.assertRaises(ValueError):
+            MultivariateNormalFullCovariance(loc=1.0, covariance_matrix=None)
+        with self.assertRaises(ValueError):
+            MultivariateNormalFullCovariance(loc=None, covariance_matrix=1.0)
+
     @parameterized.expand([("float32", jnp.float32), ("float64", jnp.float64)])
     def test_sample_dtype(self, name, dtype):
         dist_params = {

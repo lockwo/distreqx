@@ -2,8 +2,8 @@
 
 import operator
 
+import jax
 import jax.numpy as jnp
-import jax.tree_util as jtu
 from jaxtyping import Array, Key, PyTree
 
 from ._distribution import (
@@ -15,8 +15,8 @@ from ._distribution import (
 
 
 def _reduce_helper(pytree: PyTree) -> Array:
-    sum_over_leaves = jtu.tree_map(jnp.sum, pytree)
-    return jtu.tree_reduce(operator.add, sum_over_leaves)
+    sum_over_leaves = jax.tree.map(jnp.sum, pytree)
+    return jax.tree.reduce(operator.add, sum_over_leaves)
 
 
 class Independent(
@@ -105,7 +105,7 @@ class Independent(
         return self.distribution.mode()
 
     def kl_divergence(self, other_dist, **kwargs) -> Array:
-        """Calculates the KL divergence to another distribution.
+        r"""Calculates the KL divergence to another distribution.
 
         **Arguments:**
 
@@ -114,7 +114,8 @@ class Independent(
 
         **Returns:**
 
-        The KL divergence `KL(self || other_dist)`.
+        The divergence $D_{\mathrm{KL}}(P \parallel Q)$, where $P$ is this
+        distribution and $Q$ is `other_dist`.
         """
         dist1 = self
         dist2 = other_dist
