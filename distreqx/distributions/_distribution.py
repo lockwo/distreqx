@@ -38,7 +38,7 @@ class AbstractDistribution(AbstractStrictModule):
 
     @abstractmethod
     def log_prob(self, value: PyTree[Array]) -> PyTree[Array]:
-        """Calculates the log probability of an event.
+        r"""Calculates the log probability of an event.
 
         **Arguments:**
 
@@ -46,7 +46,7 @@ class AbstractDistribution(AbstractStrictModule):
 
         **Returns:**
 
-        - The log probability log P(value).
+        - The log probability $\log P(x)$ for $x$ equal to `value`.
         """
         raise NotImplementedError
 
@@ -75,7 +75,7 @@ class AbstractDistribution(AbstractStrictModule):
 
     @abstractmethod
     def prob(self, value: PyTree[Array]) -> PyTree[Array]:
-        """Calculates the probability of an event.
+        r"""Calculates the probability of an event.
 
         **Arguments:**
 
@@ -83,7 +83,7 @@ class AbstractDistribution(AbstractStrictModule):
 
         **Returns:**
 
-        - The probability P(value).
+        - The probability $P(x)$ for $x$ equal to `value`.
         """
         raise NotImplementedError
 
@@ -99,30 +99,29 @@ class AbstractDistribution(AbstractStrictModule):
 
     @abstractmethod
     def icdf(self, value: PyTree[Array]) -> PyTree[Array]:
-        """Evaluates the inverse cumulative distribution function at `value`.
+        r"""Evaluates the inverse cumulative distribution function at `value`.
 
-        For a given probability `u`, returns the value `x` such that
-        `P[X <= x] = u`.
+        For a given probability $u$, returns the value $x$ such that
+        $P(X \le x) = u$.
 
         **Arguments:**
 
-        - `value`: A probability value in [0, 1].
+        - `value`: A probability value in $[0, 1]$.
 
         **Returns:**
 
-        - The ICDF evaluated at value, i.e. `x` such that `CDF(x) = value`.
+        - The ICDF evaluated at `value`, i.e. $x$ such that $F(x) = u$.
         """
         raise NotImplementedError
 
     @abstractmethod
     def log_cdf(self, value: PyTree[Array]) -> PyTree[Array]:
-        """Evaluates the log cumulative distribution function at
-        `value` i.e. log P[X <= value]."""
+        r"""Evaluates $\log P(X \le x)$ with $x$ equal to `value`."""
         raise NotImplementedError
 
     @abstractmethod
     def cdf(self, value: PyTree[Array]) -> PyTree[Array]:
-        """Evaluates the cumulative distribution function at `value`.
+        r"""Evaluates the cumulative distribution function at `value`.
 
         **Arguments:**
 
@@ -130,13 +129,13 @@ class AbstractDistribution(AbstractStrictModule):
 
         **Returns:**
 
-        - The CDF evaluated at value, i.e. P[X <= value].
+        - The CDF evaluated at `value`, i.e. $P(X \le x)$ with $x$ equal to `value`.
         """
         raise NotImplementedError
 
     @abstractmethod
     def survival_function(self, value: PyTree[Array]) -> PyTree[Array]:
-        """Evaluates the survival function at `value`.
+        r"""Evaluates the survival function at `value`.
 
         Note that by default we use a numerically not necessarily stable definition
         of the survival function in terms of the CDF.
@@ -149,13 +148,14 @@ class AbstractDistribution(AbstractStrictModule):
 
         **Returns:**
 
-        - The survival function evaluated at `value`, i.e. P[X > value]
+        - The survival function evaluated at `value`, i.e. $P(X > x)$ with $x$ equal
+            to `value`.
         """
         raise NotImplementedError
 
     @abstractmethod
     def log_survival_function(self, value: PyTree[Array]) -> PyTree[Array]:
-        """Evaluates the log of the survival function at `value`.
+        r"""Evaluates the log of the survival function at `value`.
 
         Note that by default we use a numerically not necessarily stable definition
         of the log of the survival function in terms of the CDF.
@@ -169,7 +169,7 @@ class AbstractDistribution(AbstractStrictModule):
         **Returns:**
 
         - The log of the survival function evaluated at `value`, i.e.
-            log P[X > value]
+            $\log P(X > x)$ with $x$ equal to `value`.
         """
         raise NotImplementedError
 
@@ -204,7 +204,7 @@ class AbstractDistribution(AbstractStrictModule):
 
     @abstractmethod
     def kl_divergence(self, other_dist, **kwargs) -> PyTree[Array]:
-        """Calculates the KL divergence to another distribution.
+        r"""Calculates the KL divergence to another distribution.
 
         **Arguments:**
 
@@ -213,7 +213,8 @@ class AbstractDistribution(AbstractStrictModule):
 
         **Returns:**
 
-        - The KL divergence `KL(self || other_dist)`.
+        - The divergence $D_{\mathrm{KL}}(P \parallel Q)$, where $P$ is this
+            distribution and $Q$ is `other_dist`.
         """
         raise NotImplementedError
 
@@ -227,7 +228,8 @@ class AbstractDistribution(AbstractStrictModule):
 
         **Returns:**
 
-        - The cross entropy `H(self || other_dist)`.
+        - The cross entropy $H(P, Q)$, where $P$ is this distribution and $Q$ is
+            `other_dist`.
         """
         return self.kl_divergence(other_dist, **kwargs) + self.entropy()
 
@@ -264,7 +266,7 @@ class AbstractProbDistribution(AbstractDistribution):
     """Abstract distribution + concrete `prob`."""
 
     def prob(self, value: PyTree[Array]) -> PyTree[Array]:
-        """Calculates the probability of an event.
+        r"""Calculates the probability of an event.
 
         **Arguments:**
 
@@ -272,7 +274,7 @@ class AbstractProbDistribution(AbstractDistribution):
 
         **Returns:**
 
-        - The probability P(value).
+        - The probability $P(x)$ for $x$ equal to `value`.
         """
         return jnp.exp(self.log_prob(value))
 
@@ -281,7 +283,7 @@ class AbstractCDFDistribution(AbstractDistribution):
     """Abstract distribution + concrete `cdf`."""
 
     def cdf(self, value: PyTree[Array]) -> PyTree[Array]:
-        """Evaluates the cumulative distribution function at `value`.
+        r"""Evaluates the cumulative distribution function at `value`.
 
         **Arguments:**
 
@@ -289,7 +291,7 @@ class AbstractCDFDistribution(AbstractDistribution):
 
         **Returns:**
 
-        - The CDF evaluated at value, i.e. P[X <= value].
+        - The CDF evaluated at `value`, i.e. $P(X \le x)$ with $x$ equal to `value`.
         """
         return jnp.exp(self.log_cdf(value))
 
@@ -307,7 +309,7 @@ class AbstractSurvivalDistribution(AbstractDistribution):
     `log_survival_function`."""
 
     def survival_function(self, value: PyTree[Array]) -> PyTree[Array]:
-        """Evaluates the survival function at `value`.
+        r"""Evaluates the survival function at `value`.
 
         Note that by default we use a numerically not necessarily stable definition
         of the survival function in terms of the CDF.
@@ -320,12 +322,13 @@ class AbstractSurvivalDistribution(AbstractDistribution):
 
         **Returns:**
 
-        - The survival function evaluated at `value`, i.e. P[X > value]
+        - The survival function evaluated at `value`, i.e. $P(X > x)$ with $x$ equal
+            to `value`.
         """
         return 1.0 - self.cdf(value)
 
     def log_survival_function(self, value: PyTree[Array]) -> PyTree[Array]:
-        """Evaluates the log of the survival function at `value`.
+        r"""Evaluates the log of the survival function at `value`.
 
         Note that by default we use a numerically not necessarily stable definition
         of the log of the survival function in terms of the CDF.
@@ -339,6 +342,6 @@ class AbstractSurvivalDistribution(AbstractDistribution):
         **Returns:**
 
         - The log of the survival function evaluated at `value`, i.e.
-            log P[X > value]
+            $\log P(X > x)$ with $x$ equal to `value`.
         """
         return jnp.log1p(-self.cdf(value))

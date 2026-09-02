@@ -39,6 +39,14 @@ class MultivariateNormalTriTest(TestCase):
             dist_kwargs={"loc": jnp.zeros((5,)), "scale_tri": jnp.ones((4, 4))}
         )
 
+    def test_raw_python_float_raises_value_error_not_attribute_error(self):
+        """A raw (uncast) `loc`/`scale_tri` should fail shape validation cleanly,
+        instead of crashing on a missing `.shape`/`.ndim` attribute."""
+        with self.assertRaises(ValueError):
+            MultivariateNormalTri(loc=1.0, scale_tri=None)
+        with self.assertRaises(ValueError):
+            MultivariateNormalTri(loc=None, scale_tri=1.0)
+
     @parameterized.expand([("float32", jnp.float32), ("float64", jnp.float64)])
     def test_sample_dtype(self, name, dtype):
         dist_params = {

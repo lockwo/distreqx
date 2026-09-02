@@ -1,4 +1,4 @@
-# Independent Distribution
+# Independent
 
 ::: distreqx.distributions.Independent
     options:

@@ -30,6 +30,14 @@ class MultivariateNormalDiagTest(TestCase):
             dist_kwargs={"loc": jnp.zeros((3, 5)), "scale_diag": jnp.ones((3, 4))}
         )
 
+    def test_raw_python_float_raises_value_error_not_attribute_error(self):
+        """A raw (uncast) `loc`/`scale_diag` should fail shape validation cleanly,
+        instead of crashing on a missing `.shape` attribute."""
+        with self.assertRaises(ValueError):
+            MultivariateNormalDiag(loc=1.0, scale_diag=None)
+        with self.assertRaises(ValueError):
+            MultivariateNormalDiag(loc=None, scale_diag=1.0)
+
     @parameterized.expand([("float32", jnp.float32), ("float64", jnp.float64)])
     def test_sample_dtype(self, name, dtype):
         dist_params = {

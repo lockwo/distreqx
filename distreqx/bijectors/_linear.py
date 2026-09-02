@@ -7,17 +7,17 @@ from ._bijector import AbstractBijector
 
 
 class AbstractLinearBijector(AbstractBijector):
-    """Base class for linear bijectors.
+    r"""Base class for linear bijectors.
 
-    This class provides a base class for bijectors defined as `f(x) = Ax`,
-    where `A` is a `DxD` matrix and `x` is a `D`-dimensional vector.
+    This class provides a base class for bijectors defined as $f(x) = Ax$,
+    where $A$ is a $D \times D$ matrix and $x$ is a $D$-dimensional vector.
     """
 
     event_dims: eqx.AbstractVar[int]
 
     @property
     def matrix(self) -> Array:
-        """The matrix `A` of the transformation.
+        r"""The matrix $A$ of the transformation.
 
         To be optionally implemented in a subclass.
 

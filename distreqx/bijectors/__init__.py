@@ -11,6 +11,10 @@ from ._exp import Exp as Exp
 from ._identity import Identity as Identity
 from ._inverse import Inverse as Inverse
 from ._linear import AbstractLinearBijector as AbstractLinearBijector
+from ._r2_to_complex import R2ToComplex as R2ToComplex
+from ._rational_quadratic_spline import (
+    RationalQuadraticSpline as RationalQuadraticSpline,
+)
 from ._scalar_affine import ScalarAffine as ScalarAffine
 from ._shift import Shift as Shift
 from ._sigmoid import Sigmoid as Sigmoid

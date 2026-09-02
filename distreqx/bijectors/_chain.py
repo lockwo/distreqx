@@ -2,7 +2,7 @@
 
 from collections.abc import Sequence
 
-from jaxtyping import Array
+from jaxtyping import Array, PyTree
 
 from ._bijector import (
     AbstractBijector,
@@ -12,16 +12,16 @@ from ._bijector import (
 
 
 class Chain(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector):
-    """Composition of a sequence of bijectors into a single bijector.
+    r"""Composition of a sequence of bijectors into a single bijector.
 
-    Bijectors are composable: if `f` and `g` are bijectors, then `g o f` is also
-    a bijector. Given a sequence of bijectors `[f1, ..., fN]`, this class
-    implements the bijector defined by `fN o ... o f1`.
+    Bijectors are composable: if $f$ and $g$ are bijectors, then $g \circ f$ is
+    also a bijector. Given a sequence $[f_1, \ldots, f_N]$, this class implements
+    $f_N \circ \cdots \circ f_1$.
 
     !!! warning "Bijectors are applied in reverse order"
 
-        Given a sequence `[f, g]`, the `Chain` bijector computes `f(g(x))`, not
-        `g(f(x))`. This matches the mathematical convention for function
+        Given a sequence `[f, g]`, the `Chain` bijector computes $f(g(x))$, not
+        $g(f(x))$. This matches the mathematical convention for function
         composition but may be counterintuitive when building layers sequentially.
 
     !!! example
@@ -64,28 +64,28 @@ class Chain(AbstractFwdLogDetJacBijector, AbstractInvLogDetJacBijector):
         self._is_constant_jacobian = is_constant_jacobian
         self._is_constant_log_det = is_constant_log_det
 
-    def forward(self, x: Array) -> Array:
-        """Computes y = f(x)."""
+    def forward(self, x: PyTree) -> PyTree:
+        r"""Computes $y = f(x)$."""
         for bijector in reversed(self.bijectors):
             x = bijector.forward(x)
         return x
 
-    def inverse(self, y: Array) -> Array:
-        """Computes x = f^{-1}(y)."""
+    def inverse(self, y: PyTree) -> PyTree:
+        r"""Computes $x = f^{-1}(y)$."""
         for bijector in self.bijectors:
             y = bijector.inverse(y)
         return y
 
-    def forward_and_log_det(self, x: Array) -> tuple[Array, Array]:
-        """Computes y = f(x) and log|det J(f)(x)|."""
+    def forward_and_log_det(self, x: PyTree) -> tuple[PyTree, Array]:
+        r"""Computes $y = f(x)$ and $\log|\det J(f)(x)|$."""
         x, log_det = self.bijectors[-1].forward_and_log_det(x)
         for bijector in reversed(self.bijectors[:-1]):
             x, ld = bijector.forward_and_log_det(x)
             log_det += ld
         return x, log_det
 
-    def inverse_and_log_det(self, y: Array) -> tuple[Array, Array]:
-        """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
+    def inverse_and_log_det(self, y: PyTree) -> tuple[PyTree, Array]:
+        r"""Computes $x = f^{-1}(y)$ and $\log|\det J(f^{-1})(y)|$."""
         y, log_det = self.bijectors[0].inverse_and_log_det(y)
         for bijector in self.bijectors[1:]:
             y, ld = bijector.inverse_and_log_det(y)

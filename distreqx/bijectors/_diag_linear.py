@@ -19,7 +19,7 @@ class DiagLinear(AbstractLinearBijector):
     diagonal entries in $A$. The inverse transformation $x = f^{-1}(y)$ is
     computed element-wise.
 
-    The bijector is invertible if and only if the diagonal entries of `A` are all
+    The bijector is invertible if and only if the diagonal entries of $A$ are all
     non-zero. It is the responsibility of the user to make sure that this is the
     case; the class will make no attempt to verify that the bijector is
     invertible.
@@ -36,7 +36,7 @@ class DiagLinear(AbstractLinearBijector):
 
         **Arguments:**
 
-        - `diag`: a vector of length D, the diagonal of matrix `A`.
+        - `diag`: a vector of length $D$, the diagonal of matrix $A$.
         """
         if diag.ndim != 1:
             raise ValueError("`diag` must have one dimension.")
@@ -49,32 +49,32 @@ class DiagLinear(AbstractLinearBijector):
         self._is_constant_log_det = True
 
     def forward(self, x: Array) -> Array:
-        """Computes y = f(x)."""
+        r"""Computes $y = f(x)$."""
         return self._bijector.forward(x)
 
     def inverse(self, y: Array) -> Array:
-        """Computes x = f^{-1}(y)."""
+        r"""Computes $x = f^{-1}(y)$."""
         return self._bijector.inverse(y)
 
     def forward_log_det_jacobian(self, x: Array) -> Array:
-        """Computes log|det J(f)(x)|."""
+        r"""Computes $\log|\det J(f)(x)|$."""
         return self._bijector.forward_log_det_jacobian(x)
 
     def inverse_log_det_jacobian(self, y: Array) -> Array:
-        """Computes log|det J(f^{-1})(y)|."""
+        r"""Computes $\log|\det J(f^{-1})(y)|$."""
         return self._bijector.inverse_log_det_jacobian(y)
 
     def inverse_and_log_det(self, y: Array) -> tuple[Array, Array]:
-        """Computes x = f^{-1}(y) and log|det J(f^{-1})(y)|."""
+        r"""Computes $x = f^{-1}(y)$ and $\log|\det J(f^{-1})(y)|$."""
         return self._bijector.inverse_and_log_det(y)
 
     def forward_and_log_det(self, x: Array) -> tuple[Array, Array]:
-        """Computes y = f(x) and log|det J(f)(x)|."""
+        r"""Computes $y = f(x)$ and $\log|\det J(f)(x)|$."""
         return self._bijector.forward_and_log_det(x)
 
     @property
     def matrix(self) -> Array:
-        """The full matrix `A`."""
+        """The full matrix $A$."""
         return jnp.diag(self.diag)
 
     def same_as(self, other: AbstractBijector) -> bool:

@@ -58,6 +58,13 @@ class MultivariateNormalFromBijectorTest(TestCase):
         with self.assertRaises(ValueError):
             MultivariateNormalFromBijector(loc, bij)
 
+    def test_raw_python_float_raises_value_error_not_attribute_error(self):
+        """A raw (uncast) `loc` should fail shape validation cleanly, instead of
+        crashing on a missing `.ndim` attribute."""
+        bij = MockLinear(4)
+        with self.assertRaises(ValueError):
+            MultivariateNormalFromBijector(1.0, bij)
+
     @parameterized.expand([("no broadcast", jnp.ones((4,)), jnp.zeros((4,)), (4,))])
     def test_loc_scale_and_shapes(self, name, diag, loc, expected_shape):
         scale = DiagLinear(diag)

@@ -2,5 +2,7 @@
 
 ::: distreqx.distributions.Uniform
     options:
-        members: false
+        inherited_members: false
+        members:
+            - __init__
 ---

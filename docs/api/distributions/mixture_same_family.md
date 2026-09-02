@@ -1,4 +1,4 @@
-# Mixture Distribution
+# MixtureSameFamily
 
 ::: distreqx.distributions.MixtureSameFamily
     options:

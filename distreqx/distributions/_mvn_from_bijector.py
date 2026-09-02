@@ -58,7 +58,7 @@ class AbstractMultivariateNormalFromBijector(AbstractTransformed):
         return self.loc
 
     def kl_divergence(self, other_dist, **kwargs) -> Array:
-        """Calculates the KL divergence to another distribution.
+        r"""Calculates the KL divergence to another distribution.
 
         **Arguments:**
 
@@ -67,7 +67,8 @@ class AbstractMultivariateNormalFromBijector(AbstractTransformed):
 
         **Returns:**
 
-        The KL divergence `KL(self || other_dist)`.
+        The divergence $D_{\mathrm{KL}}(P \parallel Q)$, where $P$ is this
+        distribution and $Q$ is `other_dist`.
         """
         dist1 = self
         dist2 = other_dist
@@ -116,15 +117,16 @@ class MultivariateNormalFromBijector(AbstractMultivariateNormalFromBijector):
     distribution: AbstractDistribution
     bijector: AbstractBijector
 
-    def __init__(self, loc: Array, scale: AbstractLinearBijector):
+    def __init__(self, loc: float | Array, scale: AbstractLinearBijector):
         """Initializes the distribution.
 
         **Arguments:**
 
-        - `loc`: The term `b`, i.e., the mean of the multivariate normal distribution.
-        - `scale`: The bijector specifying the linear transformation `A @ z`, as
+        - `loc`: The term $b$, i.e., the mean of the multivariate normal distribution.
+        - `scale`: The bijector specifying the linear transformation $Az$, as
             described in the class docstring.
         """
+        loc = jnp.asarray(loc)
         _check_input_parameters_are_valid(scale, loc)
 
         # Build a standard multivariate Gaussian.
@@ -175,24 +177,24 @@ def _squared_frobenius_norm(x: Array) -> Array:
 
 
 def _log_abs_determinant(d: AbstractMultivariateNormalFromBijector) -> Array:
-    """Obtains `log|det(A)|`."""
+    r"""Obtains $\log|\det(A)|$."""
     return d.scale.forward_log_det_jacobian(jnp.zeros(d.event_shape, dtype=d.dtype))
 
 
 def _inv_scale_operator(
     d: AbstractMultivariateNormalFromBijector,
 ) -> Callable[[Array], Array]:
-    """Gets the operator that performs `A^-1 * x`."""
+    """Gets the operator that performs $A^{-1}x$."""
     return jax.vmap(d.scale.inverse, in_axes=-1, out_axes=-1)
 
 
 def _scale_matrix(d: AbstractMultivariateNormalFromBijector) -> Array:
-    """Gets the full scale matrix `A`."""
+    """Gets the full scale matrix $A$."""
     return d.scale.matrix
 
 
 def _has_diagonal_scale(d: AbstractMultivariateNormalFromBijector) -> bool:
-    """Determines if the scale matrix `A` is diagonal."""
+    """Determines if the scale matrix $A$ is diagonal."""
     if isinstance(d, AbstractMultivariateNormalFromBijector) and isinstance(
         d.scale, DiagLinear
     ):
