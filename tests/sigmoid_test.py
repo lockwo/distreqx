@@ -101,6 +101,24 @@ class SigmoidTest(TestCase):
         np.testing.assert_allclose(x1, x2, rtol=RTOL)
         np.testing.assert_allclose(logdet1, logdet2, rtol=RTOL)
 
+    def test_gradient_finite_at_extreme_values(self):
+        """Regression test for a NaN-gradient bug in `_more_stable_sigmoid`/
+        `_more_stable_softplus`. Both used a single `jnp.where(cond, a, b)` to
+        pick between two approximations, but `jnp.where` evaluates both branches
+        unconditionally: for large positive `x`, the unselected `jnp.exp(x)` (or
+        `log1p(exp(x))`) branch overflowed to `inf`, and the `0 * inf` this
+        produces in the backward pass poisoned the gradient with NaN even though
+        that branch was never selected for the forward value.
+        """
+        bijector = Sigmoid()
+        x = jnp.array([-1e5, -50.0, -9.0, 0.0, 9.0, 50.0, 1e5])
+
+        fwd_grad = jax.vmap(jax.grad(bijector.forward))(x)
+        self.assertTrue(bool(jnp.all(jnp.isfinite(fwd_grad))))
+
+        logdet_grad = jax.vmap(jax.grad(bijector.forward_log_det_jacobian))(x)
+        self.assertTrue(bool(jnp.all(jnp.isfinite(logdet_grad))))
+
     def test_jittable(self):
         @jax.jit
         def f(x, b):
